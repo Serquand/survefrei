@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import Loader from "../components/Loader";
+import { useDispatch } from "react-redux";
+import { updateUser } from '../context/User';
 
 const LoginPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const dispatch = useDispatch();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -17,11 +20,20 @@ const LoginPage = () => {
         };
 
         setIsLoading(true);
-        const response = await fetch(apiUrl + '/user/login', requestOptions)
-        const responseBody = await response.json();
-        console.log(responseBody);
+        try {
+            const response = await fetch(apiUrl + '/user/login', requestOptions)
+            const { accessToken } = await response.json();
+            const profileRequest = await fetch(apiUrl + '/user/profile', { headers: { Authorization: 'Bearer ' + accessToken } } );
+            const profile = await profileRequest.json();
+            const newUser = { ...profile, accessToken };
+            dispatch(updateUser(newUser));
+        } catch {
+            // TODO
+        } finally {
+            setIsLoading(false);
+        }
 
-        setIsLoading(false);
+
     };
 
     return (
