@@ -17,12 +17,12 @@ interface NavigationOption {
     label: string;
     id: string | number;
     current: boolean;
-    neededRole: Roles[]
+    neededRole: Roles[],
+    notifications?: number,
 }
 
 const Layout: React.FC = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-
 
     const navigationCategories: NavigationOption[] = [
         {
@@ -31,7 +31,8 @@ const Layout: React.FC = () => {
             icon: DocumentPlusIcon,
             to: '/to-fill',
             current: false,
-            neededRole: [Roles.STUDENT]
+            neededRole: [Roles.STUDENT],
+            notifications: 1
         },
         {
             id: 'filled',
@@ -113,7 +114,7 @@ const Layout: React.FC = () => {
                                             <ul className="-mx-2 space-y-1">
                                                 <li key={link.id}>
                                                     <Link
-                                                        to={'/app' + link.to}
+                                                        to={/*'/app' + */link.to}
                                                         className={`group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold ${link.current
                                                             ? 'bg-gray-800 text-white'
                                                             : 'text-gray-400 hover:text-white hover:bg-gray-800'
@@ -164,7 +165,7 @@ const Layout: React.FC = () => {
                             <ul className="-mx-2 space-y-1">
                                 <li key={link.id}>
                                     <Link
-                                        to={'/app' + link.to}
+                                        to={/*'/app' + */link.to}
                                         className={`group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold ${link.current
                                             ? 'bg-gray-800 text-white'
                                             : 'text-gray-400 hover:text-white hover:bg-gray-800'
@@ -172,6 +173,10 @@ const Layout: React.FC = () => {
                                     >
                                         <link.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
                                         {link.label}
+                                        {(link.notifications && link.notifications > 0) ?
+                                        <span className='text-white bg-red-800 px-1 rounded-full size-6 align-middle text-center'>
+                                            {link.notifications}
+                                        </span> : null}
                                     </Link>
                                 </li>
                             </ul>

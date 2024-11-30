@@ -3,6 +3,6 @@ import userReducers from "./User";
 
 export const store = configureStore({
     reducer: {
-        general: userReducers,
+        user: userReducers,
     },
 });

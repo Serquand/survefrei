@@ -26,6 +26,7 @@ const LoginPage = () => {
             const profileRequest = await fetch(apiUrl + '/user/profile', { headers: { Authorization: 'Bearer ' + accessToken } } );
             const profile = await profileRequest.json();
             const newUser = { ...profile, accessToken };
+            console.log(newUser);
             dispatch(updateUser(newUser));
         } catch {
             // TODO
