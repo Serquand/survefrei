@@ -1,7 +1,26 @@
-import LoginPage from "./pages/Login";
+import { Route, Routes } from "react-router-dom";
+import Layout from "./layouts/DefaultLayout";
+import Login from "./pages/Login";
+import ToFill from "./pages/ToFill";
+import Filled from "./pages/Filled";
+import OrganizationPage from "./pages/Organization";
+import FormsPage from "./pages/Forms";
+import UsersPage from "./pages/UsersPage";
 
-export default function App() {
+const App = () => {
     return (
-        <LoginPage />
-    )
-}
+        <Routes>
+            <Route path="/app" element={<Layout />}>
+                <Route path="to-fill" element={<ToFill />} />
+                <Route path="filled" element={<Filled />} />
+                <Route path="organization" element={<OrganizationPage />} />
+                <Route path="forms" element={<FormsPage />} />
+                <Route path="users" element={<UsersPage />} />
+            </Route>
+
+            <Route path="/" element={<Login />} />
+        </Routes>
+    );
+};
+
+export default App;
