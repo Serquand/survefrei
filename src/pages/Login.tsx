@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import Loader from "../components/Loader";
 import { useDispatch } from "react-redux";
 import { updateUser } from '../context/User';
+import { Roles, User } from "../utils/types";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -21,13 +24,22 @@ const LoginPage = () => {
 
         setIsLoading(true);
         try {
+            // Fetch login
             const response = await fetch(apiUrl + '/user/login', requestOptions)
             const { accessToken } = await response.json();
+
+            // Fetch profile
             const profileRequest = await fetch(apiUrl + '/user/profile', { headers: { Authorization: 'Bearer ' + accessToken } } );
             const profile = await profileRequest.json();
-            const newUser = { ...profile, accessToken };
-            console.log(newUser);
-            dispatch(updateUser(newUser));
+            const user: User = { ...profile, accessToken };
+            dispatch(updateUser(user));
+
+            // Go to the good pages
+            if(user.role === Roles.STUDENT) {
+                return navigate('/to-fill');
+            } else {
+                return navigate('/forms');
+            }
         } catch {
             // TODO
         } finally {
