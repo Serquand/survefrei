@@ -24,7 +24,7 @@ interface NavigationOption {
 
 const Layout: React.FC = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const user = useSelector(state => state.user.user) as User;
+    const user = useSelector((state: any) => state.user.user) as User;
 
     const navigationCategories: NavigationOption[] = [
         {
