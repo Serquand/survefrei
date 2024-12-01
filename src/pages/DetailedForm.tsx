@@ -1,18 +1,25 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import SurveyField from "../components/SurveyField";
-import { Survey } from '../utils/types';
+import { Organization, Survey } from '../utils/types';
+import InputField from "../components/SiteGlobalInput";
+import { useSelector } from "react-redux";
+import SiteCheckbox from "../components/SiteCheckbox";
+import SiteSelect from "../components/SiteSelect";
 
 const DetailedForm = () => {
     const { id } = useParams<{ id: string; }>();
     const [form, setForm] = useState<Survey | undefined>(undefined);
     const API_URL = import.meta.env.VITE_API_URL;
     const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
+    const organizations: Organization[] = useSelector((state: any) => state.organization.organizations);
 
     const findMaxOrder = (): number => {
         if (!form || form.fields.length === 0) return 1;
         return Math.max(...form.fields.map(field => field.order)) + 1;
     }
+
+    const organizationOptions: { label: string, id: number }[] = organizations.map((org) => ({ id: org.id, label: org.name }));
 
     const createNewField = async () => {
         const body = { fieldType: "TX", label: "Mon champ", order: findMaxOrder() + 1 };
@@ -44,21 +51,70 @@ const DetailedForm = () => {
         }));
     }
 
+    const updateForm = (key: keyof Survey, newValue: any) => {
+        // @ts-ignore
+        setForm(prevForm => ({
+            ...prevForm,
+            [key]: newValue
+        }));
+    }
+
     useEffect(() => {
         const getForm = async () => {
             const headers = { Authorization: 'Bearer ' + accessToken };
             const response = await fetch(API_URL + '/survey/' + id, { headers });
             const data = await response.json();
-            setForm(data);
-            console.log(data);
+            const organization = organizations.find(org => org.id === data.organizationId)
+            setForm({...data, organization});
         }
         getForm();
     }, []);
 
     return (
         <div className="relative flex flex-col min-h-screen">
-            <div className="flex-grow">
-                <div className="divide-y flex flex-col w-4/5 mx-auto gap-5 mb-14">
+            <div className="flex-grow w-4/5 mx-auto pt-10 divide-y-2">
+                {/* <pre>{JSON.stringify(form.organization.name, null, 2)}</pre> */}
+
+                {form ? <div className="flex flex-col gap-6 pb-12">
+                    <InputField
+                        modelValue={form.title}
+                        onUpdate={(e) => updateForm('title', e)}
+                        id="form-title"
+                        type="text"
+                        required={true}
+                        label="Titre du formulaire"
+                        disabled={false}
+                    />
+
+                    <InputField
+                        modelValue={form.description}
+                        onUpdate={(e) => updateForm('description', e)}
+                        id="form-description"
+                        type="textarea"
+                        required={true}
+                        label="Description du formulaire"
+                        disabled={false}
+                    />
+
+                    <div className="grid grid-cols-2">
+                        <SiteCheckbox
+                            id="form-published"
+                            onUpdate={(e) => updateForm('isPublic', e)}
+                            label="Formulaire public ?"
+                            modelValue={form.isPublic}
+                        />
+
+                        <SiteSelect
+                            modelValue={1}
+                            onUpdate={(e) => console.log(e)}
+                            options={organizationOptions}
+                            required={true}
+                            label="Organisation"
+                        />
+                    </div>
+                </div> : null}
+
+                <div className="divide-y flex flex-col mx-auto gap-5 mb-14">
                     {form && form.fields.map((field, index) => (
                         <div className="pt-5">
                             <SurveyField
