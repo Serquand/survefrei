@@ -1,16 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Loader from "../components/Loader";
 import { useDispatch } from "react-redux";
 import { updateUser } from '../context/User';
 import { Roles, User } from "../utils/types";
 import { useNavigate } from "react-router-dom";
+import Notification, { NotificationRef } from "../components/SiteNotifications";
+import { XCircleIcon } from "@heroicons/react/24/outline";
 
 const LoginPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [notificationTitle, setNotificationTitle] = useState("");
+    const [notificationInformations, setNotificationInformations] = useState("");
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const notificationRef = useRef<NotificationRef>(null);
+
+    const showNotification = () => {
+        if (notificationRef.current) {
+            notificationRef.current.openNotifications();
+        }
+    };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -25,12 +38,16 @@ const LoginPage = () => {
         setIsLoading(true);
         try {
             // Fetch login
-            const response = await fetch(apiUrl + '/user/login', requestOptions)
-            const { accessToken } = await response.json();
+            const response = await fetch(apiUrl + '/user/login', requestOptions);
+            const informations = await response.json();
+            if(!response.ok) throw new Error(informations.message);
 
             // Fetch profile
+            const {accessToken} = informations;
             const profileRequest = await fetch(apiUrl + '/user/profile', { headers: { Authorization: 'Bearer ' + accessToken } } );
             const profile = await profileRequest.json();
+            if(!profileRequest.ok) throw new Error(profile.message);
+
             const user: User = { ...profile, accessToken };
             dispatch(updateUser(user));
 
@@ -41,12 +58,12 @@ const LoginPage = () => {
                 return navigate('/forms');
             }
         } catch {
-            // TODO
+            setNotificationTitle("Error")
+            setNotificationInformations("Caca");
+            showNotification();
         } finally {
             setIsLoading(false);
         }
-
-
     };
 
     return (
@@ -64,6 +81,13 @@ const LoginPage = () => {
             </div>
 
             {isLoading && <Loader />}
+            <Notification
+                ref={notificationRef}
+                title={notificationTitle}
+                information={notificationInformations}
+            >
+                <XCircleIcon className="h-6 w-6 text-red-600" />
+            </Notification>
 
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                 <form
