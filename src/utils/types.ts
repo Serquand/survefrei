@@ -24,10 +24,11 @@ export interface SurveyField {
 }
 
 export enum SurveyFieldType {
-    SELECT = "select",
-    TITLE = "title",
-    DESCRIPTION = "description",
-    IMAGE = "image",
+    SELECT = "SL",
+    TEXT = "TX",
+    TEXTAREA = "TA",
+    CHECKBOX = "CB",
+    NUMBER = 'NB',
 }
 
 export interface Survey extends SurveyPreview {

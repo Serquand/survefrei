@@ -80,7 +80,7 @@ const InputField: React.FC<Props> = ({
                         maxLength={maxLength}
                         disabled={disabled}
                         rows={3}
-                        className="block w-full pl-10 rounded-md mt-1 px-3 py-2 border border-gray-300 placeholder:text-gray-400 focus:outline-none focus:border-sky-700 sm:text-sm sm:leading-6 disabled:bg-slate-100 disabled:text-slate-500"
+                        className="block w-full rounded-md mt-1 px-3 py-2 border border-gray-300 placeholder:text-gray-400 focus:outline-none focus:border-sky-700 sm:text-sm sm:leading-6 disabled:bg-slate-100 disabled:text-slate-500"
                         onChange={handleChange}
                     />
                 )}
@@ -91,7 +91,7 @@ const InputField: React.FC<Props> = ({
                         value={String(inputValue)}
                         maxLength={maxLength}
                         disabled={disabled}
-                        className="block h-9 pl-10 resize-none overflow-auto w-full border rounded-md mt-1 px-3 py-1 border-gray-300 placeholder:text-gray-400 focus:outline-none focus:border-sky-700 sm:text-sm sm:leading-6 disabled:bg-slate-100 disabled:text-slate-500"
+                        className="block h-9 resize-none overflow-auto w-full border rounded-md mt-1 px-3 py-1 border-gray-300 placeholder:text-gray-400 focus:outline-none focus:border-sky-700 sm:text-sm sm:leading-6 disabled:bg-slate-100 disabled:text-slate-500"
                         onChange={handleInputTextAreaResizable}
                     />
                 )}
@@ -103,7 +103,7 @@ const InputField: React.FC<Props> = ({
                         value={String(inputValue)}
                         disabled={disabled}
                         placeholder={placeholder}
-                        className="appearance-none pl-10 block w-full px-3 py-2 border border-gray-300 rounded-md disabled:bg-slate-100 disabled:text-slate-500 focus:outline-none focus:border-sky-700 sm:text-sm"
+                        className={`appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md disabled:bg-slate-100 disabled:text-slate-500 focus:outline-none focus:border-sky-700 sm:text-sm ${children ? 'pl-10' : ''}`}
                         maxLength={maxLength}
                         min={min}
                         onChange={handleChange}
