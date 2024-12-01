@@ -9,7 +9,8 @@ import {
     Bars3Icon,
 } from '@heroicons/react/24/outline';
 import { Dialog, Transition, TransitionChild, DialogPanel } from '@headlessui/react';
-import { Roles } from '../utils/types';
+import { Roles, User } from '../utils/types';
+import { useSelector } from 'react-redux';
 
 interface NavigationOption {
     to: string;
@@ -23,6 +24,7 @@ interface NavigationOption {
 
 const Layout: React.FC = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const user = useSelector(state => state.user.user) as User;
 
     const navigationCategories: NavigationOption[] = [
         {
@@ -164,7 +166,7 @@ const Layout: React.FC = () => {
                         {navigationCategories.map((link) => (
                             <ul className="-mx-2 space-y-1">
                                 <li key={link.id}>
-                                    <Link
+                                    {link.neededRole.includes(user?.role) ? <Link
                                         to={/*'/app' + */link.to}
                                         className={`group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold ${link.current
                                             ? 'bg-gray-800 text-white'
@@ -177,7 +179,7 @@ const Layout: React.FC = () => {
                                         <span className='text-white bg-red-800 px-1 rounded-full size-6 align-middle text-center'>
                                             {link.notifications}
                                         </span> : null}
-                                    </Link>
+                                    </Link> : null}
                                 </li>
                             </ul>
                         ))}
