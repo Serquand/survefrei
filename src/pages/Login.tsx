@@ -6,6 +6,7 @@ import { Roles, User } from "../utils/types";
 import { useNavigate } from "react-router-dom";
 import Notification, { NotificationRef } from "../components/SiteNotifications";
 import { XCircleIcon } from "@heroicons/react/24/outline";
+import { fetchOrganizations } from "../context/Organization";
 
 const LoginPage = () => {
     const [email, setEmail] = useState("");
@@ -15,7 +16,7 @@ const LoginPage = () => {
     const [notificationInformations, setNotificationInformations] = useState("");
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
+    const apiUrl = import.meta.env.VITE_API_URL;
     const notificationRef = useRef<NotificationRef>(null);
 
     const showNotification = () => {
@@ -24,39 +25,49 @@ const LoginPage = () => {
         }
     };
 
+    const fetchProfile = async (accessToken: string) => {
+        const profileRequest = await fetch(apiUrl + '/user/profile', { headers: { Authorization: 'Bearer ' + accessToken } } );
+        const profile = await profileRequest.json();
+        if(!profileRequest.ok) throw new Error(profile.message);
+        return profile;
+    }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const navigateToGoodPage = (role: Roles) => {
+        if(role === Roles.STUDENT) {
+            return navigate('/to-fill');
+        } else {
+            return navigate('/forms');
+        }
+    }
 
-        const apiUrl = import.meta.env.VITE_API_URL;
+    const fetchLogin = async () => {
         const requestOptions = {
             method: "POST",
             body: JSON.stringify({ email, password }),
             headers: { "Content-Type": "application/json" }
         };
 
+        const response = await fetch(apiUrl + '/user/login', requestOptions);
+        const informations = await response.json();
+        if(!response.ok) throw new Error(informations.message);
+
+        const {accessToken} = informations;
+        return accessToken as string;
+    }
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
         setIsLoading(true);
         try {
-            // Fetch login
-            const response = await fetch(apiUrl + '/user/login', requestOptions);
-            const informations = await response.json();
-            if(!response.ok) throw new Error(informations.message);
+            const accessToken = await fetchLogin()
 
-            // Fetch profile
-            const {accessToken} = informations;
-            const profileRequest = await fetch(apiUrl + '/user/profile', { headers: { Authorization: 'Bearer ' + accessToken } } );
-            const profile = await profileRequest.json();
-            if(!profileRequest.ok) throw new Error(profile.message);
+            const profile: Omit<User, "accessToken"> = await fetchProfile(accessToken);
+            dispatch(updateUser({ ...profile, accessToken }));
 
-            const user: User = { ...profile, accessToken };
-            dispatch(updateUser(user));
+            if(profile.role === Roles.ADMIN) dispatch(fetchOrganizations(accessToken))
 
-            // Go to the good pages
-            if(user.role === Roles.STUDENT) {
-                return navigate('/to-fill');
-            } else {
-                return navigate('/forms');
-            }
+            return navigateToGoodPage(profile.role);
         } catch {
             setNotificationTitle("Error")
             setNotificationInformations("Caca");

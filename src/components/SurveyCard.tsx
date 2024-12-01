@@ -6,6 +6,7 @@ interface Props {
     id: number;
     description: string;
     organizationName: string;
+    onDeleteForm: (id: number) => void
 }
 
 const SurveyCard = (props: Props) => {
@@ -20,6 +21,7 @@ const SurveyCard = (props: Props) => {
             headers: { Authorization: 'Bearer ' + accessToken }
         }
         await fetch(API_URL + '/survey/' + props.id, requestOptions);
+        props.onDeleteForm(props.id);
     }
 
     return (

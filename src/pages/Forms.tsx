@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import SurveyCard from "../components/SurveyCard";
-import { SurveyPreview } from "../utils/types";
+import { CreationSurvey, SurveyPreview } from "../utils/types";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import CreateFormModal from "../components/CreateFormModal";
+import { useNavigate } from "react-router-dom";
 
 const FormsPage = () => {
     const [surveys, setSurveys] = useState<SurveyPreview[]>();
+    const [creationModalOpen, isModalCreationOpen] = useState(false);
     const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVzdGViYW52aW5jZW50Lm1haWxAZ21haWwuY29tIiwidXNlcklkIjoxLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzI4ODk1ODl9.RA9_ZalRKeQNVG_A6Cc-LIEAPIbCzRxnGniLYQAu9P8";
     const API_URL = import.meta.env.VITE_API_URL;
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchSurveys = async () => {
@@ -15,22 +20,49 @@ const FormsPage = () => {
             setSurveys(data);
         }
         fetchSurveys();
-    })
+    }, []);
+
+    const postNewSurvey = async (data: CreationSurvey) => {
+        const requestOptions = {
+            headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+            body: JSON.stringify({...data, organizationId: 1}),
+            method: "POST"
+        };
+        const response = await fetch(API_URL + '/survey', requestOptions);
+        const newSurvey = await response.json();
+        navigate('/form/' + newSurvey.id);
+    }
 
     return (
-        <div className="flex flex-col px-12 gap-5 py-6">
-            {(surveys && surveys.length > 0) ? surveys.map((survey, index) => {
-                return (
-                    <SurveyCard
-                        description={survey.description}
-                        id={survey.id}
-                        organizationName={survey.organization.name}
-                        title={survey.title}
-                        key={index}
-                    />
-                );
-            }): null}
-        </div>
+        <>
+            <div className="flex flex-col px-12 gap-5 py-6">
+                {(surveys && surveys.length > 0) ? surveys.map((survey, index) => {
+                    return (
+                        <SurveyCard
+                            description={survey.description}
+                            id={survey.id}
+                            organizationName={survey.organization.name}
+                            title={survey.title}
+                            key={index}
+                            onDeleteForm={(id) => setSurveys(surveys.filter(survey => survey.id !== id))}
+                        />
+                    );
+                }): null}
+            </div>
+
+            <div
+                className="absolute bottom-10 right-10 size-14 rounded-full bg-green-600 flex items-center justify-center cursor-pointer"
+                onClick={() => isModalCreationOpen(true)}
+            >
+                <PlusIcon className="size-10 text-white" />
+            </div>
+
+            <CreateFormModal
+                isOpen={creationModalOpen}
+                onClose={() => isModalCreationOpen(false)}
+                onSubmit={postNewSurvey}
+            />
+        </>
     );
 };
 

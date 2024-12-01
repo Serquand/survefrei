@@ -16,7 +16,7 @@ const DetailedForm = () => {
             console.log(data);
         }
         getForm();
-    });
+    }, []);
 
     return (
         <h1>Detailed Form - {id} - <pre>{JSON.stringify(form, null, 2)}</pre></h1>

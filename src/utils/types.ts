@@ -54,3 +54,9 @@ export interface SurveyPreview {
     organizationId: number;
     organization: Omit<Organization, "users">,
 }
+
+export interface CreationSurvey {
+    title: string;
+    description: string;
+    organizationId: number;
+}
