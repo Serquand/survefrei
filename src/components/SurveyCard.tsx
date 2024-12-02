@@ -10,6 +10,7 @@ interface Props {
     onDeleteForm: (id: number) => void,
     isPublic: boolean;
     canDelete: boolean;
+    mustShowPublicationStatus?: boolean;
 }
 
 const SurveyCard = (props: Props) => {
@@ -58,7 +59,9 @@ const SurveyCard = (props: Props) => {
                         <div className="ml-4 overflow-hidden">
                             <div className="flex gap-2">
                                 <h3 className="text-base font-semibold text-gray-900">
-                                    <span>{props.title}, {props.isPublic ? 'P' : 'Non p'}ublié</span>
+                                    <span>{props.title}
+                                        {props.mustShowPublicationStatus ? <span>, {props.isPublic ? 'P' : 'Non p'}ublié</span> : null}
+                                    </span>
                                 </h3>
 
                                 {props.canDelete ? <div

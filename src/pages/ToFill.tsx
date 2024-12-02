@@ -25,6 +25,7 @@ const ToFillPage = () => {
                 <ListPreviewForm
                     canDelete={false}
                     surveys={surveys}
+                    mustShowPublicationStatus={false}
                 />
             : null}
         </div>

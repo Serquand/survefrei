@@ -39,6 +39,7 @@ const FormsPage = () => {
                 canDelete={true}
                 onDeleteForm={(id) => setSurveys(surveys.filter(survey => survey.id !== id))}
                 surveys={surveys}
+                mustShowPublicationStatus={true}
             /> : null}
 
             <div

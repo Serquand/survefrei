@@ -5,9 +5,10 @@ interface Props {
     surveys: SurveyPreview[];
     canDelete: boolean;
     onDeleteForm?: (id: number) => void;
+    mustShowPublicationStatus?: boolean;
 }
 
-const ListPreviewForm = ({surveys, canDelete, onDeleteForm}: Props) => {
+const ListPreviewForm = ({surveys, canDelete, onDeleteForm, mustShowPublicationStatus}: Props) => {
     const handleOnDeleteForm = (id: number) => {
         onDeleteForm && onDeleteForm(id);
     }
@@ -25,6 +26,7 @@ const ListPreviewForm = ({surveys, canDelete, onDeleteForm}: Props) => {
                             onDeleteForm={() => handleOnDeleteForm(survey.id)}
                             isPublic={survey.isPublic}
                             canDelete={canDelete}
+                            mustShowPublicationStatus={mustShowPublicationStatus}
                         />
                     );
                 }): null}

@@ -8,8 +8,10 @@ import SiteCheckbox from "../components/SiteCheckbox";
 import SiteSelect from "../components/SiteSelect";
 
 const FormEditionPage = () => {
+    const debounceTimeMs = 2_500;
     const { id } = useParams<{ id: string; }>();
     const [form, setForm] = useState<Survey | undefined>(undefined);
+    const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
     const API_URL = import.meta.env.VITE_API_URL;
     const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
     const organizations: Organization[] = useSelector((state: any) => state.organization.organizations);
@@ -36,28 +38,53 @@ const FormEditionPage = () => {
         const data = await response.json();
 
         // @ts-ignore
-        setForm(prevForm => ({
-            ...prevForm,
-            fields: prevForm?.fields ? [...prevForm.fields, data] : [data]
-        }));
+        setForm(prevForm => {
+            const newForm = { ...prevForm, fields: prevForm?.fields ? [...prevForm.fields, data] : [data] };
+            setDebounceToSaveField(newForm);
+            return newForm;
+        });
     }
 
-    const deleteField = (fieldId: number) => {
-        console.log(fieldId);
+    const saveForm = async (newForm: any) => {
+        const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
+        const { fields, organization, id, ...formToSave } = newForm;
+        console.log(formToSave);
+        const requestOptions = {
+            headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+            method: "PUT",
+            body: JSON.stringify(formToSave),
+        };
+        await fetch(`${API_URL}/survey/${id}`, requestOptions);
+    }
 
+    const setDebounceToSaveField = (newForm: any) => {
+        if (saveTimeout) clearTimeout(saveTimeout);
+
+        const timeout = setTimeout(() => saveForm(newForm), debounceTimeMs);
+        setSaveTimeout(timeout);
+
+        return () => {
+            if (saveTimeout) clearTimeout(saveTimeout);
+        };
+
+    };
+
+    const deleteField = (fieldId: number) => {
         // @ts-ignore
-        setForm(prevForm => ({
-            ...prevForm,
-            fields: prevForm?.fields.filter((field) => field.id !== fieldId)
-        }));
+        setForm(prevForm => {
+            const newForm = { ...prevForm, fields: prevForm?.fields.filter((field) => field.id !== fieldId) };
+            setDebounceToSaveField(newForm);
+            return newForm;
+        });
     }
 
     const updateForm = (key: keyof Survey, newValue: any) => {
         // @ts-ignore
-        setForm(prevForm => ({
-            ...prevForm,
-            [key]: newValue
-        }));
+        setForm(prevForm => {
+            const newForm = { ...prevForm, [key]: newValue }
+            setDebounceToSaveField(newForm);
+            return newForm;
+        });
     }
 
     useEffect(() => {
@@ -71,7 +98,7 @@ const FormEditionPage = () => {
             const organization = organizations.find(org => org.id === data.organizationId)
             console.log(Object.keys(data));
 
-            setForm({...data, organization});
+            setForm({ ...data, organization });
         }
         getForm();
     }, []);
@@ -114,7 +141,7 @@ const FormEditionPage = () => {
                             modelValue={1}
                             onUpdate={(e) => console.log(e)}
                             options={organizationOptions}
-                            required={true}
+                            required={false}
                             label="Organisation"
                         />
                     </div>
