@@ -29,6 +29,10 @@ export interface SurveyField {
     maximalNumberOfChoices: number;
 }
 
+export interface SurveyFieldWithAnswer extends SurveyField {
+    answers: { id: number; value: boolean | string[] | string | number; }[];
+}
+
 export enum SurveyFieldType {
     SELECT = "SL",
     TEXT = "TX",

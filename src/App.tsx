@@ -9,9 +9,10 @@ import UsersPage from "./pages/UsersPage";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import { Roles } from "./utils/types";
-import EditSurvey from "./pages/DetailedFormEdition";
 import FillForm from "./pages/FillForm";
 import ReviewForm from "./pages/ReviewForm";
+import AnswersPage from "./pages/AnswersPage";
+import FormEditionPage from "./pages/FormEditionPage";
 
 const App = () => {
     return (
@@ -71,7 +72,7 @@ const App = () => {
                     path="form/:id/answers"
                     element={
                         <ProtectedRoute allowedRole={[Roles.ADMIN, Roles.TEACHER]}>
-                            <FormsPage />
+                            <AnswersPage />
                         </ProtectedRoute>
                     }
                 />
@@ -79,7 +80,7 @@ const App = () => {
                     path="form/:id/edition"
                     element={
                         <ProtectedRoute allowedRole={[Roles.ADMIN]}>
-                            <EditSurvey />
+                            <FormEditionPage />
                         </ProtectedRoute>
                     }
                 />
@@ -104,7 +105,7 @@ export default App;
 // import ScatterPlot from './components/DensityChart';
 // import PieChart from './components/PieChart';
 
-// const App = () => {
+// const App = () => {a
 //     const occurences = [
 //         { label: "Bonjour", occurrences: 10 },
 //         { label: "Au revoir", occurrences: 5 },

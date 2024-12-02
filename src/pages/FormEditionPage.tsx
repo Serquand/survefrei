@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import SurveyField from "../components/SurveyField";
+import SurveyFieldBuilder from "../components/SurveyFieldBuilder";
 import { Organization, Survey } from '../utils/types';
 import InputField from "../components/SiteGlobalInput";
 import { useSelector } from "react-redux";
 import SiteCheckbox from "../components/SiteCheckbox";
 import SiteSelect from "../components/SiteSelect";
 
-const EditSurvey = () => {
+const FormEditionPage = () => {
     const { id } = useParams<{ id: string; }>();
     const [form, setForm] = useState<Survey | undefined>(undefined);
     const API_URL = import.meta.env.VITE_API_URL;
-    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_TEACHER;
+    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
     const organizations: Organization[] = useSelector((state: any) => state.organization.organizations);
     const navigate = useNavigate();
 
@@ -65,6 +65,7 @@ const EditSurvey = () => {
             const headers = { Authorization: 'Bearer ' + accessToken };
             const response = await fetch(API_URL + '/survey/' + id, { headers });
             const data = await response.json();
+            alert(JSON.stringify(data, null, 2));
             if (data.isPublic) return navigate("/"); // If the survey is already public, the admin, or whoever he is, cannot update the survey. Error => Go on login
 
             const organization = organizations.find(org => org.id === data.organizationId)
@@ -122,7 +123,7 @@ const EditSurvey = () => {
                 <div className="divide-y flex flex-col mx-auto gap-5 mb-14">
                     {form && form.fields.map((field, index) => (
                         <div className="pt-5">
-                            <SurveyField
+                            <SurveyFieldBuilder
                                 currentPlaceOfField={index + 1}
                                 field={field}
                                 numberOfFields={form.fields.length}
@@ -146,4 +147,4 @@ const EditSurvey = () => {
     );
 };
 
-export default EditSurvey;
+export default FormEditionPage;

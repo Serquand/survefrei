@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-import SurveyCard from "../components/SurveyCard";
 import { CreationSurvey, SurveyPreview } from "../utils/types";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import CreateFormModal from "../components/CreateFormModal";
 import { useNavigate } from "react-router-dom";
+import ListPreviewForm from "../components/ListPreviewForm";
 
 const FormsPage = () => {
     const [surveys, setSurveys] = useState<SurveyPreview[]>();
     const [creationModalOpen, isModalCreationOpen] = useState(false);
     const API_URL = import.meta.env.VITE_API_URL;
-    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_TEACHER;
+    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -17,7 +17,6 @@ const FormsPage = () => {
             const headers = { Authorization: 'Bearer ' + accessToken };
             const response = await fetch(API_URL + '/survey', { headers });
             const data = await response.json();
-
             setSurveys(data);
         }
         fetchSurveys();
@@ -26,30 +25,21 @@ const FormsPage = () => {
     const postNewSurvey = async (data: CreationSurvey) => {
         const requestOptions = {
             headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-            body: JSON.stringify({...data, organizationId: 1}),
+            body: JSON.stringify({...data,  }),
             method: "POST"
         };
         const response = await fetch(API_URL + '/survey', requestOptions);
         const newSurvey = await response.json();
-        navigate('/form/' + newSurvey.id);
+        navigate(`/form/${newSurvey.id}/edition`);
     }
 
     return (
         <>
-            <div className="flex flex-col px-12 gap-5 py-6">
-                {(surveys && surveys.length > 0) ? surveys.map((survey, index) => {
-                    return (
-                        <SurveyCard
-                            description={survey.description}
-                            id={survey.id}
-                            organizationName={survey.organization.name}
-                            title={survey.title}
-                            key={index}
-                            onDeleteForm={(id) => setSurveys(surveys.filter(survey => survey.id !== id))}
-                        />
-                    );
-                }): null}
-            </div>
+            {surveys ? <ListPreviewForm
+                canDelete={true}
+                onDeleteForm={(id) => setSurveys(surveys.filter(survey => survey.id !== id))}
+                surveys={surveys}
+            /> : null}
 
             <div
                 className="absolute bottom-10 right-10 size-14 rounded-full bg-green-600 flex items-center justify-center cursor-pointer"

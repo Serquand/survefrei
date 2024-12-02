@@ -1,17 +1,33 @@
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 interface Props {
     title: string;
     id: number;
     description: string;
     organizationName: string;
-    onDeleteForm: (id: number) => void
+    onDeleteForm: (id: number) => void,
+    isPublic: boolean;
+    canDelete: boolean;
 }
 
 const SurveyCard = (props: Props) => {
     const navigate = useNavigate();
-    const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVzdGViYW52aW5jZW50Lm1haWxAZ21haWwuY29tIiwidXNlcklkIjoxLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzI4ODk1ODl9.RA9_ZalRKeQNVG_A6Cc-LIEAPIbCzRxnGniLYQAu9P8";
+    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
+    const location = useLocation();
+
+    const navigateToFormPage = () => {
+        switch(location.pathname) {
+            case '/to-fill': return navigate(`/form/${props.id}/fill`)
+
+            case '/forms':
+                if(props.isPublic) return navigate(`/form/${props.id}/answers`)
+                else  return navigate(`/form/${props.id}/edition`)
+
+            case '/filled': return navigate(`/form/${props.id}/review`)
+        }
+    }
 
     const deleteSurvey = async (e: any) => {
         e.stopPropagation();
@@ -27,7 +43,7 @@ const SurveyCard = (props: Props) => {
     return (
         <div
             className="border group border-gray-300 cursor-pointer bg-white px-4 py-5 sm:px-6"
-            onClick={() => navigate("/form/" + props.id)}
+            onClick={navigateToFormPage}
         >
             <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
                 <div className="ml-4 mt-4">
@@ -42,15 +58,15 @@ const SurveyCard = (props: Props) => {
                         <div className="ml-4 overflow-hidden">
                             <div className="flex gap-2">
                                 <h3 className="text-base font-semibold text-gray-900">
-                                    <span>{props.title}</span>
+                                    <span>{props.title}, {props.isPublic ? 'P' : 'Non p'}ublié</span>
                                 </h3>
 
-                                <div
+                                {props.canDelete ? <div
                                     className="size-[22px] flex items-center justify-center rounded-full cursor-pointer opacity-0 group-hover:opacity-100"
                                     onClick={deleteSurvey}
                                 >
                                     <TrashIcon className="size-5 text-red-600" />
-                                </div>
+                                </div> : null}
                             </div>
 
                             <p className="text-sm text-gray-600 overflow-hidden w-full text-wrap break-words">

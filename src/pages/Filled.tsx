@@ -1,38 +1,32 @@
-// import { useEffect, useState } from "react";
-// import { useSelector } from "react-redux";
-// import { User } from "../utils/types";
-// import SurveyCard from "../components/SurveyCard";
+import { useEffect, useState } from "react";
+import { SurveyPreview } from "../utils/types";
+import ListPreviewForm from "../components/ListPreviewForm";
 
 const Filled = () => {
     // const user: User = useSelector(state => state.user.user);
-    // const [surveyData, setSurveyData] = useState(null); // to store the survey data
+    const [surveys, setSurveyData] = useState<SurveyPreview[] | null>(null);
+    const API_URL = import.meta.env.VITE_API_URL;
+    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_STUDENT;
 
-    // useEffect(() => {
-    //     const fetchSurveyData = async () => {
-    //         try {
-    //             const API_URL = import.meta.env.VITE_API_URL;
-    //             const headers = { Authorization: "Bearer " + user.accessToken };
-    //             const response = await fetch(API_URL + "/survey", { headers });
+    useEffect(() => {
+        const fetchSurveyData = async () => {
+            const headers = { Authorization: "Bearer " + accessToken };
+            const response = await fetch(API_URL + "/survey", { headers });
+            const data = await response.json();
+            setSurveyData(data.filledSurvey);
+        };
 
-    //             if (!response.ok) {
-    //                 throw new Error(`Failed to fetch survey data: ${response.statusText}`);
-    //             }
-
-    //             const data = await response.json();
-    //             setSurveyData(data);
-    //         } catch (err) {
-    //             console.error("Error fetching survey data:", err);
-    //         }
-    //     };
-
-    //     if (user.accessToken) {
-    //         fetchSurveyData();
-    //     }
-    // }, [user]);
+        fetchSurveyData();
+    }, []);
 
     return (
         <div>
-            <div>Caca</div>
+            {surveys ?
+                <ListPreviewForm
+                    canDelete={false}
+                    surveys={surveys}
+                />
+            : null}
         </div>
     );
 };
