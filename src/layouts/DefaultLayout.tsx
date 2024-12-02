@@ -166,7 +166,8 @@ const Layout: React.FC = () => {
                         {navigationCategories.map((link) => (
                             <ul className="-mx-2 space-y-1">
                                 <li key={link.id}>
-                                    {link.neededRole.includes(user?.role) ? <Link
+                                    {/* link.neededRole.includes(user?.role) */}
+                                    {true ? <Link
                                         to={/*'/app' + */link.to}
                                         className={`group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold ${link.current
                                             ? 'bg-gray-800 text-white'

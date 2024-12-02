@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import SurveyField from "../components/SurveyField";
 import { Organization, Survey } from '../utils/types';
 import InputField from "../components/SiteGlobalInput";
@@ -7,12 +7,13 @@ import { useSelector } from "react-redux";
 import SiteCheckbox from "../components/SiteCheckbox";
 import SiteSelect from "../components/SiteSelect";
 
-const DetailedForm = () => {
+const EditSurvey = () => {
     const { id } = useParams<{ id: string; }>();
     const [form, setForm] = useState<Survey | undefined>(undefined);
     const API_URL = import.meta.env.VITE_API_URL;
     const accessToken = import.meta.env.VITE_ACCESS_TOKEN_TEACHER;
     const organizations: Organization[] = useSelector((state: any) => state.organization.organizations);
+    const navigate = useNavigate();
 
     const findMaxOrder = (): number => {
         if (!form || form.fields.length === 0) return 1;
@@ -64,6 +65,8 @@ const DetailedForm = () => {
             const headers = { Authorization: 'Bearer ' + accessToken };
             const response = await fetch(API_URL + '/survey/' + id, { headers });
             const data = await response.json();
+            if (data.isPublic) return navigate("/"); // If the survey is already public, the admin, or whoever he is, cannot update the survey. Error => Go on login
+
             const organization = organizations.find(org => org.id === data.organizationId)
             console.log(Object.keys(data));
 
@@ -143,4 +146,4 @@ const DetailedForm = () => {
     );
 };
 
-export default DetailedForm;
+export default EditSurvey;
