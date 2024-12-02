@@ -13,12 +13,18 @@ export interface User {
     role: Roles;
 }
 
+export interface SurveyFieldChoice {
+    id: number;
+    label: string;
+    formFieldId: number;
+}
+
 export interface SurveyField {
     id: number;
     label: string;
     fieldType: SurveyFieldType;
     required: boolean;
-    choices: string[];
+    choices: SurveyFieldChoice[];
     order: number;
     maximalNumberOfChoices: number;
 }
@@ -60,4 +66,9 @@ export interface CreationSurvey {
     title: string;
     description: string;
     organizationId: number;
+}
+
+export interface Answer {
+    questionId: string;
+    value: any;
 }

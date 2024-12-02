@@ -11,7 +11,7 @@ const DetailedForm = () => {
     const { id } = useParams<{ id: string; }>();
     const [form, setForm] = useState<Survey | undefined>(undefined);
     const API_URL = import.meta.env.VITE_API_URL;
-    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
+    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_TEACHER;
     const organizations: Organization[] = useSelector((state: any) => state.organization.organizations);
 
     const findMaxOrder = (): number => {
@@ -65,6 +65,8 @@ const DetailedForm = () => {
             const response = await fetch(API_URL + '/survey/' + id, { headers });
             const data = await response.json();
             const organization = organizations.find(org => org.id === data.organizationId)
+            console.log(Object.keys(data));
+
             setForm({...data, organization});
         }
         getForm();

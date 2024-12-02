@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 interface Props {
     id: string;
-    type?: 'text' | 'number' | 'textarea' | 'password' | 'email' | 'textarea_resizable';
+    type?: 'text' | 'number' | 'textarea' | 'password' | 'email';
     modelValue: string | number | boolean | string[] | undefined;
     label?: string;
     placeholder?: string;
@@ -10,7 +10,6 @@ interface Props {
     disabled?: boolean;
     maxLength?: number;
     min?: string;
-    maxHeight?: number;
     required?: boolean;
     onUpdate: (value: string | number | boolean | string[] | undefined) => void;
     onBlur?: () => void;
@@ -26,7 +25,6 @@ const InputField: React.FC<Props> = ({
     disabled = false,
     maxLength,
     min = '0',
-    maxHeight = 100,
     required = false,
     onUpdate,
     children,
@@ -44,17 +42,6 @@ const InputField: React.FC<Props> = ({
         } else {
             onUpdate(value);
         }
-    };
-
-    const handleInputTextAreaResizable = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const value = e.target.value;
-        autoGrowTextArea(e);
-        onUpdate(value);
-    };
-
-    const autoGrowTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        e.target.style.height = '0px';
-        e.target.style.height = `${Math.min(e.target.scrollHeight + 4, maxHeight)}px`;
     };
 
     return (
@@ -85,18 +72,7 @@ const InputField: React.FC<Props> = ({
                     />
                 )}
 
-                {type === 'textarea_resizable' && (
-                    <textarea
-                        id={id}
-                        value={String(inputValue)}
-                        maxLength={maxLength}
-                        disabled={disabled}
-                        className="block h-9 resize-none overflow-auto w-full border rounded-md mt-1 px-3 py-1 border-gray-300 placeholder:text-gray-400 focus:outline-none focus:border-sky-700 sm:text-sm sm:leading-6 disabled:bg-slate-100 disabled:text-slate-500"
-                        onChange={handleInputTextAreaResizable}
-                    />
-                )}
-
-                {type !== 'textarea' && type !== 'textarea_resizable' && (
+                {type !== 'textarea' && (
                     <input
                         id={id}
                         type={type}

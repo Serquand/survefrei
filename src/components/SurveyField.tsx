@@ -46,6 +46,7 @@ const SurveyField = (props: Props) => {
     }
 
     const updateChoices = (newChoice: string, choiceIndex: number) => {
+        // @ts-ignore
         setValue(prevState => {
             const newState = {
                 ...prevState,

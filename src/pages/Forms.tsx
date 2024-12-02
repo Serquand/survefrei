@@ -8,8 +8,8 @@ import { useNavigate } from "react-router-dom";
 const FormsPage = () => {
     const [surveys, setSurveys] = useState<SurveyPreview[]>();
     const [creationModalOpen, isModalCreationOpen] = useState(false);
-    const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVzdGViYW52aW5jZW50Lm1haWxAZ21haWwuY29tIiwidXNlcklkIjoxLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzI4ODk1ODl9.RA9_ZalRKeQNVG_A6Cc-LIEAPIbCzRxnGniLYQAu9P8";
     const API_URL = import.meta.env.VITE_API_URL;
+    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_TEACHER;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -17,6 +17,7 @@ const FormsPage = () => {
             const headers = { Authorization: 'Bearer ' + accessToken };
             const response = await fetch(API_URL + '/survey', { headers });
             const data = await response.json();
+
             setSurveys(data);
         }
         fetchSurveys();

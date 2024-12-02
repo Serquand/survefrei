@@ -9,7 +9,7 @@ import UsersPage from "./pages/UsersPage";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import { Roles } from "./utils/types";
-import DetailedForm from "./pages/DetailedForm";
+import DetailedForm from "./pages/DetailedFormDisplay";
 
 const App = () => {
     return (
