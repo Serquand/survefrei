@@ -42,12 +42,6 @@ export enum SurveyFieldType {
 }
 
 export interface Survey extends SurveyPreview {
-    id: number;
-    title: string;
-    description: string;
-    isPublic: boolean;
-    organizationId: number;
-    organization: Omit<Organization, "users">;
     fields: SurveyField[];
 }
 
@@ -75,4 +69,8 @@ export interface CreationSurvey {
 export interface Answer {
     questionId: string;
     value: any;
+}
+
+export interface SurveyWithAnswer extends Survey {
+    fields: SurveyFieldWithAnswer[];
 }
