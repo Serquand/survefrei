@@ -11,6 +11,7 @@ interface Props {
     currentPlaceOfField: number;
     surveyId: number;
     onDeleteField: () => void;
+    onUpdatePosition: (newPosition: number) => void;
 }
 
 const SurveyFieldBuilder = (props: Props) => {
@@ -71,6 +72,7 @@ const SurveyFieldBuilder = (props: Props) => {
                 ...prevState,
                 choices: prevState.choices.map((choice, index) => (index === choiceIndex ? {label: newChoice} : choice))
             };
+            // @ts-ignore
             setDebounceToSaveField(newState);
             return newState;
         });
@@ -159,7 +161,7 @@ const SurveyFieldBuilder = (props: Props) => {
                     <SiteSelect
                         options={positionOptions}
                         modelValue={props.currentPlaceOfField}
-                        onUpdate={(value) => console.log(value)}
+                        onUpdate={(value) => props.onUpdatePosition(value)}
                         nativeSelect={true}
                     />
                 </div>

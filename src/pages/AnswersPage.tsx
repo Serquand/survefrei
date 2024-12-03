@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { SurveyWithAnswer } from "../utils/types";
 import { useParams } from "react-router-dom";
 import SiteGlobalKPI from "../components/SiteGlobalKPI";
+import { sendOrderedFields } from "../utils/utils";
 
 const AnswersPage = () => {
     const [answers, setAnswers] = useState<SurveyWithAnswer | undefined>(undefined);
@@ -14,6 +15,7 @@ const AnswersPage = () => {
             const headers = { Authorization: 'Bearer ' + accessToken };
             const response = await fetch(`${API_URL}/user-answer/${id}`, { headers });
             const data = await response.json();
+            data.fields = sendOrderedFields(data.fields);
             setAnswers(data);
         }
         getUserAnswers();

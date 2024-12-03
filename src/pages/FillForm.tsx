@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import InputField from "../components/SiteGlobalInput";
 import SiteCheckbox from "../components/SiteCheckbox";
 import SiteSelect from "../components/SiteSelect";
+import { sendOrderedFields } from "../utils/utils";
 
 const FillForm = () => {
     const { id } = useParams<{ id: string; }>();
@@ -21,12 +22,14 @@ const FillForm = () => {
             const headers = { Authorization: 'Bearer ' + accessToken };
             const response = await fetch(API_URL + '/survey/' + id, { headers });
             const data = await response.json();
+            data.fields = sendOrderedFields(data.fields);
             const organization = organizations.find(org => org.id === data.organizationId);
 
             setForm({ ...data, organization });
             setAnswers(() => data.fields.map((field: SurveyField) => ({ questionId: field.id, value: '' })));
         }
-        getForm();
+
+        getForm().catch(() => navigate('/to-fill'));
     }, []);
 
     const updateAnswer = (index: number, newValue: any) => {
@@ -60,7 +63,6 @@ const FillForm = () => {
             navigate(`/form/${id}/review`)
         } catch (err) {
             console.error(err);
-
         }
     }
 

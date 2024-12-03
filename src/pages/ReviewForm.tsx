@@ -4,6 +4,7 @@ import SiteSelect from "../components/SiteSelect";
 import { SurveyFieldType, SurveyWithAnswer } from "../utils/types";
 import SiteCheckbox from "../components/SiteCheckbox";
 import InputField from "../components/SiteGlobalInput";
+import { sendOrderedFields } from "../utils/utils";
 
 const ReviewForm = () => {
     const { id: formId } = useParams<{ id: string; }>();
@@ -16,6 +17,7 @@ const ReviewForm = () => {
             const headers = { Authorization: 'Bearer ' + ACCESS_TOKEN_STUDENT }
             const response = await fetch(`${API_URL}/user-answer/${formId}`, { headers });
             const data = await response.json();
+            data.field = sendOrderedFields(data.field);
             setForm(data);
         }
         getAnswers();
@@ -63,7 +65,7 @@ const ReviewForm = () => {
                             /> : null}
 
                             {field.fieldType === SurveyFieldType.SELECT ? <SiteSelect
-                                modelValue={(form.fields[index].answers[0].value as string[]).map(el => ({ label: el }))}
+                                modelValue={(form.fields[index].answers[0].value as string[]).map(el => el)}
                                 key={index}
                                 options={field.choices.map((choice) => ({ label: choice.label }))}
                                 optionLabel="label"

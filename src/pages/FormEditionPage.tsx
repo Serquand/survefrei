@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SurveyFieldBuilder from "../components/SurveyFieldBuilder";
-import { Organization, Survey } from '../utils/types';
+import { Organization, Survey, SurveyField } from '../utils/types';
 import InputField from "../components/SiteGlobalInput";
 import { useSelector } from "react-redux";
 import SiteCheckbox from "../components/SiteCheckbox";
 import SiteSelect from "../components/SiteSelect";
 import ConfirmationModal from "../components/ConfirmationModal";
+import { moveElement, sendOrderedFields } from "../utils/utils";
 
 const FormEditionPage = () => {
     const debounceTimeMs = 2_500;
@@ -17,10 +18,17 @@ const FormEditionPage = () => {
     const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
     const organizations: Organization[] = useSelector((state: any) => state.organization.organizations);
     const organizationOptions: { label: string, id: number }[] = organizations.map((org) => ({ id: org.id, label: org.name }));
+    const [updatingKey, setUpdatingKey] = useState<number>(0);
     const navigate = useNavigate();
 
     // @ts-ignore
     const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
+
+    const fieldsOrdered = useMemo(() => {
+        if (!form || !form.fields) return [];
+        setUpdatingKey(prev => prev + 1);
+        return sendOrderedFields(form.fields);
+    }, [form?.fields]);
 
     const onTriggerPublishButton = (publishmentValue: boolean) => {
         setForm(prevForm => ({ ...prevForm!, isPublic: publishmentValue }));
@@ -41,7 +49,7 @@ const FormEditionPage = () => {
 
     const findMaxOrder = (): number => {
         if (!form || form.fields.length === 0) return 1;
-        return Math.max(...form.fields.map(field => field.order)) + 1;
+        return Math.max(...form.fields.map(field => field.order));
     }
 
     const createNewField = async () => {
@@ -105,6 +113,27 @@ const FormEditionPage = () => {
         });
     }
 
+    const handleUpdatePosition = async (fieldId: number, newPosition: number) => {
+        const patchOrderField = async (field: SurveyField) => {
+            const requestOptions = {
+                method: "PUT",
+                headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order: field.order })
+            }
+            await fetch(`${API_URL}/survey/${id}/field/${field.id}`, requestOptions);
+        }
+
+        const fields = form!.fields;
+        const oldIndex = fields.findIndex(f => f.id === fieldId);
+        const newFieldsArray = moveElement(fields, oldIndex, newPosition - 1);
+        setForm(prev => {
+            const newForm = { ...prev!, fields: newFieldsArray };
+            console.log(newForm.fields.map(x => x.order));
+            return newForm;
+        });
+        await Promise.all(newFieldsArray.map(patchOrderField));
+    }
+
     useEffect(() => {
         const getForm = async () => {
             const headers = { Authorization: 'Bearer ' + accessToken };
@@ -163,15 +192,22 @@ const FormEditionPage = () => {
                         </div>
                     </div> : null}
 
-                    <div className="divide-y flex flex-col mx-auto gap-5 mb-14">
-                        {form && form.fields.map((field, index) => (
-                            <div className="pt-5">
+                    <div
+                        className="divide-y flex flex-col mx-auto gap-5 mb-14"
+                        key={updatingKey}
+                    >
+                        {fieldsOrdered && fieldsOrdered.length > 0 && fieldsOrdered.map((field, index) => (
+                            <div
+                                className="pt-5"
+                                key={`field-${field.id}`}
+                            >
                                 <SurveyFieldBuilder
                                     currentPlaceOfField={index + 1}
                                     field={field}
-                                    numberOfFields={form.fields.length}
-                                    surveyId={form.id}
+                                    numberOfFields={fieldsOrdered.length}
+                                    surveyId={form!.id}
                                     onDeleteField={() => deleteField(field.id)}
+                                    onUpdatePosition={(newPosition) => handleUpdatePosition(field.id, newPosition)}
                                 />
                             </div>
                         ))}
