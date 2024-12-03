@@ -43,7 +43,7 @@ const FormsPage = () => {
             /> : null}
 
             <div
-                className="absolute bottom-10 right-10 size-14 rounded-full bg-green-600 flex items-center justify-center cursor-pointer"
+                className="fixed bottom-10 right-10 size-14 rounded-full bg-green-600 flex items-center justify-center cursor-pointer"
                 onClick={() => isModalCreationOpen(true)}
             >
                 <PlusIcon className="size-10 text-white" />

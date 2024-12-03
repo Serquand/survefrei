@@ -71,7 +71,6 @@ const SurveyFieldBuilder = (props: Props) => {
                 ...prevState,
                 choices: prevState.choices.map((choice, index) => (index === choiceIndex ? {label: newChoice} : choice))
             };
-            console.log(newState);
             setDebounceToSaveField(newState);
             return newState;
         });

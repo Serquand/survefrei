@@ -4,8 +4,8 @@ import { Organization } from "../utils/types";
 const initialState: { organizations: Organization[] | null } = {
     organizations: [
         {
-            id: 1,
-            name: "Mon organisation 2",
+            id: 8,
+            name: "Mon organisation 9",
             users: []
         }
     ],
@@ -20,10 +20,7 @@ const organizationSlice = createSlice({
             const headers = { Authorization: 'Bearer ' + accessToken };
             fetch(API_URL + '/organization', { headers })
                 .then(response => response.json())
-                .then(data => {
-                    state.organizations = data;
-                    console.log(data);
-                });
+                .then(data => state.organizations = data);
         }
     },
 });

@@ -53,10 +53,7 @@ const FillForm = () => {
             body: JSON.stringify({ answers })
         };
         const response = await fetch(`${API_URL}/user-answer/${id}`, requestOptions);
-        const data = await response.json();
-        if(response.ok) {
-            console.log(data);
-        }
+        await response.json();
     }
 
     return (

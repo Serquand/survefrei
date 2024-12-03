@@ -20,7 +20,6 @@ const SiteGlobalKPI = (props: Props) => {
             }
         });
         const occurrences = Array.from(occurrencesMap.entries()).map(([label, occurrences]) => ({ label, occurrences }));
-        console.log(occurrences);
         return occurrences;
     }
 

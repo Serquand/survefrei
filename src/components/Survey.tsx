@@ -60,7 +60,6 @@ const Survey = () => {
         };
         const response = await fetch(`${API_URL}/user-answer/${id}`, requestOptions);
         const data = await response.json();
-        console.log(data);
     }
 
     return (
