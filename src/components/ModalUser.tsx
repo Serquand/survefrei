@@ -1,35 +1,75 @@
 import { useState, useEffect } from "react";
 import { User } from "../utils/types";
-import SiteInput from "./SiteInput";
+import InputField from "./SiteGlobalInput";
+import SiteSelect from "./SiteSelect";
+
+export type CreateNewUSer = Omit<User, "accessToken"> & { password?: string; };
 
 interface ModalUserProps {
     isOpen: boolean;
     onClose: () => void;
-    user: Omit<User, "accessToken">;
+    user: Partial<CreateNewUSer>;
     onUpdateUser: (updatedUser: Omit<User, "accessToken">) => void;
+    mode: 'creation' | 'edition';
 }
 
-const ModalUser = ({ isOpen, onClose, user, onUpdateUser }: ModalUserProps) => {
-    const [formData, setFormData] = useState<Omit<User, "accessToken">>(user);
+const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps) => {
+    const [formData, setFormData] = useState<Partial<CreateNewUSer>>(user);
+    const API_URL = import.meta.env.VITE_API_URL;
+    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
+    const roleOptions: { label: string; id: string }[] = [
+        { id: 'student', label: "Étudiant" },
+        { id: 'teacher', label: 'Professeur' },
+        { id: 'admin', label: 'Administrateur' },
+    ]
+
 
     useEffect(() => {
         setFormData(user);
     }, [user]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        console.log(formData);
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
+    const handleChange = (key: keyof CreateNewUSer, e: any) => {
+        setFormData({ ...formData, [key]: e });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onUpdateUser(formData);
-        onClose();
+    const sendUserRequest = async (url: string, method: string, data: object) => {
+        try {
+            const requestOptions = {
+                body: JSON.stringify(data),
+                method,
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
+            };
+
+            const response = await fetch(url, requestOptions);
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status} - ${response.statusText}`);
+            }
+
+            return response.json();
+        } catch (error) {
+            console.error("An error occurred:", error);
+            throw error;
+        }
     };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        try {
+            if (mode === "creation") {
+                const { id, ...dataToSend } = formData;
+                const data = await sendUserRequest(`${API_URL}/user/register`, "POST", dataToSend);
+                onUpdateUser(data);
+            } else if (mode === "edition") {
+                const { id, password, email, ...dataToSend } = formData;
+                await sendUserRequest(`${API_URL}/user/${id}`, "PUT", dataToSend);
+                onUpdateUser(formData);
+            }
+        } catch (error) {
+            console.error("Error during submission:", error);
+        }
+    };
+
 
     return (
         <>
@@ -50,56 +90,54 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser }: ModalUserProps) => {
                                 onSubmit={handleSubmit}
                                 className="grid grid-cols-2 gap-y-4 gap-x-12"
                             >
-                                <div className="mb-4">
-                                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-                                        Prénom
-                                    </label>
-                                    <SiteInput
-                                        onChange={(value: string) => formData.firstName = value}
-                                        value={formData.firstName}
-                                        placeholder="Prénom"
-                                    />
-                                </div>
+                                <InputField
+                                    id="update-user-first-name"
+                                    modelValue={formData.firstName}
+                                    onUpdate={(e) => handleChange('firstName', e)}
+                                    label="Prénom"
+                                    placeholder="Prénom"
+                                    required={true}
+                                />
 
-                                <div className="mb-4">
-                                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-                                        Nom
-                                    </label>
-                                    <SiteInput
-                                        onChange={() => handleChange}
-                                        value={formData.lastName}
-                                        placeholder="Nom"
-                                    />
-                                </div>
+                                <InputField
+                                    id="update-user-last-name"
+                                    modelValue={formData.lastName}
+                                    onUpdate={(e) => handleChange('lastName', e)}
+                                    label="Nom"
+                                    placeholder="Nom"
+                                    required={true}
+                                />
 
-                                <div className="mb-4">
-                                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                                        Email
-                                    </label>
-                                    <SiteInput
-                                        onChange={() => handleChange}
-                                        value={formData.email}
-                                        placeholder="Email"
-                                    />
-                                </div>
+                                <InputField
+                                    id="update-user-email"
+                                    modelValue={formData.email}
+                                    onUpdate={(e) => handleChange('email', e)}
+                                    label="Adresse email"
+                                    placeholder="Adresse email"
+                                    required={true}
+                                    disabled={mode === 'edition'}
+                                />
 
-                                <div className="mb-4">
-                                    <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-                                        Rôle
-                                    </label>
-                                    <select
-                                        id="role"
-                                        name="role"
-                                        value={formData.role}
-                                        onChange={handleChange}
-                                        className="p-2 w-full border border-gray-300 bg-white rounded-md"
-                                        required
-                                    >
-                                        <option value="student">Étudiant</option>
-                                        <option value="admin">Administrateur</option>
-                                        <option value="teacher">Professeur</option>
-                                    </select>
-                                </div>
+                                <SiteSelect
+                                    modelValue={formData.role}
+                                    onUpdate={(e) => handleChange("role", e)}
+                                    options={roleOptions}
+                                    label="Rôle"
+                                    placeholder="Rôle"
+                                    required={true}
+                                    optionLabel="label"
+                                    optionKey="id"
+                                />
+
+                                {mode === 'creation' ? <InputField
+                                    id="update-user-password"
+                                    modelValue={formData.password}
+                                    onUpdate={(e) => handleChange('password', e)}
+                                    label="Mot de passe"
+                                    placeholder="Mot de passe"
+                                    required={true}
+                                    type="password"
+                                /> : null}
 
                                 <div className="flex justify-end space-x-2 col-span-2">
                                     <button

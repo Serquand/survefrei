@@ -1,25 +1,38 @@
 import { TrashIcon } from "@heroicons/react/24/outline";
+import ModalUser from "./ModalUser";
+import { User } from "../utils/types";
+import { useState } from "react";
 
 interface Props {
-    fullName: string;
-    role: string;
-    email: string;
-    id: number;
+    user: Omit<User, "accessToken">;
+    onRemoveUser: () => void;
 }
 
 const UserCard = (props: Props) => {
-    const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVzdGViYW52aW5jZW50Lm1haWxAZ21haWwuY29tIiwidXNlcklkIjoxLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzI4ODk1ODl9.RA9_ZalRKeQNVG_A6Cc-LIEAPIbCzRxnGniLYQAu9P8";
+    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [user, setUser] = useState(props.user);
+
     const deleteUser = async () => {
         const API_URL = import.meta.env.VITE_API_URL;
         const requestOptions = {
             method: "DELETE",
             headers: { Authorization: 'Bearer ' + accessToken }
         }
-        await fetch(API_URL + '/user/' + props.id, requestOptions);
+        await fetch(API_URL + '/user/' + props.user.id, requestOptions);
+        props.onRemoveUser();
     }
 
-    return (
-        <div className="border group border-gray-200 bg-white px-4 py-5 sm:px-6">
+    const handleUpdateUser = (newUser: any) => {
+        setUser(newUser);
+        setIsModalOpen(false);
+    }
+
+    return (<>
+        <div
+            className="border group border-gray-200 bg-white px-4 py-5 sm:px-6 cursor-pointer"
+            onClick={() => setIsModalOpen(true)}
+        >
             <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
                 <div className="ml-4 mt-4">
                     <div className="flex items-center">
@@ -33,24 +46,32 @@ const UserCard = (props: Props) => {
                                 className="cursor-pointer bg-red-600 opacity-0 group-hover:opacity-100 size-7 rounded-full absolute -bottom-2 right-0 flex justify-center items-center"
                                 onClick={deleteUser}
                             >
-                                <TrashIcon className="size-5 text-white"/>
+                                <TrashIcon className="size-5 text-white" />
                             </div>
                         </div>
                         <div className="ml-4 overflow-hidden">
                             <h3 className="text-base font-semibold text-gray-900">
-                                <span>{ props.fullName }</span> -&nbsp;
-                                <span>{ props.role.toUpperCase() }</span>
+                                <span>{user.firstName + ' ' + user.lastName}</span> -&nbsp;
+                                <span>{user.role.toUpperCase()}</span>
                             </h3>
 
                             <p className="text-sm text-gray-500 overflow-hidden w-full text-wrap break-words">
-                                @ <span>{ props.email }</span>
+                                @ <span>{user.email}</span>
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    )
+
+        <ModalUser
+            mode="edition"
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onUpdateUser={handleUpdateUser}
+            user={user}
+        />
+    </>)
 }
 
 export default UserCard;

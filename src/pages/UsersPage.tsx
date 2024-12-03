@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import SiteInput from "../components/SiteInput";
 import UserCard from "../components/UserCard";
-import { User } from "../utils/types";
-import ModalUser from "../components/ModalUser";
+import { Roles, User } from "../utils/types";
+import ModalUser, { CreateNewUSer } from "../components/ModalUser";
 
 const UsersPage = () => {
     const [searchText, setSearchText] = useState("");
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [users, setUsers] = useState<Omit<User, 'accessToken'>[]>([]);
     const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
+    const newUser: Partial<CreateNewUSer> = { email: '',  firstName: '', id: 0, lastName: '', role: Roles.STUDENT, password: '' }
+    const [updatedUser, setUpdatedUser] = useState<Partial<CreateNewUSer>>(newUser);
 
     const fetchUsers = async () => {
         const API_URL = import.meta.env.VITE_API_URL;
@@ -17,6 +19,20 @@ const UsersPage = () => {
         });
         const data = await response.json();
         setUsers(data);
+    }
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setUpdatedUser(newUser);
+    }
+
+    const addUser = (newUser: Omit<User, 'accessToken'>) => {
+        setUsers([...users, newUser]);
+        closeModal();
+    }
+
+    const removeUser = (userId: number) => {
+        setUsers(users.filter(user => user.id !== userId));
     }
 
     useEffect(() => {
@@ -49,20 +65,19 @@ const UsersPage = () => {
                 {users.map((user) =>
                     <UserCard
                         key={user.id}
-                        fullName={user.firstName + ' ' + user.lastName}
-                        email={user.email}
-                        id={user.id}
-                        role={user.role}
+                        user={user}
+                        onRemoveUser={() => removeUser(user.id)}
                     />
                 )}
             </div>
 
-            {(users && users.length > 0) ? <ModalUser
+            <ModalUser
+                mode="creation"
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onUpdateUser={() => console.log("Coucou")}
-                user={users[0]}
-            /> : null}
+                onClose={closeModal}
+                onUpdateUser={addUser}
+                user={updatedUser}
+            />
         </>
     );
 };
