@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Answer, Organization, Survey, SurveyField, SurveyFieldType } from "../utils/types";
 import { useSelector } from "react-redux";
 import InputField from "../components/SiteGlobalInput";
@@ -13,6 +13,7 @@ const FillForm = () => {
     const API_URL = import.meta.env.VITE_API_URL;
     const accessToken = import.meta.env.VITE_ACCESS_TOKEN_STUDENT;
     const organizations: Organization[] = useSelector((state: any) => state.organization.organizations);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const getForm = async () => {
@@ -52,8 +53,15 @@ const FillForm = () => {
             headers: { Authorization: 'Bearer ' + accessToken, "Content-Type": 'application/json' },
             body: JSON.stringify({ answers })
         };
-        const response = await fetch(`${API_URL}/user-answer/${id}`, requestOptions);
-        await response.json();
+
+        try {
+            const response = await fetch(`${API_URL}/user-answer/${id}`, requestOptions);
+            await response.json();
+            navigate(`/form/${id}/review`)
+        } catch (err) {
+            console.error(err);
+
+        }
     }
 
     return (
@@ -90,11 +98,14 @@ const FillForm = () => {
                             {field.fieldType === SurveyFieldType.SELECT ? <SiteSelect
                                 modelValue={answers[index].value}
                                 key={index}
-                                options={field.choices.map((choice) => ({ label: choice.label }))}
+                                options={field.choices.map((choice) => ({ label: choice.label, id: choice.label }))}
                                 optionLabel="label"
-                                label={field.label}
+                                label={`${field.label} ${field.maximalNumberOfChoices > 1 ? `(max. ${field.maximalNumberOfChoices})` : ''}`}
                                 onUpdate={(e) => updateAnswer(index, e)}
-                                optionKey="label"
+                                optionKey="id"
+                                multiple={true}
+                                nativeSelect={false}
+                                maxNumberOfChoices={field.maximalNumberOfChoices}
                             /> : null}
                         </>))}
                     </>) : null}

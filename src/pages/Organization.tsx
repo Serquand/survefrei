@@ -114,7 +114,6 @@ const OrganizationPage = () => {
     }
 
     const handleOrganizationNameUpdate = (newOrganization: Organization, organizationId: number) => {
-        alert(JSON.stringify({ newOrganization, organizationId }, null, 2));
         if (!organizations) return;
 
         setUpdatedOrganizationId(undefined);

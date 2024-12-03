@@ -6,23 +6,43 @@ import InputField from "../components/SiteGlobalInput";
 import { useSelector } from "react-redux";
 import SiteCheckbox from "../components/SiteCheckbox";
 import SiteSelect from "../components/SiteSelect";
+import ConfirmationModal from "../components/ConfirmationModal";
 
 const FormEditionPage = () => {
     const debounceTimeMs = 2_500;
     const { id } = useParams<{ id: string; }>();
     const [form, setForm] = useState<Survey | undefined>(undefined);
-    const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
     const API_URL = import.meta.env.VITE_API_URL;
     const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
     const organizations: Organization[] = useSelector((state: any) => state.organization.organizations);
+    const organizationOptions: { label: string, id: number }[] = organizations.map((org) => ({ id: org.id, label: org.name }));
     const navigate = useNavigate();
+
+    // @ts-ignore
+    const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
+
+    const onTriggerPublishButton = (publishmentValue: boolean) => {
+        setForm(prevForm => ({ ...prevForm!, isPublic: publishmentValue }));
+        publishmentValue && setIsConfirmModalOpen(true);
+    }
+
+    const onCancelPublishment = () => {
+        setForm(prevForm => ({ ...prevForm!, isPublic: false }));
+        setIsConfirmModalOpen(false);
+    }
+
+    const onValidatePublishment = async () => {
+        if (saveTimeout) clearTimeout(saveTimeout);
+        await saveForm(form);
+        setIsConfirmModalOpen(false);
+        navigate('/forms')
+    }
 
     const findMaxOrder = (): number => {
         if (!form || form.fields.length === 0) return 1;
         return Math.max(...form.fields.map(field => field.order)) + 1;
     }
-
-    const organizationOptions: { label: string, id: number }[] = organizations.map((org) => ({ id: org.id, label: org.name }));
 
     const createNewField = async () => {
         const body = { fieldType: "TX", label: "Mon champ", order: findMaxOrder() + 1 };
@@ -39,9 +59,7 @@ const FormEditionPage = () => {
 
         // @ts-ignore
         setForm(prevForm => {
-            const newForm = { ...prevForm, fields: prevForm?.fields ? [...prevForm.fields, data] : [data] };
-            setDebounceToSaveField(newForm);
-            return newForm;
+            return { ...prevForm, fields: prevForm?.fields ? [...prevForm.fields, data] : [data] };
         });
     }
 
@@ -92,8 +110,7 @@ const FormEditionPage = () => {
             const headers = { Authorization: 'Bearer ' + accessToken };
             const response = await fetch(API_URL + '/survey/' + id, { headers });
             const data = await response.json();
-            alert(JSON.stringify(data, null, 2));
-            if (data.isPublic) return navigate("/"); // If the survey is already public, the admin, or whoever he is, cannot update the survey. Error => Go on login
+            if (data.isPublic) return navigate(`form/${id}/answers"`);
 
             const organization = organizations.find(org => org.id === data.organizationId)
             console.log(Object.keys(data));
@@ -104,73 +121,81 @@ const FormEditionPage = () => {
     }, []);
 
     return (
-        <div className="relative flex flex-col min-h-screen">
-            <div className="flex-grow w-4/5 mx-auto pt-10 divide-y-2">
-                {/* <pre>{JSON.stringify(form.organization.name, null, 2)}</pre> */}
-
-                {form ? <div className="flex flex-col gap-6 pb-12">
-                    <InputField
-                        modelValue={form.title}
-                        onUpdate={(e) => updateForm('title', e)}
-                        id="form-title"
-                        type="text"
-                        required={true}
-                        label="Titre du formulaire"
-                        disabled={false}
-                    />
-
-                    <InputField
-                        modelValue={form.description}
-                        onUpdate={(e) => updateForm('description', e)}
-                        id="form-description"
-                        type="textarea"
-                        required={true}
-                        label="Description du formulaire"
-                        disabled={false}
-                    />
-
-                    <div className="grid grid-cols-2">
-                        <SiteCheckbox
-                            id="form-published"
-                            onUpdate={(e) => updateForm('isPublic', e)}
-                            label="Formulaire public ?"
-                            modelValue={form.isPublic}
+        <>
+            <div className="relative flex flex-col min-h-screen">
+                <div className="flex-grow w-4/5 mx-auto pt-10 divide-y-2">
+                    {form ? <div className="flex flex-col gap-6 pb-12">
+                        <InputField
+                            modelValue={form.title}
+                            onUpdate={(e) => updateForm('title', e)}
+                            id="form-title"
+                            type="text"
+                            required={true}
+                            label="Titre du formulaire"
+                            disabled={false}
                         />
 
-                        <SiteSelect
-                            modelValue={1}
-                            onUpdate={(e) => console.log(e)}
-                            options={organizationOptions}
-                            required={false}
-                            label="Organisation"
+                        <InputField
+                            modelValue={form.description}
+                            onUpdate={(e) => updateForm('description', e)}
+                            id="form-description"
+                            type="textarea"
+                            required={true}
+                            label="Description du formulaire"
+                            disabled={false}
                         />
-                    </div>
-                </div> : null}
 
-                <div className="divide-y flex flex-col mx-auto gap-5 mb-14">
-                    {form && form.fields.map((field, index) => (
-                        <div className="pt-5">
-                            <SurveyFieldBuilder
-                                currentPlaceOfField={index + 1}
-                                field={field}
-                                numberOfFields={form.fields.length}
-                                surveyId={form.id}
-                                onDeleteField={() => deleteField(field.id)}
+                        <div className="grid grid-cols-2">
+                            <SiteCheckbox
+                                id="form-published"
+                                onUpdate={onTriggerPublishButton}
+                                label="Formulaire public ?"
+                                modelValue={form.isPublic}
+                            />
+
+                            <SiteSelect
+                                modelValue={1}
+                                onUpdate={(e) => console.log(e)}
+                                options={organizationOptions}
+                                required={false}
+                                label="Organisation"
                             />
                         </div>
-                    ))}
+                    </div> : null}
+
+                    <div className="divide-y flex flex-col mx-auto gap-5 mb-14">
+                        {form && form.fields.map((field, index) => (
+                            <div className="pt-5">
+                                <SurveyFieldBuilder
+                                    currentPlaceOfField={index + 1}
+                                    field={field}
+                                    numberOfFields={form.fields.length}
+                                    surveyId={form.id}
+                                    onDeleteField={() => deleteField(field.id)}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="self-center mb-4">
+                    <button
+                        className="px-6 py-3 text-white bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 focus:ring-4 focus:ring-green-300 rounded-lg shadow-lg shadow-green-500/50 hover:shadow-xl transition-all duration-300 ease-in-out"
+                        onClick={createNewField}
+                    >
+                        Ajouter un champ
+                    </button>
                 </div>
             </div>
 
-            <div className="self-center mb-4">
-                <button
-                    className="px-6 py-3 text-white bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 focus:ring-4 focus:ring-green-300 rounded-lg shadow-lg shadow-green-500/50 hover:shadow-xl transition-all duration-300 ease-in-out"
-                    onClick={createNewField}
-                >
-                    Ajouter un champ
-                </button>
-            </div>
-        </div>
+            <ConfirmationModal
+                isOpen={isConfirmModalOpen}
+                onCancel={onCancelPublishment}
+                onValidate={onValidatePublishment}
+            >
+                <p>Êtes-vous sûr de vouloir publier ce formulaire ?</p>
+            </ConfirmationModal>
+        </>
     );
 };
 

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Listbox as HeadlessListbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import { isArray } from "lodash";
 
 interface Props {
     options: readonly (string | object)[];
@@ -14,7 +15,9 @@ interface Props {
     customClassButton?: string;
     labelPosition?: "top" | "right";
     required?: boolean;
-    onUpdate: (value: any) => void;
+    onUpdate: (value: any | any[]) => void;
+    maxNumberOfChoices?: number;
+    disabled?: boolean,
 }
 
 const SiteSelect: React.FC<Props> = ({
@@ -29,9 +32,12 @@ const SiteSelect: React.FC<Props> = ({
     customClassButton,
     labelPosition = "top",
     required = false,
+    maxNumberOfChoices = 1,
+    disabled = false,
     onUpdate,
 }) => {
-    const [selected, setSelected] = useState(modelValue);
+    const [selected, setSelected] = useState(multiple ? (modelValue || []) : modelValue);
+    console.log(JSON.stringify(multiple ? (modelValue || []) : modelValue, null, 2), options);
 
     // Transform options to standard format
     const optionsParsed = useMemo(() => {
@@ -45,10 +51,19 @@ const SiteSelect: React.FC<Props> = ({
     }, [options, optionKey, optionLabel]);
 
     const currentValueSelected = useMemo(() => {
+        if (multiple) {
+            return optionsParsed.filter((option) =>
+                (selected as any[]).includes(option[optionKey])
+            );
+        }
         return optionsParsed.find((option) => option[optionKey] === selected);
-    }, [optionsParsed, selected, optionKey]);
+    }, [optionsParsed, selected, optionKey, multiple]);
 
-    const handleSelectChange = (value: any) => {
+    const handleSelectChange = (value: any | any[]) => {
+        if (multiple && value.length > maxNumberOfChoices) {
+            return;
+        }
+
         setSelected(value);
         onUpdate(value);
     };
@@ -64,6 +79,7 @@ const SiteSelect: React.FC<Props> = ({
                     value={selected}
                     onChange={handleSelectChange}
                     multiple={multiple}
+                    disabled={disabled}
                 >
                     <div className={`relative ${labelPosition === "right" ? "flex items-baseline gap-1" : ""}`}>
                         {label && (
@@ -76,9 +92,11 @@ const SiteSelect: React.FC<Props> = ({
                                 className={`${buttonClassName} disabled:bg-slate-100 disabled:text-slate-500`}
                             >
                                 <span className={`block truncate ${!currentValueSelected ? "italic" : ""}`}>
-                                    {currentValueSelected
-                                        ? currentValueSelected[optionLabel]
-                                        : placeholder}
+                                    {multiple
+                                        ? currentValueSelected.map((item) => item[optionLabel]).join(", ") || placeholder
+                                        : currentValueSelected
+                                            ? currentValueSelected[optionLabel]
+                                            : placeholder}
                                 </span>
                                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                     <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
@@ -134,9 +152,14 @@ const SiteSelect: React.FC<Props> = ({
                     <select
                         value={selected}
                         multiple={multiple}
-                        className={`block w-full rounded-md border border-gray-300 py-1.5 pl-3 pr-10 text-gray-900 focus:border-sky-700 sm:text-sm sm:leading-6 max-w-full truncate ${label && labelPosition === "top" ? "mt-2" : ""
+                        className={`block w-full rounded-md border border-gray-300 bg-white py-1.5 pl-3 pr-10 text-gray-900 focus:border-sky-700 sm:text-sm sm:leading-6 max-w-full truncate ${label && labelPosition === "top" ? "mt-2" : ""
                             }`}
-                        onChange={(e) => handleSelectChange(e.target.value)}
+                        onChange={(e) => {
+                            const value = multiple
+                                ? Array.from(e.target.selectedOptions, (opt) => opt.value)
+                                : e.target.value;
+                            handleSelectChange(value);
+                        }}
                     >
                         {optionsParsed.map((option, index) => (
                             <option key={index} value={option[optionKey]}>

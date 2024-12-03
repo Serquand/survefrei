@@ -25,7 +25,7 @@ const FormsPage = () => {
     const postNewSurvey = async (data: CreationSurvey) => {
         const requestOptions = {
             headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-            body: JSON.stringify({...data,  }),
+            body: JSON.stringify({...data, isPublic: false }),
             method: "POST"
         };
         const response = await fetch(API_URL + '/survey', requestOptions);

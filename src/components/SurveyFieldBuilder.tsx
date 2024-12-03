@@ -139,7 +139,8 @@ const SurveyFieldBuilder = (props: Props) => {
                     </div>
                 )}
 
-                {false && value.fieldType === SurveyFieldType.SELECT && (
+                {/*false && */}
+                {value.fieldType === SurveyFieldType.SELECT && (
                     <InputField
                         modelValue={value.maximalNumberOfChoices}
                         onUpdate={(e) => updateFieldValue("maximalNumberOfChoices", e)}

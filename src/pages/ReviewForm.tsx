@@ -63,13 +63,14 @@ const ReviewForm = () => {
                             /> : null}
 
                             {field.fieldType === SurveyFieldType.SELECT ? <SiteSelect
-                                modelValue={form.fields[index].answers[0].value}
+                                modelValue={(form.fields[index].answers[0].value as string[]).map(el => ({ label: el }))}
                                 key={index}
                                 options={field.choices.map((choice) => ({ label: choice.label }))}
                                 optionLabel="label"
                                 label={field.label}
                                 optionKey="label"
                                 onUpdate={() => console.error()}
+                                disabled={true}
                             /> : null}
                         </>))}
                     </>) : null}
