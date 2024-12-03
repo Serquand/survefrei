@@ -1,5 +1,7 @@
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 import { Line } from "react-chartjs-2";
+import Statistic from "./Statistic";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -66,8 +68,23 @@ const DensityChart = () => {
     };
 
     return <>
-        <div className="w-3/5 mx-auto">
+        <div className="w-3/5 flex mx-auto items-center gap-7">
             <Line data={data} options={options} />
+            <div className="flex flex-col gap-5">
+                <Statistic
+                    title="Moyenne"
+                    value={27.84}
+                >
+                    <XMarkIcon className="size-6 text-white" />
+                </Statistic>
+
+                <Statistic
+                    title="Moyenne"
+                    value={27.84}
+                >
+                    <XMarkIcon className="size-6 text-white" />
+                </Statistic>
+            </div>
         </div>
     </>
 };

@@ -70,7 +70,7 @@ const LoginPage = () => {
             return navigateToGoodPage(profile.role);
         } catch {
             setNotificationTitle("Error")
-            setNotificationInformations("Caca");
+            setNotificationInformations("An error has occured when trying to log in");
             showNotification();
         } finally {
             setIsLoading(false);

@@ -6,12 +6,9 @@ import ModalUser from "../components/ModalUser";
 
 const UsersPage = () => {
     const [searchText, setSearchText] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [users, setUsers] = useState<Omit<User, 'accessToken'>[]>([]);
-    const accessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImVzdGViYW52aW5jZW50Lm1haWxAZ21haWwuY29tIiwidXNlcklkIjoxLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MzI4ODk1ODl9.RA9_ZalRKeQNVG_A6Cc-LIEAPIbCzRxnGniLYQAu9P8';
-
-    const handleSearchChange = (newValue: string) => {
-        setSearchText(newValue);
-    };
+    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
 
     const fetchUsers = async () => {
         const API_URL = import.meta.env.VITE_API_URL;
@@ -33,14 +30,16 @@ const UsersPage = () => {
                     <div className="flex items-center space-x-2">
                         <SiteInput
                             value={searchText}
-                            onChange={handleSearchChange}
+                            onChange={(e) => setSearchText(e)}
                             placeholder="Chercher un utilisateur"
                         />
-                        <button className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">
-                            Rechercher
-                        </button>
+
                     </div>
-                    <button className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200">
+
+                    <button
+                        className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
+                        onClick={() => setIsModalOpen(true)}
+                    >
                         Ajouter un utilisateur
                     </button>
                 </div>
@@ -59,8 +58,8 @@ const UsersPage = () => {
             </div>
 
             {(users && users.length > 0) ? <ModalUser
-                isOpen={false}
-                onClose={() => console.log("Coucou")}
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
                 onUpdateUser={() => console.log("Coucou")}
                 user={users[0]}
             /> : null}
