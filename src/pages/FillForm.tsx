@@ -84,7 +84,7 @@ const FillForm = () => {
                                 onUpdate={(e) => updateAnswer(index, e)}
                                 label={`
                                     ${field.label}
-                                    ${field.fieldType !== SurveyFieldType.NUMBER ? `(min. ${field.minValue}, max. ${field.maxValue})` : null}
+                                    ${field.fieldType === SurveyFieldType.NUMBER ? `(min. ${field.minValue}, max. ${field.maxValue})` : ''}
                                 `}
                                 required={field.required}
                                 type={convertFieldTypeToInputType(field.fieldType)}
