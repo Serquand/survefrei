@@ -25,3 +25,24 @@ export function moveElement(array: SurveyField[], indexFrom: number, indexTo: nu
 export function sendOrderedFields(fields: (SurveyField | SurveyFieldWithAnswer)[]): (SurveyField | SurveyFieldWithAnswer)[] {
     return fields.sort((a, b) => a.order - b.order);
 }
+
+export function calculateMedian(numbers: Array<number>): string {
+    const sorted = [...numbers].sort((a, b) => a - b);
+    const n = sorted.length;
+
+    if (n % 2 !== 0) {
+        const median = sorted[Math.floor(n / 2)];
+        return median.toFixed(2);
+    }
+
+    const mid1 = n / 2 - 1;
+    const mid2 = n / 2;
+    const median = (sorted[mid1] + sorted[mid2]) / 2;
+    return median.toFixed(2);
+}
+
+export function calculateMean(numbers: Array<number>): string {
+    const sum = numbers.reduce((a, b) => a + b, 0);
+    const mean = sum / numbers.length;
+    return mean.toFixed(2);
+}

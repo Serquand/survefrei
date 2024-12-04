@@ -11,7 +11,7 @@ interface Props {
     maxLength?: number;
     min?: string;
     required?: boolean;
-    onUpdate: (value: string | number | boolean | string[] | undefined) => void;
+    onUpdate?: (value: string | number | boolean | string[] | undefined) => void;
     onBlur?: () => void;
     children?: JSX.Element,
 }
@@ -37,6 +37,8 @@ const InputField: React.FC<Props> = ({
     }, [modelValue]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        if(!onUpdate) return;
+
         const value = e.target.value;
         if (type === 'number') {
             onUpdate(Number.parseInt(value));

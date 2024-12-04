@@ -3,6 +3,7 @@ import { SurveyWithAnswer } from "../utils/types";
 import { useParams } from "react-router-dom";
 import SiteGlobalKPI from "../components/SiteGlobalKPI";
 import { sendOrderedFields } from "../utils/utils";
+import CollapsibleSection from "../components/CollapsibleSection";
 
 const AnswersPage = () => {
     const [answers, setAnswers] = useState<SurveyWithAnswer | undefined>(undefined);
@@ -22,14 +23,24 @@ const AnswersPage = () => {
     }, []);
 
     return (<>
-        <div className="flex flex-col divide-y-2">
+        {answers && (
+            <div className="sticky top-0 bg-gray-200 text-gray-900 p-4 shadow-xl z-10">
+                <h1 className="text-lg font-semibold text-center">{answers.title}</h1>
+            </div>
+        )}
+
+        <div className="flex flex-col gap-6 py-6">
             {answers && answers.fields.map((field) => (
-                <div className="py-6 w-4/5 mx-auto">
-                    <SiteGlobalKPI
-                        answers={field.answers}
-                        fieldType={field.fieldType}
-                        label={field.label}
-                    />
+                <div className="px-6 w-full mx-auto">
+                    <CollapsibleSection title={field.label}>
+                        <SiteGlobalKPI
+                            maxValue={field.maxValue}
+                            minValue={field.minValue}
+                            answers={field.answers}
+                            fieldType={field.fieldType}
+                            label={field.label}
+                        />
+                    </CollapsibleSection>
                 </div>
             ))}
         </div>

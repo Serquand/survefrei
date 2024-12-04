@@ -74,7 +74,8 @@ export interface CreationSurvey {
 
 export interface Answer {
     questionId: string;
-    value: boolean | string[] | string | number;
+    value: boolean | string[] | number;
+    valueText: string;
 }
 
 export interface SurveyWithAnswer extends Survey {

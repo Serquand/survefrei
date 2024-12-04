@@ -1,7 +1,14 @@
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 import { Line } from "react-chartjs-2";
 import Statistic from "./Statistic";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { PresentationChartLineIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { calculateMean, calculateMedian } from "../utils/utils";
+
+interface Props {
+    minValue: number;
+    maxValue: number;
+    numbers: number[];
+}
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -14,22 +21,18 @@ const kernelDensityEstimation = (x: number[], data: number[], bandwidth: number)
     );
 };
 
-const DensityChart = () => {
-    const numbers = [1.2, 1.2, 1.2, 1.2, 1.2, 2.5, 3.1, 4.7, 5.8, 6.3, 7.9, 8.1, 9.6, 10.4];
-
-    const xMin = Math.min(...numbers);
-    const xMax = Math.max(...numbers);
+const DensityChart = (props: Props) => {
     const step = 0.1;
-    const xRange = Array.from({ length: Math.ceil((xMax - xMin) / step) + 1 }, (_, i) => xMin + i * step);
+    const xRange = Array.from({ length: Math.ceil((props.maxValue - props.minValue) / step) + 1 }, (_, i) => props.minValue + i * step);
 
     const bandwidth = 0.5;
-    const densities = kernelDensityEstimation(xRange, numbers, bandwidth);
+    const densities = kernelDensityEstimation(xRange, props.numbers, bandwidth);
 
     const data = {
         labels: xRange.map((x) => x.toFixed(1)),
         datasets: [
             {
-                label: "Density",
+                label: "Densité",
                 data: densities,
                 borderColor: "rgba(75, 192, 192, 1)",
                 backgroundColor: "rgba(75, 192, 192, 0.1)",
@@ -42,47 +45,38 @@ const DensityChart = () => {
 
     const options = {
         responsive: true,
-        plugins: {
-            legend: {
-                position: "top" as const,
-            },
-            title: {
-                display: true,
-                text: "Kernel Density Estimation (KDE)",
-            },
-        },
         scales: {
             x: {
                 title: {
                     display: true,
-                    text: "Value",
+                    text: "Valeurs",
                 },
             },
             y: {
                 title: {
                     display: true,
-                    text: "Density",
+                    text: "Densité",
                 },
             },
         },
     };
 
     return <>
-        <div className="w-3/5 flex mx-auto items-center gap-7">
+        <div className="w-3/5 flex flex-col mx-auto items-center gap-7">
             <Line data={data} options={options} />
-            <div className="flex flex-col gap-5">
+            <div className="flex gap-5">
                 <Statistic
                     title="Moyenne"
-                    value={27.84}
+                    value={calculateMean(props.numbers)}
                 >
-                    <XMarkIcon className="size-6 text-white" />
+                    <PresentationChartLineIcon className="size-6 text-white" />
                 </Statistic>
 
                 <Statistic
-                    title="Moyenne"
-                    value={27.84}
+                    title="Médianne"
+                    value={calculateMedian(props.numbers)}
                 >
-                    <XMarkIcon className="size-6 text-white" />
+                    <PresentationChartLineIcon className="size-6 text-white" />
                 </Statistic>
             </div>
         </div>

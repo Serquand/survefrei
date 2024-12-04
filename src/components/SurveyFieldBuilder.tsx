@@ -97,7 +97,7 @@ const SurveyFieldBuilder = (props: Props) => {
                     modelValue={value.label}
                     onUpdate={(e) => updateFieldValue("label", e)}
                     onBlur={handleOnBlur}
-                    id="field-label"
+                    id={`field-${props.field.id}-label`}
                     type="text"
                     required={true}
                     label="Nom du champ"
@@ -118,7 +118,7 @@ const SurveyFieldBuilder = (props: Props) => {
                             modelValue={value.minValue}
                             onUpdate={(e) => updateFieldValue("minValue", e)}
                             onBlur={handleOnBlur}
-                            id="field-label"
+                            id={`field-${props.field.id}-min-value`}
                             type="number"
                             required={true}
                             label="Valeur minimale"
@@ -128,7 +128,7 @@ const SurveyFieldBuilder = (props: Props) => {
                             modelValue={value.maxValue}
                             onUpdate={(e) => updateFieldValue("maxValue", e)}
                             onBlur={handleOnBlur}
-                            id="field-label"
+                            id={`field-${props.field.id}-max-value`}
                             type="number"
                             required={true}
                             label="Valeur maximale"
@@ -163,7 +163,7 @@ const SurveyFieldBuilder = (props: Props) => {
 
                         <button
                             type="button"
-                            onClick={() => updateFieldValue("choices", [...value.choices, { label: "" }])}
+                            onClick={() => updateFieldValue("choices", [...value.choices, { label: "Choix " + (value.choices.length + 1) }])}
                             className="text-green-600 hover:text-green-800 mt-4"
                         >
                             Ajouter une réponse
@@ -176,7 +176,7 @@ const SurveyFieldBuilder = (props: Props) => {
                         modelValue={value.maximalNumberOfChoices}
                         onUpdate={(e) => updateFieldValue("maximalNumberOfChoices", e)}
                         onBlur={handleOnBlur}
-                        id="field-label"
+                        id={`field-${props.field.id}-max-number-of-choices`}
                         type="number"
                         required={true}
                         label="Nombre maximum de réponses"
