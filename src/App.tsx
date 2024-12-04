@@ -13,8 +13,13 @@ import FillForm from "./pages/FillForm";
 import ReviewForm from "./pages/ReviewForm";
 import AnswersPage from "./pages/AnswersPage";
 import FormEditionPage from "./pages/FormEditionPage";
+import { useDispatch } from "react-redux";
+import { fetchOrganizations } from "./context/Organization";
 
 const App = () => {
+    const dispatch = useDispatch();
+    dispatch(fetchOrganizations());
+
     return (
         <Routes>
             <Route path="/" element={<Login />} />
