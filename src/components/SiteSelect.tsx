@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Listbox as HeadlessListbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import { isArray } from "lodash";
 
 interface Props {
     options: readonly (string | object)[];
@@ -17,7 +16,7 @@ interface Props {
     required?: boolean;
     onUpdate: (value: any | any[]) => void;
     maxNumberOfChoices?: number;
-    disabled?: boolean,
+    disabled?: boolean;
 }
 
 const SiteSelect: React.FC<Props> = ({
@@ -36,8 +35,14 @@ const SiteSelect: React.FC<Props> = ({
     disabled = false,
     onUpdate,
 }) => {
-    const [selected, setSelected] = useState(multiple ? (modelValue || []) : modelValue);
-    console.log(JSON.stringify(multiple ? (modelValue || []) : modelValue, null, 2), options);
+    const [selected, setSelected] = useState(() => {
+        if (multiple) {
+            return Array.isArray(modelValue)
+                ? modelValue.map((item) => (typeof item === "object" ? item[optionKey] : item))
+                : [];
+        }
+        return typeof modelValue === "object" ? modelValue[optionKey] : modelValue;
+    });
 
     // Transform options to standard format
     const optionsParsed = useMemo(() => {
@@ -56,7 +61,7 @@ const SiteSelect: React.FC<Props> = ({
                 (selected as any[]).includes(option[optionKey])
             );
         }
-        return optionsParsed.find((option) => option[optionKey] === selected);
+        return optionsParsed.find((option) => option[optionKey] === selected) || null;
     }, [optionsParsed, selected, optionKey, multiple]);
 
     const handleSelectChange = (value: any | any[]) => {
@@ -89,7 +94,8 @@ const SiteSelect: React.FC<Props> = ({
                         )}
                         <div className={`relative ${label && labelPosition === "top" ? "mt-2" : ""}`}>
                             <HeadlessListbox.Button
-                                className={`${buttonClassName} disabled:bg-slate-100 disabled:text-slate-500`}
+                                className={`${buttonClassName} ${disabled ? "disabled:bg-slate-100 disabled:text-slate-500" : ""}`}
+                                disabled={disabled}
                             >
                                 <span className={`block truncate ${!currentValueSelected ? "italic" : ""}`}>
                                     {multiple

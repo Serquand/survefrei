@@ -44,12 +44,12 @@ const SurveyFieldBuilder = (props: Props) => {
     const saveField = async (fieldToSave: SurveyFieldInterface) => {
         const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
         // @ts-ignore
-        const { id, formId, answers, ...newField} = fieldToSave;
+        const { id, formId, answers, ...newField } = fieldToSave;
         const choicesToSave = fieldToSave.choices.map(choice => ({ label: choice.label }));
         const requestOptions = {
             headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
             method: "PUT",
-            body: JSON.stringify({...newField, choices: choicesToSave}),
+            body: JSON.stringify({ ...newField, choices: choicesToSave }),
         };
         await fetch(`${API_URL}/survey/${props.surveyId}/field/${props.field.id}`, requestOptions);
     };
@@ -70,7 +70,7 @@ const SurveyFieldBuilder = (props: Props) => {
         setValue((prevState) => {
             const newState = {
                 ...prevState,
-                choices: prevState.choices.map((choice, index) => (index === choiceIndex ? {label: newChoice} : choice))
+                choices: prevState.choices.map((choice, index) => (index === choiceIndex ? { label: newChoice } : choice))
             };
             // @ts-ignore
             setDebounceToSaveField(newState);
@@ -107,6 +107,29 @@ const SurveyFieldBuilder = (props: Props) => {
                     onUpdate={(value) => updateFieldValue("fieldType", value)}
                     label="Type du champ"
                 />
+
+                {value.fieldType === SurveyFieldType.NUMBER && (
+                    <>
+                        <InputField
+                            modelValue={value.minValue}
+                            onUpdate={(e) => updateFieldValue("minValue", e)}
+                            id="field-label"
+                            type="number"
+                            required={true}
+                            label="Valeur minimale"
+                            disabled={false}
+                        />
+                        <InputField
+                            modelValue={value.maxValue}
+                            onUpdate={(e) => updateFieldValue("maxValue", e)}
+                            id="field-label"
+                            type="number"
+                            required={true}
+                            label="Valeur maximale"
+                            disabled={false}
+                        />
+                    </>
+                )}
 
                 {value.fieldType === SurveyFieldType.SELECT && (
                     <div className="flex flex-col gap-4">

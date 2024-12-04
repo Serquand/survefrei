@@ -27,10 +27,16 @@ export interface SurveyField {
     choices: SurveyFieldChoice[];
     order: number;
     maximalNumberOfChoices: number;
+    minValue: number;
+    maxValue: number;
 }
 
 export interface SurveyFieldWithAnswer extends SurveyField {
-    answers: { id: number; value: boolean | string[] | string | number; }[];
+    answers: {
+        id: number;
+        value: boolean | string[] | number;
+        valueText: string;
+    }[];
 }
 
 export enum SurveyFieldType {

@@ -17,7 +17,7 @@ const ReviewForm = () => {
             const headers = { Authorization: 'Bearer ' + ACCESS_TOKEN_STUDENT }
             const response = await fetch(`${API_URL}/user-answer/${formId}`, { headers });
             const data = await response.json();
-            data.field = sendOrderedFields(data.field);
+            data.fields = sendOrderedFields(data.fields);
             setForm(data);
         }
         getAnswers();
@@ -43,10 +43,22 @@ const ReviewForm = () => {
                 <div className="grid gap-5">
                     {(form && form.fields) ? (<>
                         {form.fields.map((field, index) => (<>
-                            {(field.fieldType !== SurveyFieldType.CHECKBOX && field.fieldType !== SurveyFieldType.SELECT) ? <InputField
+                            {(field.fieldType === SurveyFieldType.TEXTAREA || field.fieldType === SurveyFieldType.TEXT) ? <InputField
                                 id={"question-" + field.id}
-                                modelValue={form.fields[index].answers[0].value}
+                                modelValue={field.answers[0].valueText}
                                 label={field.label}
+                                required={field.required}
+                                type={convertFieldTypeToInputType(field.fieldType)}
+                                disabled={true}
+                                placeholder={field.label}
+                                key={index}
+                                onUpdate={() => console.error()}
+                            /> : null}
+
+                            {field.fieldType === SurveyFieldType.NUMBER ? <InputField
+                                id={"question-" + field.id}
+                                modelValue={field.answers[0].value}
+                                label={`${field.label} (min. ${field.minValue}, max. ${field.maxValue})`}
                                 required={field.required}
                                 type={convertFieldTypeToInputType(field.fieldType)}
                                 disabled={true}
@@ -59,13 +71,13 @@ const ReviewForm = () => {
                                 onUpdate={() => console.error()}
                                 id={"question-" + field.id}
                                 label={field.label}
-                                modelValue={form.fields[index].answers[0].value as boolean}
+                                modelValue={field.answers[0].value as boolean}
                                 disabled={true}
                                 key={index}
                             /> : null}
 
                             {field.fieldType === SurveyFieldType.SELECT ? <SiteSelect
-                                modelValue={(form.fields[index].answers[0].value as string[]).map(el => el)}
+                                modelValue={(field.answers[0].value as string[]).map(el => el)}
                                 key={index}
                                 options={field.choices.map((choice) => ({ label: choice.label }))}
                                 optionLabel="label"
