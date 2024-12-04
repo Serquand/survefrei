@@ -1,22 +1,18 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Answer, Organization, Survey as SurveyInterface, SurveyField, SurveyFieldType } from "../utils/types";
+import { Answer, Organization, Survey as SurveyInterface, SurveyField, SurveyFieldType, User } from "../utils/types";
 import { useSelector } from "react-redux";
 import InputField from "../components/SiteGlobalInput";
 import SiteCheckbox from "../components/SiteCheckbox";
 import SiteSelect from "../components/SiteSelect";
-
-interface Props {
-    surveyId: number;
-    surveyValue: SurveyInterface
-}
 
 const Survey = () => {
     const { id } = useParams<{ id: string; }>();
     const [form, setForm] = useState<SurveyInterface | undefined>(undefined);
     const [answers, setAnswers] = useState<Answer[] | undefined>(undefined);
     const API_URL = import.meta.env.VITE_API_URL;
-    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_STUDENT;
+    const userLoggedIn = useSelector((state: any) => state.user.user) as User;
+    const accessToken = userLoggedIn.accessToken;
     const organizations: Organization[] = useSelector((state: any) => state.organization.organizations);
     const isDisabledForm = false;
 
@@ -52,14 +48,17 @@ const Survey = () => {
     }
 
     const submitAnswers = async () => {
-        const accessToken = import.meta.env.VITE_ACCESS_TOKEN_STUDENT;
-        const requestOptions = {
-            method: "POST",
-            headers: { Authorization: 'Bearer ' + accessToken, "Content-Type": 'application/json' },
-            body: JSON.stringify({ answers })
-        };
-        const response = await fetch(`${API_URL}/user-answer/${id}`, requestOptions);
-        const data = await response.json();
+        try {
+            const requestOptions = {
+                method: "POST",
+                headers: { Authorization: 'Bearer ' + accessToken, "Content-Type": 'application/json' },
+                body: JSON.stringify({ answers })
+            };
+            const response = await fetch(`${API_URL}/user-answer/${id}`, requestOptions);
+            await response.json();
+        } catch {
+            // TODO
+        }
     }
 
     return (

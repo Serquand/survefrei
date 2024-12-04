@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Organization } from "../utils/types";
 import { useSelector } from "react-redux";
+import SiteSelect from "./SiteSelect";
 
 interface Props {
     isOpen: boolean;
@@ -52,23 +53,16 @@ const CreateFormModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {
                     />
                 </div>
 
-                <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Organisation</label>
-                    <select
-                        value={organizationId}
-                        onChange={(e) => setOrganizationId(+e.target.value)}
-                        className="w-full border border-gray-300 rounded-md p-2"
-                    >
-                        <option value="">Sélectionnez une organisation</option>
-                        {organizations.map((org) => (
-                            <option key={org.id} value={org.id}>
-                                {org.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <SiteSelect
+                    modelValue={organizationId}
+                    onUpdate={(e) => setOrganizationId(+e.target.value)}
+                    options={organizations.map((org) => ({ label: org.name, id: org.id }))}
+                    label="Sélectionnez une organisation"
+                    optionKey="id"
+                    optionLabel="label"
+                />
 
-                <div className="flex justify-end gap-4">
+                <div className="flex justify-end pt-6 gap-4">
                     <button
                         onClick={onClose}
                         className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"

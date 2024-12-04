@@ -1,6 +1,8 @@
 import { TrashIcon } from "@heroicons/react/24/outline";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { User } from "../utils/types";
 
 interface Props {
     title: string;
@@ -15,7 +17,8 @@ interface Props {
 
 const SurveyCard = (props: Props) => {
     const navigate = useNavigate();
-    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
+    const userLoggedIn = useSelector((state: any) => state.user.user) as User;
+    const accessToken = userLoggedIn.accessToken;
     const location = useLocation();
 
     const navigateToFormPage = () => {

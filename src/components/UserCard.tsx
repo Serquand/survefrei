@@ -2,6 +2,7 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import ModalUser from "./ModalUser";
 import { User } from "../utils/types";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 interface Props {
     user: Omit<User, "accessToken">;
@@ -9,7 +10,8 @@ interface Props {
 }
 
 const UserCard = (props: Props) => {
-    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
+    const userLoggedIn = useSelector((state: any) => state.user.user) as User;
+    const accessToken = userLoggedIn.accessToken;
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [user, setUser] = useState(props.user);
 

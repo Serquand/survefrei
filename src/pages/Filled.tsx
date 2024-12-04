@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { SurveyPreview } from "../utils/types";
+import { SurveyPreview, User } from "../utils/types";
 import ListPreviewForm from "../components/ListPreviewForm";
+import { useSelector } from "react-redux";
 
 const Filled = () => {
     // const user: User = useSelector(state => state.user.user);
     const [surveys, setSurveyData] = useState<SurveyPreview[] | null>(null);
     const API_URL = import.meta.env.VITE_API_URL;
-    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_STUDENT;
+    const userLoggedIn = useSelector((state: any) => state.user.user) as User;
+    const accessToken = userLoggedIn.accessToken;
 
     useEffect(() => {
         const fetchSurveyData = async () => {

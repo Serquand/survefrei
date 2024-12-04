@@ -115,7 +115,7 @@ const Layout: React.FC = () => {
                                         {navigationCategories.map((link) => (
                                             <ul className="-mx-2 space-y-1">
                                                 <li key={link.id}>
-                                                    <Link
+                                                    {link.neededRole.includes(user?.role) ? <Link
                                                         to={link.to}
                                                         className={`flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold ${link.current
                                                             ? 'bg-gray-800 text-white'
@@ -124,7 +124,7 @@ const Layout: React.FC = () => {
                                                     >
                                                         <link.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
                                                         {link.label}
-                                                    </Link>
+                                                    </Link> : null}
                                                 </li>
                                             </ul>
                                         ))}
@@ -166,9 +166,8 @@ const Layout: React.FC = () => {
                         {navigationCategories.map((link) => (
                             <ul className="-mx-2 space-y-1">
                                 <li key={link.id}>
-                                    {/* link.neededRole.includes(user?.role) */}
-                                    {true ? <Link
-                                        to={/*'/app' + */link.to}
+                                    {link.neededRole.includes(user?.role) ? <Link
+                                        to={link.to}
                                         className={`group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold ${link.current
                                             ? 'bg-gray-800 text-white'
                                             : 'text-gray-400 hover:text-white hover:bg-gray-800'

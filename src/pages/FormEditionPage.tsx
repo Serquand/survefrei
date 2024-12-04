@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SurveyFieldBuilder from "../components/SurveyFieldBuilder";
-import { Organization, Survey, SurveyField } from '../utils/types';
+import { Organization, Survey, SurveyField, User } from '../utils/types';
 import InputField from "../components/SiteGlobalInput";
 import { useSelector } from "react-redux";
 import SiteCheckbox from "../components/SiteCheckbox";
@@ -15,7 +15,8 @@ const FormEditionPage = () => {
     const [form, setForm] = useState<Survey | undefined>(undefined);
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
     const API_URL = import.meta.env.VITE_API_URL;
-    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
+    const userLoggedIn = useSelector((state: any) => state.user.user) as User;
+    const accessToken = userLoggedIn.accessToken;
     const organizations: Organization[] = useSelector((state: any) => state.organization.organizations);
     const organizationOptions: { label: string, id: number }[] = organizations.map((org) => ({ id: org.id, label: org.name }));
     const [updatingKey, setUpdatingKey] = useState<number>(0);
@@ -72,7 +73,6 @@ const FormEditionPage = () => {
     }
 
     const saveForm = async (newForm: any) => {
-        const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
         const { fields, organization, id, ...formToSave } = newForm;
         console.log(formToSave);
         const requestOptions = {

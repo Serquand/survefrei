@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { User } from "../utils/types";
 import InputField from "./SiteGlobalInput";
 import SiteSelect from "./SiteSelect";
+import { useSelector } from "react-redux";
 
 export type CreateNewUSer = Omit<User, "accessToken"> & { password?: string; };
 
@@ -16,7 +17,8 @@ interface ModalUserProps {
 const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps) => {
     const [formData, setFormData] = useState<Partial<CreateNewUSer>>(user);
     const API_URL = import.meta.env.VITE_API_URL;
-    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
+    const userLoggedIn = useSelector((state: any) => state.user.user) as User;
+    const accessToken = userLoggedIn.accessToken;
     const roleOptions: { label: string; id: string }[] = [
         { id: 'student', label: "Étudiant" },
         { id: 'teacher', label: 'Professeur' },

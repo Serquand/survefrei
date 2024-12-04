@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import SiteSelect from "../components/SiteSelect";
-import { SurveyFieldType, SurveyWithAnswer } from "../utils/types";
+import { SurveyFieldType, SurveyWithAnswer, User } from "../utils/types";
 import SiteCheckbox from "../components/SiteCheckbox";
 import InputField from "../components/SiteGlobalInput";
 import { sendOrderedFields } from "../utils/utils";
+import { useSelector } from "react-redux";
 
 const ReviewForm = () => {
     const { id: formId } = useParams<{ id: string; }>();
     const [form, setForm] = useState<SurveyWithAnswer | undefined>(undefined);
     const API_URL = import.meta.env.VITE_API_URL;
-    const ACCESS_TOKEN_STUDENT = import.meta.env.VITE_ACCESS_TOKEN_STUDENT;
+    const user = useSelector((state: any) => state.user.user) as User;
+    const accessToken = user.accessToken;
 
     useEffect(() => {
         const getAnswers = async () => {
-            const headers = { Authorization: 'Bearer ' + ACCESS_TOKEN_STUDENT }
+            const headers = { Authorization: 'Bearer ' + accessToken }
             const response = await fetch(`${API_URL}/user-answer/${formId}`, { headers });
             const data = await response.json();
             data.fields = sendOrderedFields(data.fields);

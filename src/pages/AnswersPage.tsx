@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
-import { SurveyWithAnswer } from "../utils/types";
+import { SurveyWithAnswer, User } from "../utils/types";
 import { useParams } from "react-router-dom";
 import SiteGlobalKPI from "../components/SiteGlobalKPI";
 import { sendOrderedFields } from "../utils/utils";
 import CollapsibleSection from "../components/CollapsibleSection";
+import { useSelector } from "react-redux";
 
 const AnswersPage = () => {
     const [answers, setAnswers] = useState<SurveyWithAnswer | undefined>(undefined);
     const API_URL = import.meta.env.VITE_API_URL;
-    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
+    const userLoggedIn = useSelector((state: any) => state.user.user) as User;
+    const accessToken = userLoggedIn.accessToken;
     const { id } = useParams<{ id: string; }>();
 
     useEffect(() => {

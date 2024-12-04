@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Organization } from "../utils/types";
+import { Organization, User } from "../utils/types";
 import InputField from "./SiteGlobalInput";
+import { useSelector } from "react-redux";
 
 interface Props {
     isOpen: boolean;
@@ -13,7 +14,8 @@ interface Props {
 
 const CreateOrganizationModal: React.FC<Props> = ({ isOpen, onClose, onOrganizationCreate, onOrganizationUpdate, updatedOrganizationId, mode = "creation" }) => {
     const [organizationName, setOrganizationName] = useState<string>("");
-    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
+    const user = useSelector((state: any) => state.user.user) as User;
+    const accessToken = user.accessToken;
     const API_URL = import.meta.env.VITE_API_URL;
 
     if (!isOpen) return null;
@@ -33,7 +35,7 @@ const CreateOrganizationModal: React.FC<Props> = ({ isOpen, onClose, onOrganizat
             const data: Organization = await response.json();
 
             if(mode === 'creation') return onOrganizationCreate(data);
-            else return onOrganizationUpdate(data, updatedOrganizationId);
+            else return onOrganizationUpdate(data, updatedOrganizationId!);
         } catch (err) {
             console.error(err);
             return null;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Answer, Organization, Survey, SurveyField, SurveyFieldType } from "../utils/types";
+import { Answer, Organization, Survey, SurveyField, SurveyFieldType, User } from "../utils/types";
 import { useSelector } from "react-redux";
 import InputField from "../components/SiteGlobalInput";
 import SiteCheckbox from "../components/SiteCheckbox";
@@ -12,7 +12,8 @@ const FillForm = () => {
     const [form, setForm] = useState<Survey | undefined>(undefined);
     const [answers, setAnswers] = useState<Answer[] | undefined>(undefined);
     const API_URL = import.meta.env.VITE_API_URL;
-    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_STUDENT;
+    const userLoggedIn = useSelector((state: any) => state.user.user) as User;
+    const accessToken = userLoggedIn.accessToken;
     const organizations: Organization[] = useSelector((state: any) => state.organization.organizations);
     const navigate = useNavigate();
 
@@ -50,7 +51,6 @@ const FillForm = () => {
     }
 
     const submitAnswers = async () => {
-        const accessToken = import.meta.env.VITE_ACCESS_TOKEN_STUDENT;
         const requestOptions = {
             method: "POST",
             headers: { Authorization: 'Bearer ' + accessToken, "Content-Type": 'application/json' },

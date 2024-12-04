@@ -3,12 +3,14 @@ import SiteInput from "../components/SiteInput";
 import UserCard from "../components/UserCard";
 import { Roles, User } from "../utils/types";
 import ModalUser, { CreateNewUSer } from "../components/ModalUser";
+import { useSelector } from "react-redux";
 
 const UsersPage = () => {
     const [searchText, setSearchText] = useState("");
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [users, setUsers] = useState<Omit<User, 'accessToken'>[]>([]);
-    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
+    const userLoggedIn = useSelector((state: any) => state.user.user) as User;
+    const accessToken = userLoggedIn.accessToken;
     const newUser: Partial<CreateNewUSer> = { email: '',  firstName: '', id: 0, lastName: '', role: Roles.STUDENT, password: '' }
     const [updatedUser, setUpdatedUser] = useState<Partial<CreateNewUSer>>(newUser);
 

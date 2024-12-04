@@ -5,9 +5,8 @@ const initialState = {
     organizations: [] as Organization[],
 };
 
-export const fetchOrganizations = createAsyncThunk("organization/fetchOrganizations", async (_, { rejectWithValue }) => {
+export const fetchOrganizations = createAsyncThunk("organization/fetchOrganizations", async (accessToken: string, { rejectWithValue }) => {
     const API_URL = import.meta.env.VITE_API_URL;
-    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
     const headers = { Authorization: "Bearer " + accessToken };
 
     try {
@@ -20,8 +19,7 @@ export const fetchOrganizations = createAsyncThunk("organization/fetchOrganizati
     } catch (error: any) {
         return rejectWithValue(error.message);
     }
-}
-);
+});
 
 const organizationSlice = createSlice({
     name: "organization",

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Organization, User } from "../utils/types";
 import CreateOrganizationModal from "../components/CreateOrganizationForm";
 import { PencilSquareIcon, PlusIcon, TrashIcon, UserGroupIcon, UserIcon } from "@heroicons/react/24/outline";
+import { useSelector } from "react-redux";
 
 const OrganizationPage = () => {
     const [organizations, setOrganizations] = useState<Organization[] | undefined>(undefined);
@@ -9,7 +10,8 @@ const OrganizationPage = () => {
     const [isModalCreationOpen, setIsModalCreationOpen] = useState<boolean>(false);
     const [organizationDescribedId, setOrganizationDescribedId] = useState<number>(-1);
     const [updatedOrganizationId, setUpdatedOrganizationId] = useState<number | undefined>(undefined);
-    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
+    const userLoggedIn = useSelector((state: any) => state.user.user) as User;
+    const accessToken = userLoggedIn.accessToken;
     const API_URL = import.meta.env.VITE_API_URL;
 
     const fetchUsers = async () => {

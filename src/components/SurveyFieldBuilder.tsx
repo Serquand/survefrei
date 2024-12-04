@@ -1,11 +1,12 @@
 // @ts-nocheck
 
 import { useState } from "react";
-import { SurveyFieldType, SurveyField as SurveyFieldInterface } from "../utils/types";
+import { SurveyFieldType, SurveyField as SurveyFieldInterface, User } from "../utils/types";
 import InputField from "./SiteGlobalInput";
 import SiteSelect from "./SiteSelect";
 import SiteCheckbox from "./SiteCheckbox";
 import { TrashIcon } from "@heroicons/react/24/outline";
+import { useSelector } from "react-redux";
 
 interface Props {
     field: SurveyFieldInterface;
@@ -22,6 +23,8 @@ const SurveyFieldBuilder = (props: Props) => {
     const debounceTimeMs = 2_500;
     const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
     const API_URL = import.meta.env.VITE_API_URL;
+    const userLoggedIn = useSelector((state: any) => state.user.user) as User;
+    const accessToken = userLoggedIn.accessToken;
 
     const fieldTypeOptions = [
         { id: SurveyFieldType.CHECKBOX, label: "Case à cocher" },
@@ -49,7 +52,6 @@ const SurveyFieldBuilder = (props: Props) => {
     }
 
     const saveField = async (fieldToSave: SurveyFieldInterface) => {
-        const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
         const { id, formId, answers, ...newField } = fieldToSave;
         const choicesToSave = fieldToSave.choices.map(choice => ({ label: choice.label }));
         const requestOptions = {
@@ -81,7 +83,6 @@ const SurveyFieldBuilder = (props: Props) => {
     };
 
     const deleteField = async () => {
-        const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
         const requestOptions = {
             headers: { Authorization: `Bearer ${accessToken}` },
             method: "DELETE",

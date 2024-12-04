@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import { CreationSurvey, SurveyPreview } from "../utils/types";
+import { CreationSurvey, Roles, SurveyPreview, User } from "../utils/types";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import CreateFormModal from "../components/CreateFormModal";
 import { useNavigate } from "react-router-dom";
 import ListPreviewForm from "../components/ListPreviewForm";
+import { useSelector } from "react-redux";
 
 const FormsPage = () => {
     const [surveys, setSurveys] = useState<SurveyPreview[]>();
     const [creationModalOpen, isModalCreationOpen] = useState(false);
+    const user = useSelector((state: any) => state.user.user) as User;
     const API_URL = import.meta.env.VITE_API_URL;
-    const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
+    const accessToken = user.accessToken;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -36,24 +38,24 @@ const FormsPage = () => {
     return (
         <>
             {surveys ? <ListPreviewForm
-                canDelete={true}
                 onDeleteForm={(id) => setSurveys(surveys.filter(survey => survey.id !== id))}
                 surveys={surveys}
-                mustShowPublicationStatus={true}
+                mustShowPublicationStatus={user.role === Roles.ADMIN}
+                canDelete={user.role === Roles.ADMIN}
             /> : null}
 
-            <div
+            {user.role === Roles.ADMIN ? <div
                 className="fixed bottom-10 right-10 size-14 rounded-full bg-green-600 flex items-center justify-center cursor-pointer"
                 onClick={() => isModalCreationOpen(true)}
             >
                 <PlusIcon className="size-10 text-white" />
-            </div>
+            </div> : null}
 
-            <CreateFormModal
+            {user.role === Roles.ADMIN ? <CreateFormModal
                 isOpen={creationModalOpen}
                 onClose={() => isModalCreationOpen(false)}
                 onSubmit={postNewSurvey}
-            />
+            /> : null}
         </>
     );
 };

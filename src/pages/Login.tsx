@@ -65,7 +65,11 @@ const LoginPage = () => {
             const profile: Omit<User, "accessToken"> = await fetchProfile(accessToken);
             dispatch(updateUser({ ...profile, accessToken }));
 
-            if(profile.role === Roles.ADMIN) dispatch(fetchOrganizations(accessToken))
+            if(profile.role === Roles.ADMIN) {
+                console.log("Ma bite");
+                // @ts-ignore
+                dispatch(fetchOrganizations(accessToken))
+            }
 
             return navigateToGoodPage(profile.role);
         } catch {
