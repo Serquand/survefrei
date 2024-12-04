@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import InputField from "../components/SiteGlobalInput";
 import SiteCheckbox from "../components/SiteCheckbox";
 import SiteSelect from "../components/SiteSelect";
+import { sendOrderedFields } from "../utils/utils";
 
 const Survey = () => {
     const { id } = useParams<{ id: string; }>();
@@ -13,7 +14,6 @@ const Survey = () => {
     const API_URL = import.meta.env.VITE_API_URL;
     const userLoggedIn = useSelector((state: any) => state.user.user) as User;
     const accessToken = userLoggedIn.accessToken;
-    const organizations: Organization[] = useSelector((state: any) => state.organization.organizations);
     const isDisabledForm = false;
 
     useEffect(() => {
@@ -22,9 +22,8 @@ const Survey = () => {
             const headers = { Authorization: 'Bearer ' + accessToken };
             const response = await fetch(API_URL + '/survey/' + id, { headers });
             const data = await response.json();
-            const organization = organizations.find(org => org.id === data.organizationId)
-
-            setForm({ ...data, organization });
+            data.fields = sendOrderedFields(data.fields);
+            setForm(data);
             setAnswers(() => data.fields.map((field: SurveyField) => ({ questionId: field.id, value: '' })));
         }
         getForm();
@@ -55,6 +54,7 @@ const Survey = () => {
                 body: JSON.stringify({ answers })
             };
             const response = await fetch(`${API_URL}/user-answer/${id}`, requestOptions);
+            if(!response.ok) throw new Error();
             await response.json();
         } catch {
             // TODO

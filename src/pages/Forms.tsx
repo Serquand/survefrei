@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CreationSurvey, Roles, SurveyPreview, User } from "../utils/types";
+import { CreationSurvey, Organization, Roles, SurveyPreview, User } from "../utils/types";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import CreateFormModal from "../components/CreateFormModal";
 import { useNavigate } from "react-router-dom";
@@ -9,19 +9,29 @@ import { useSelector } from "react-redux";
 const FormsPage = () => {
     const [surveys, setSurveys] = useState<SurveyPreview[]>();
     const [creationModalOpen, isModalCreationOpen] = useState(false);
+    const [organizations, setOrganizations] = useState<Organization[] | undefined>(undefined);
     const user = useSelector((state: any) => state.user.user) as User;
     const API_URL = import.meta.env.VITE_API_URL;
     const accessToken = user.accessToken;
     const navigate = useNavigate();
 
+    const fetchSurveys = async () => {
+        const headers = { Authorization: 'Bearer ' + accessToken };
+        const response = await fetch(API_URL + '/survey', { headers });
+        const data = await response.json();
+        setSurveys(data);
+    }
+
+    const fetchOrganizations = async () => {
+        const headers = { Authorization: 'Bearer ' + accessToken };
+        const response = await fetch(API_URL + '/organization', { headers });
+        const data = await response.json();
+        setOrganizations(data);
+    }
+
     useEffect(() => {
-        const fetchSurveys = async () => {
-            const headers = { Authorization: 'Bearer ' + accessToken };
-            const response = await fetch(API_URL + '/survey', { headers });
-            const data = await response.json();
-            setSurveys(data);
-        }
         fetchSurveys();
+        fetchOrganizations()
     }, []);
 
     const postNewSurvey = async (data: CreationSurvey) => {
@@ -51,7 +61,8 @@ const FormsPage = () => {
                 <PlusIcon className="size-10 text-white" />
             </div> : null}
 
-            {user.role === Roles.ADMIN ? <CreateFormModal
+            {(user.role === Roles.ADMIN && organizations) ? <CreateFormModal
+                organizations={organizations}
                 isOpen={creationModalOpen}
                 onClose={() => isModalCreationOpen(false)}
                 onSubmit={postNewSurvey}

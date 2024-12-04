@@ -6,7 +6,6 @@ import { Roles, User } from "../utils/types";
 import { useNavigate } from "react-router-dom";
 import Notification, { NotificationRef } from "../components/SiteNotifications";
 import { XCircleIcon } from "@heroicons/react/24/outline";
-import { fetchOrganizations } from "../context/Organization";
 
 const LoginPage = () => {
     const [email, setEmail] = useState("");
@@ -64,12 +63,6 @@ const LoginPage = () => {
 
             const profile: Omit<User, "accessToken"> = await fetchProfile(accessToken);
             dispatch(updateUser({ ...profile, accessToken }));
-
-            if(profile.role === Roles.ADMIN) {
-                console.log("Ma bite");
-                // @ts-ignore
-                dispatch(fetchOrganizations(accessToken))
-            }
 
             return navigateToGoodPage(profile.role);
         } catch {

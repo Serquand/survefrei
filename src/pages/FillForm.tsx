@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Answer, Organization, Survey, SurveyField, SurveyFieldType, User } from "../utils/types";
+import { Answer, Survey, SurveyField, SurveyFieldType, User } from "../utils/types";
 import { useSelector } from "react-redux";
 import InputField from "../components/SiteGlobalInput";
 import SiteCheckbox from "../components/SiteCheckbox";
@@ -14,7 +14,6 @@ const FillForm = () => {
     const API_URL = import.meta.env.VITE_API_URL;
     const userLoggedIn = useSelector((state: any) => state.user.user) as User;
     const accessToken = userLoggedIn.accessToken;
-    const organizations: Organization[] = useSelector((state: any) => state.organization.organizations);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -24,9 +23,7 @@ const FillForm = () => {
             const response = await fetch(API_URL + '/survey/' + id, { headers });
             const data = await response.json();
             data.fields = sendOrderedFields(data.fields);
-            const organization = organizations.find(org => org.id === data.organizationId);
-
-            setForm({ ...data, organization });
+            setForm(data);
             setAnswers(() => data.fields.map((field: SurveyField) => ({ questionId: field.id, value: '' })));
         }
 

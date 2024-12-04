@@ -1,19 +1,18 @@
 import React, { useState } from "react";
 import { Organization } from "../utils/types";
-import { useSelector } from "react-redux";
 import SiteSelect from "./SiteSelect";
 
 interface Props {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (data: { title: string; description: string; organizationId: number }) => void;
+    organizations: Organization[];
 }
 
-const CreateFormModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {
+const CreateFormModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, organizations }) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [organizationId, setOrganizationId] = useState<number>();
-    const organizations: Organization[] = useSelector((state: any) => state.organization.organizations);
 
     const handleSubmit = () => {
         if (!title || !description || !organizationId) {
@@ -56,7 +55,7 @@ const CreateFormModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {
                 <SiteSelect
                     modelValue={organizationId}
                     onUpdate={(e) => setOrganizationId(e)}
-                    options={organizations.map((org) => ({ label: org.name, id: org.id }))}
+                    options={organizations!.map((org) => ({ label: org.name, id: org.id }))}
                     label="Sélectionnez une organisation"
                     optionKey="id"
                     optionLabel="label"
