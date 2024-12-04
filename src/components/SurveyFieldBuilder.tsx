@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { useState } from "react";
 import { SurveyFieldType, SurveyField as SurveyFieldInterface } from "../utils/types";
 import InputField from "./SiteGlobalInput";
@@ -12,6 +14,7 @@ interface Props {
     surveyId: number;
     onDeleteField: () => void;
     onUpdatePosition: (newPosition: number) => void;
+    onUpdateField: (newField: SurveyFieldInterface) => void;
 }
 
 const SurveyFieldBuilder = (props: Props) => {
@@ -36,14 +39,17 @@ const SurveyFieldBuilder = (props: Props) => {
     const updateFieldValue = (key: keyof SurveyFieldInterface, newValue: any) => {
         setValue((prevState) => {
             const newState = { ...prevState, [key]: newValue };
-            setDebounceToSaveField(newState);
             return newState;
         });
     };
 
+    const handleOnBlur = (key: keyof SurveyFieldInterface) => {
+        setDebounceToSaveField(value);
+        props.onUpdateField(value);
+    }
+
     const saveField = async (fieldToSave: SurveyFieldInterface) => {
         const accessToken = import.meta.env.VITE_ACCESS_TOKEN_ADMIN;
-        // @ts-ignore
         const { id, formId, answers, ...newField } = fieldToSave;
         const choicesToSave = fieldToSave.choices.map(choice => ({ label: choice.label }));
         const requestOptions = {
@@ -66,15 +72,11 @@ const SurveyFieldBuilder = (props: Props) => {
     }
 
     const updateChoices = (newChoice: string, choiceIndex: number) => {
-        // @ts-ignore
         setValue((prevState) => {
-            const newState = {
+            return {
                 ...prevState,
                 choices: prevState.choices.map((choice, index) => (index === choiceIndex ? { label: newChoice } : choice))
             };
-            // @ts-ignore
-            setDebounceToSaveField(newState);
-            return newState;
         });
     };
 
@@ -94,6 +96,7 @@ const SurveyFieldBuilder = (props: Props) => {
                 <InputField
                     modelValue={value.label}
                     onUpdate={(e) => updateFieldValue("label", e)}
+                    onBlur={handleOnBlur}
                     id="field-label"
                     type="text"
                     required={true}
@@ -105,6 +108,7 @@ const SurveyFieldBuilder = (props: Props) => {
                     options={fieldTypeOptions}
                     modelValue={value.fieldType}
                     onUpdate={(value) => updateFieldValue("fieldType", value)}
+                    onBlur={handleOnBlur}
                     label="Type du champ"
                 />
 
@@ -113,6 +117,7 @@ const SurveyFieldBuilder = (props: Props) => {
                         <InputField
                             modelValue={value.minValue}
                             onUpdate={(e) => updateFieldValue("minValue", e)}
+                            onBlur={handleOnBlur}
                             id="field-label"
                             type="number"
                             required={true}
@@ -122,6 +127,7 @@ const SurveyFieldBuilder = (props: Props) => {
                         <InputField
                             modelValue={value.maxValue}
                             onUpdate={(e) => updateFieldValue("maxValue", e)}
+                            onBlur={handleOnBlur}
                             id="field-label"
                             type="number"
                             required={true}
@@ -139,6 +145,7 @@ const SurveyFieldBuilder = (props: Props) => {
                                     <InputField
                                         modelValue={value.choices[index].label}
                                         onUpdate={(value) => updateChoices(value + "", index)}
+                                        onBlur={handleOnBlur}
                                         type="text"
                                         id={`field-${value.id}-choice-${index}`}
                                         label={`Choix ${index + 1}`}
@@ -164,11 +171,11 @@ const SurveyFieldBuilder = (props: Props) => {
                     </div>
                 )}
 
-                {/*false && */}
                 {value.fieldType === SurveyFieldType.SELECT && (
                     <InputField
                         modelValue={value.maximalNumberOfChoices}
                         onUpdate={(e) => updateFieldValue("maximalNumberOfChoices", e)}
+                        onBlur={handleOnBlur}
                         id="field-label"
                         type="number"
                         required={true}

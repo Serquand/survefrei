@@ -134,6 +134,15 @@ const FormEditionPage = () => {
         await Promise.all(newFieldsArray.map(patchOrderField));
     }
 
+    const handleUpdateField = (newField: SurveyField, fieldId: number) => {
+        // @ts-ignore
+        setForm(prevForm => {
+            const newFields = prevForm!.fields.map(field => field.id === fieldId ? newField : field);
+            return { ...prevForm, fields: newFields };
+        });
+
+    }
+
     useEffect(() => {
         const getForm = async () => {
             const headers = { Authorization: 'Bearer ' + accessToken };
@@ -208,6 +217,7 @@ const FormEditionPage = () => {
                                     surveyId={form!.id}
                                     onDeleteField={() => deleteField(field.id)}
                                     onUpdatePosition={(newPosition) => handleUpdatePosition(field.id, newPosition)}
+                                    onUpdateField={newField => handleUpdateField(newField, field.id)}
                                 />
                             </div>
                         ))}

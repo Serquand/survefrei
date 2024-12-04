@@ -27,6 +27,7 @@ const InputField: React.FC<Props> = ({
     min = '0',
     required = false,
     onUpdate,
+    onBlur,
     children,
 }) => {
     const [inputValue, setInputValue] = useState<string | number | boolean | string[] | undefined>(modelValue);
@@ -69,6 +70,7 @@ const InputField: React.FC<Props> = ({
                         rows={3}
                         className="block w-full rounded-md mt-1 px-3 py-2 border border-gray-300 placeholder:text-gray-400 focus:outline-none focus:border-sky-700 sm:text-sm sm:leading-6 disabled:bg-slate-100 disabled:text-slate-500"
                         onChange={handleChange}
+                        onBlur={() => onBlur && onBlur()}
                     />
                 )}
 
@@ -83,6 +85,7 @@ const InputField: React.FC<Props> = ({
                         maxLength={maxLength}
                         min={min}
                         onChange={handleChange}
+                        onBlur={() => onBlur && onBlur()}
                     />
                 )}
             </div>
