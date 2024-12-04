@@ -15,7 +15,8 @@ const UserCard = (props: Props) => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [user, setUser] = useState(props.user);
 
-    const deleteUser = async () => {
+    const deleteUser = async (e: any) => {
+        e.stopPropagation();
         const API_URL = import.meta.env.VITE_API_URL;
         const requestOptions = {
             method: "DELETE",

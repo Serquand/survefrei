@@ -172,7 +172,7 @@ const OrganizationPage = () => {
                                 onClick={() => toggleUserPresenceInOrganization(user.id)}
                             >
                                 <UserIcon className="h-6 w-6 shrink-0" />
-                                {user.firstName + ' ' + user.firstName.toUpperCase() + ', ' + user.role.toUpperCase()}
+                                {user.firstName + ' ' + user.lastName.toUpperCase() + ', ' + user.role.toUpperCase()}
                             </li>
                         ))}
                     </ul>
