@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Loader from "../components/Loader";
 import { useDispatch } from "react-redux";
 import { updateUser } from '../context/User';
@@ -17,6 +17,10 @@ const LoginPage = () => {
     const navigate = useNavigate();
     const apiUrl = import.meta.env.VITE_API_URL;
     const notificationRef = useRef<NotificationRef>(null);
+
+    useEffect(() => {
+        dispatch(updateUser(null));
+    }, []);
 
     const showNotification = () => {
         if (notificationRef.current) {

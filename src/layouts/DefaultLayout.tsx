@@ -7,6 +7,7 @@ import {
     DocumentPlusIcon,
     UserCircleIcon,
     Bars3Icon,
+    XCircleIcon,
 } from '@heroicons/react/24/outline';
 import { Dialog, Transition, TransitionChild, DialogPanel } from '@headlessui/react';
 import { Roles, User } from '../utils/types';
@@ -34,7 +35,6 @@ const Layout: React.FC = () => {
             to: '/to-fill',
             current: false,
             neededRole: [Roles.STUDENT],
-            notifications: 1
         },
         {
             id: 'filled',
@@ -61,12 +61,20 @@ const Layout: React.FC = () => {
             neededRole: [Roles.ADMIN, Roles.TEACHER]
         },
         {
-            id: 1,
+            id: 'users',
             label: 'Utilisateurs',
             to: '/users',
             icon: UserCircleIcon,
             current: false,
             neededRole: [Roles.ADMIN]
+        },
+        {
+            id: 'sign-up',
+            label: 'Déconnexion',
+            to: '/',
+            icon: XCircleIcon,
+            current: false,
+            neededRole: [Roles.ADMIN, Roles.STUDENT, Roles.TEACHER]
         }
     ];
 
