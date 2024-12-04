@@ -74,7 +74,6 @@ const FormEditionPage = () => {
 
     const saveForm = async (newForm: any) => {
         const { fields, organization, id, ...formToSave } = newForm;
-        console.log(formToSave);
         const requestOptions = {
             headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
             method: "PUT",
@@ -128,7 +127,6 @@ const FormEditionPage = () => {
         const newFieldsArray = moveElement(fields, oldIndex, newPosition - 1);
         setForm(prev => {
             const newForm = { ...prev!, fields: newFieldsArray };
-            console.log(newForm.fields.map(x => x.order));
             return newForm;
         });
         await Promise.all(newFieldsArray.map(patchOrderField));
@@ -140,7 +138,6 @@ const FormEditionPage = () => {
             const newFields = prevForm!.fields.map(field => field.id === fieldId ? newField : field);
             return { ...prevForm, fields: newFields };
         });
-
     }
 
     useEffect(() => {

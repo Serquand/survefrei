@@ -55,7 +55,7 @@ const CreateFormModal: React.FC<Props> = ({ isOpen, onClose, onSubmit }) => {
 
                 <SiteSelect
                     modelValue={organizationId}
-                    onUpdate={(e) => setOrganizationId(+e.target.value)}
+                    onUpdate={(e) => setOrganizationId(e)}
                     options={organizations.map((org) => ({ label: org.name, id: org.id }))}
                     label="Sélectionnez une organisation"
                     optionKey="id"

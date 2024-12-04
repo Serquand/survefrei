@@ -42,6 +42,10 @@ const SurveyFieldBuilder = (props: Props) => {
     const updateFieldValue = (key: keyof SurveyFieldInterface, newValue: any) => {
         setValue((prevState) => {
             const newState = { ...prevState, [key]: newValue };
+            if(key == 'fieldType') {
+                setDebounceToSaveField(newState);
+                props.onUpdateField(newState);
+            }
             return newState;
         });
     };
@@ -109,7 +113,6 @@ const SurveyFieldBuilder = (props: Props) => {
                     options={fieldTypeOptions}
                     modelValue={value.fieldType}
                     onUpdate={(value) => updateFieldValue("fieldType", value)}
-                    onBlur={handleOnBlur}
                     label="Type du champ"
                 />
 
@@ -198,7 +201,7 @@ const SurveyFieldBuilder = (props: Props) => {
                 </div>
 
                 <SiteCheckbox
-                    id="1"
+                    id={`field-${value.id}-required`}
                     onUpdate={(value) => updateFieldValue("required", value)}
                     label="Champ requis"
                     modelValue={value.required}

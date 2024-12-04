@@ -157,11 +157,14 @@ const Layout: React.FC = () => {
             {/* Static Sidebar for Desktop */}
             <div className="hidden lg:fixed lg:inset-y-0 lg:z-40 lg:flex lg:w-72 lg:flex-col">
                 <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-4">
-                    <img
-                        className="w-10"
-                        src="/Logo SurvEfrei.png"
-                        alt="Logo Coupe des Régions"
-                    />
+                    <div className='flex flex-col items-center pt-6 gap-4'>
+                        <img
+                            className="w-10"
+                            src="/Logo SurvEfrei.png"
+                            alt="Logo Coupe des Régions"
+                        />
+                        <h1 className='text-white text-2xl font-semibold'>Surv'Efrei</h1>
+                    </div>
                     <nav className="flex flex-1 flex-col">
                         {navigationCategories.map((link) => (
                             <ul className="-mx-2 space-y-1">
