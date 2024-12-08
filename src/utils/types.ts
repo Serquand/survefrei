@@ -81,3 +81,9 @@ export interface Answer {
 export interface SurveyWithAnswer extends Survey {
     fields: SurveyFieldWithAnswer[];
 }
+
+export interface RetrievePassword {
+    token: string;
+    password: string;
+    email: string;
+}

@@ -13,11 +13,13 @@ import FillForm from "./pages/FillForm";
 import ReviewForm from "./pages/ReviewForm";
 import AnswersPage from "./pages/AnswersPage";
 import FormEditionPage from "./pages/FormEditionPage";
+import RetrievePasswordPage from "./pages/RetrievePassword";
 
 const App = () => {
     return (
         <Routes>
             <Route path="/" element={<Login />} />
+            <Route path="/retrieve-password" element={<RetrievePasswordPage />} />
             <Route path="/" element={<Layout />}>
                 {/* Routes protégées */}
                 <Route
