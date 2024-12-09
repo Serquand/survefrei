@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { Listbox as HeadlessListbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import { useTranslation } from 'react-i18next';
+
 
 interface Props {
     options: readonly (string | object)[];
@@ -35,6 +37,8 @@ const SiteSelect: React.FC<Props> = ({
     disabled = false,
     onUpdate,
 }) => {
+    const { t } = useTranslation();
+    const translatedPlaceholder = t('SelectOpt', { defaultValue: placeholder });
     const [selected, setSelected] = useState(() => {
         if (multiple) {
             return Array.isArray(modelValue)
@@ -99,10 +103,10 @@ const SiteSelect: React.FC<Props> = ({
                             >
                                 <span className={`block truncate ${!currentValueSelected ? "italic" : ""}`}>
                                     {multiple
-                                        ? currentValueSelected.map((item) => item[optionLabel]).join(", ") || placeholder
+                                        ? currentValueSelected.map((item) => item[optionLabel]).join(", ") || translatedPlaceholder
                                         : currentValueSelected
                                             ? currentValueSelected[optionLabel]
-                                            : placeholder}
+                                            : translatedPlaceholder}
                                 </span>
                                 <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                     <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />

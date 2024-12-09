@@ -4,8 +4,10 @@ import UserCard from "../components/UserCard";
 import { Roles, User } from "../utils/types";
 import ModalUser, { CreateNewUSer } from "../components/ModalUser";
 import { useSelector } from "react-redux";
+import { useTranslation } from 'react-i18next';
 
 const UsersPage = () => {
+    const { t } = useTranslation();
     const [searchText, setSearchText] = useState("");
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [users, setUsers] = useState<Omit<User, 'accessToken'>[]>([]);
@@ -49,7 +51,7 @@ const UsersPage = () => {
                         <SiteInput
                             value={searchText}
                             onChange={(e) => setSearchText(e)}
-                            placeholder="Chercher un utilisateur"
+                            placeholder={t("UserSearch")}
                         />
 
                     </div>
@@ -58,7 +60,7 @@ const UsersPage = () => {
                         className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
                         onClick={() => setIsModalOpen(true)}
                     >
-                        Ajouter un utilisateur
+                        {t('UserAdd')}
                     </button>
                 </div>
             </div>

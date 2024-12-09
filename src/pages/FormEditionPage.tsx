@@ -8,8 +8,10 @@ import SiteCheckbox from "../components/SiteCheckbox";
 import SiteSelect from "../components/SiteSelect";
 import ConfirmationModal from "../components/ConfirmationModal";
 import { moveElement, sendOrderedFields } from "../utils/utils";
+import { useTranslation } from 'react-i18next';
 
 const FormEditionPage = () => {
+    const { t, i18n } = useTranslation();
     const debounceTimeMs = 2_500;
     const { id } = useParams<{ id: string; }>();
     const [form, setForm] = useState<Survey | undefined>(undefined);
@@ -53,7 +55,7 @@ const FormEditionPage = () => {
     }
 
     const createNewField = async () => {
-        const body = { fieldType: "TX", label: "Mon champ", order: findMaxOrder() + 1 };
+        const body = { fieldType: "TX", label: `${t("MyField")}`, order: findMaxOrder() + 1 };
         const requestOptions = {
             method: "POST",
             body: JSON.stringify(body),
@@ -172,7 +174,7 @@ const FormEditionPage = () => {
                                 id="form-title"
                                 type="text"
                                 required={true}
-                                label="Titre du formulaire"
+                                label={t("FormTitle")}
                                 disabled={false}
                             />
 
@@ -182,7 +184,7 @@ const FormEditionPage = () => {
                                 id="form-description"
                                 type="textarea"
                                 required={true}
-                                label="Description du formulaire"
+                                label={t("FormDesc")}
                                 disabled={false}
                             />
 
@@ -190,7 +192,7 @@ const FormEditionPage = () => {
                                 <SiteCheckbox
                                     id="form-published"
                                     onUpdate={onTriggerPublishButton}
-                                    label="Formulaire public ?"
+                                    label={t("FormPublish")}
                                     modelValue={form.isPublic}
                                 />
 
@@ -199,7 +201,7 @@ const FormEditionPage = () => {
                                     onUpdate={(e) => console.log(e)}
                                     options={organizations.map((org) => ({ id: org.id, label: org.name }))}
                                     required={false}
-                                    label="Organisation"
+                                    label={t("Organization")}
                                 />
                             </div>
                         </div> : null}
@@ -232,7 +234,7 @@ const FormEditionPage = () => {
                             className="px-6 py-3 text-white bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 focus:ring-4 focus:ring-green-300 rounded-lg shadow-lg shadow-green-500/50 hover:shadow-xl transition-all duration-300 ease-in-out"
                             onClick={createNewField}
                         >
-                            Ajouter un champ
+                            {t("AddField")}
                         </button>
                     </div>
                 </div>
@@ -242,7 +244,7 @@ const FormEditionPage = () => {
                     onCancel={onCancelPublishment}
                     onValidate={onValidatePublishment}
                 >
-                    <p>Êtes-vous sûr de vouloir publier ce formulaire ?</p>
+                    <p>{t("PublishVerif")}</p>
                 </ConfirmationModal>
             </>}
         </>

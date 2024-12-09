@@ -3,6 +3,7 @@ import { User } from "../utils/types";
 import InputField from "./SiteGlobalInput";
 import SiteSelect from "./SiteSelect";
 import { useSelector } from "react-redux";
+import { useTranslation } from 'react-i18next';
 
 export type CreateNewUSer = Omit<User, "accessToken"> & { password?: string; };
 
@@ -15,14 +16,15 @@ interface ModalUserProps {
 }
 
 const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps) => {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState<Partial<CreateNewUSer>>(user);
     const API_URL = import.meta.env.VITE_API_URL;
     const userLoggedIn = useSelector((state: any) => state.user.user) as User;
     const accessToken = userLoggedIn.accessToken;
     const roleOptions: { label: string; id: string }[] = [
-        { id: 'student', label: "Étudiant" },
-        { id: 'teacher', label: 'Professeur' },
-        { id: 'admin', label: 'Administrateur' },
+        { id: 'student', label: `${t("Student")}` },
+        { id: 'teacher', label: `${t("Teacher")}` },
+        { id: 'admin', label: `${t("Admin")}` },
     ]
 
 
@@ -80,7 +82,7 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
                     <div className="bg-white p-6 rounded-lg shadow-lg">
                         <div className="flex justify-between items-center">
                             <h3 className="text-lg font-semibold">
-                                { mode === 'creation' ? 'Créer un nouvel utilisateur' : 'Modifier l\'utilisateur' }
+                                { mode === 'creation' ? `${t("UserCreate")}` : `${t("UserModify")}` }
                             </h3>
                             <button
                                 onClick={onClose}
@@ -98,8 +100,8 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
                                     id="update-user-first-name"
                                     modelValue={formData.firstName}
                                     onUpdate={(e) => handleChange('firstName', e)}
-                                    label="Prénom"
-                                    placeholder="Prénom"
+                                    label={t("UserName")}
+                                    placeholder={t("UserName")}
                                     required={true}
                                 />
 
@@ -107,8 +109,8 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
                                     id="update-user-last-name"
                                     modelValue={formData.lastName}
                                     onUpdate={(e) => handleChange('lastName', e)}
-                                    label="Nom"
-                                    placeholder="Nom"
+                                    label={t("LastName")}
+                                    placeholder={t("LastName")}
                                     required={true}
                                 />
 
@@ -116,8 +118,8 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
                                     id="update-user-email"
                                     modelValue={formData.email}
                                     onUpdate={(e) => handleChange('email', e)}
-                                    label="Adresse email"
-                                    placeholder="Adresse email"
+                                    label={t("Mail")}
+                                    placeholder={t("Mail")}
                                     required={true}
                                     disabled={mode === 'edition'}
                                 />
@@ -126,8 +128,8 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
                                     modelValue={formData.role}
                                     onUpdate={(e) => handleChange("role", e)}
                                     options={roleOptions}
-                                    label="Rôle"
-                                    placeholder="Rôle"
+                                    label={t("Role")}
+                                    placeholder={t("Role")}
                                     required={true}
                                     optionLabel="label"
                                     optionKey="id"
@@ -137,8 +139,8 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
                                     id="update-user-password"
                                     modelValue={formData.password}
                                     onUpdate={(e) => handleChange('password', e)}
-                                    label="Mot de passe"
-                                    placeholder="Mot de passe"
+                                    label={t("Password")}
+                                    placeholder={t("Password")}
                                     required={true}
                                     type="password"
                                 /> : null}
@@ -149,13 +151,13 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
                                         onClick={onClose}
                                         className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
                                     >
-                                        Annuler
+                                        {t("Cancel")}
                                     </button>
                                     <button
                                         type="submit"
                                         className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                                     >
-                                        { mode === 'creation' ? 'Créer' : 'Mettre à jour' }
+                                        { mode === 'creation' ? `${t("Create")}` :  `${t("Update")}` }
                                     </button>
                                 </div>
                             </form>

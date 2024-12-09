@@ -12,6 +12,7 @@ import {
 import { Dialog, Transition, TransitionChild, DialogPanel } from '@headlessui/react';
 import { Roles, User } from '../utils/types';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 interface NavigationOption {
     to: string;
@@ -24,13 +25,14 @@ interface NavigationOption {
 }
 
 const Layout: React.FC = () => {
+    const { t, i18n } = useTranslation();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const user = useSelector((state: any) => state.user.user) as User;
 
     const navigationCategories: NavigationOption[] = [
         {
             id: 'to-fill',
-            label: 'Formulaires à remplir',
+            label: `${t('FormsToComplete')}`,
             icon: DocumentPlusIcon,
             to: '/to-fill',
             current: false,
@@ -38,7 +40,7 @@ const Layout: React.FC = () => {
         },
         {
             id: 'filled',
-            label: 'Formulaires remplis',
+            label: `${t('FormsCompleted')}`,
             icon: NewspaperIcon,
             to: '/filled',
             current: false,
@@ -46,7 +48,7 @@ const Layout: React.FC = () => {
         },
         {
             id: 'organization',
-            label: 'Organisations',
+            label: `${t("Organization")}`,
             icon: UserGroupIcon,
             to: '/organization',
             current: false,
@@ -54,7 +56,7 @@ const Layout: React.FC = () => {
         },
         {
             id: 'forms',
-            label: 'Formulaires',
+            label: `${t("Forms")}`,
             icon: NewspaperIcon,
             to: '/forms',
             current: false,
@@ -62,7 +64,7 @@ const Layout: React.FC = () => {
         },
         {
             id: 'users',
-            label: 'Utilisateurs',
+            label: `${t("user")}`,
             to: '/users',
             icon: UserCircleIcon,
             current: false,
@@ -70,13 +72,17 @@ const Layout: React.FC = () => {
         },
         {
             id: 'sign-up',
-            label: 'Déconnexion',
+            label: `${t("exit")}`,
             to: '/',
             icon: XCircleIcon,
             current: false,
             neededRole: [Roles.ADMIN, Roles.STUDENT, Roles.TEACHER]
         }
     ];
+
+    const handleLanguageChange = (lang: string) => {
+        i18n.changeLanguage(lang);
+      };
 
     return (
         <div className="h-full">
@@ -195,6 +201,8 @@ const Layout: React.FC = () => {
                             </ul>
                         ))}
                     </nav>
+                    <button onClick={() => handleLanguageChange('fr')} className='text-white'>{t('change_language')} (FR)</button>
+                    <button onClick={() => handleLanguageChange('en')} className='text-white'>{t('change_language')} (EN)</button>
                 </div>
             </div>
 

@@ -7,6 +7,7 @@ import SiteSelect from "./SiteSelect";
 import SiteCheckbox from "./SiteCheckbox";
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { useSelector } from "react-redux";
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     field: SurveyFieldInterface;
@@ -19,6 +20,7 @@ interface Props {
 }
 
 const SurveyFieldBuilder = (props: Props) => {
+    const { t, i18n } = useTranslation();
     const [value, setValue] = useState(props.field);
     const debounceTimeMs = 2_500;
     const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -27,11 +29,11 @@ const SurveyFieldBuilder = (props: Props) => {
     const accessToken = userLoggedIn.accessToken;
 
     const fieldTypeOptions = [
-        { id: SurveyFieldType.CHECKBOX, label: "Case à cocher" },
-        { id: SurveyFieldType.NUMBER, label: "Nombre" },
-        { id: SurveyFieldType.SELECT, label: "Liste déroulante" },
-        { id: SurveyFieldType.TEXT, label: "Texte" },
-        { id: SurveyFieldType.TEXTAREA, label: "Paragraphe" },
+        { id: SurveyFieldType.CHECKBOX, label:`${t("Checkbox")}` },
+        { id: SurveyFieldType.NUMBER, label: `${t("Number")}` },
+        { id: SurveyFieldType.SELECT, label: `${t("Dropdown_list")}` },
+        { id: SurveyFieldType.TEXT, label: `${t("Text")}` },
+        { id: SurveyFieldType.TEXTAREA, label: `${t("Paragraph")}` },
     ];
 
     const positionOptions = Array.from(new Array(props.numberOfFields)).map((_, index) => ({
@@ -105,7 +107,7 @@ const SurveyFieldBuilder = (props: Props) => {
                     id={`field-${props.field.id}-label`}
                     type="text"
                     required={true}
-                    label="Nom du champ"
+                    label={t("NameField")}
                     disabled={false}
                 />
 
@@ -113,7 +115,7 @@ const SurveyFieldBuilder = (props: Props) => {
                     options={fieldTypeOptions}
                     modelValue={value.fieldType}
                     onUpdate={(value) => updateFieldValue("fieldType", value)}
-                    label="Type du champ"
+                    label={t("TypeField")}
                 />
 
                 {value.fieldType === SurveyFieldType.NUMBER && (
@@ -125,7 +127,7 @@ const SurveyFieldBuilder = (props: Props) => {
                             id={`field-${props.field.id}-min-value`}
                             type="number"
                             required={true}
-                            label="Valeur minimale"
+                            label={t("ValueMinField")}
                             disabled={false}
                         />
                         <InputField
@@ -135,7 +137,7 @@ const SurveyFieldBuilder = (props: Props) => {
                             id={`field-${props.field.id}-max-value`}
                             type="number"
                             required={true}
-                            label="Valeur maximale"
+                            label={t("ValueMaxField")}
                             disabled={false}
                         />
                     </>
@@ -170,7 +172,7 @@ const SurveyFieldBuilder = (props: Props) => {
                             onClick={() => updateFieldValue("choices", [...value.choices, { label: "Choix " + (value.choices.length + 1) }])}
                             className="text-green-600 hover:text-green-800 mt-4"
                         >
-                            Ajouter une réponse
+                            {t("AddAnswer")}
                         </button>
                     </div>
                 )}
@@ -183,7 +185,7 @@ const SurveyFieldBuilder = (props: Props) => {
                         id={`field-${props.field.id}-max-number-of-choices`}
                         type="number"
                         required={true}
-                        label="Nombre maximum de réponses"
+                        label={t("MaxAnswer")}
                         disabled={false}
                     />
                 )}
@@ -203,7 +205,7 @@ const SurveyFieldBuilder = (props: Props) => {
                 <SiteCheckbox
                     id={`field-${value.id}-required`}
                     onUpdate={(value) => updateFieldValue("required", value)}
-                    label="Champ requis"
+                    label={t("RequiredField")}
                     modelValue={value.required}
                 />
 
