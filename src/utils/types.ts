@@ -73,7 +73,7 @@ export interface CreationSurvey {
 }
 
 export interface Answer {
-    questionId: string;
+    questionId: number;
     value: boolean | string[] | number;
     valueText: string;
 }

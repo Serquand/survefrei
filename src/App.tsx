@@ -14,8 +14,10 @@ import ReviewForm from "./pages/ReviewForm";
 import AnswersPage from "./pages/AnswersPage";
 import FormEditionPage from "./pages/FormEditionPage";
 import RetrievePasswordPage from "./pages/RetrievePassword";
+import { fetchAccessToken } from "./utils/utils";
 
 const App = () => {
+    fetchAccessToken();
     return (
         <Routes>
             <Route path="/" element={<Login />} />

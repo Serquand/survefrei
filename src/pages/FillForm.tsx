@@ -93,7 +93,7 @@ const FillForm = () => {
                                 id={"question-" + field.id}
                                 onUpdate={(e) => updateAnswer(index, e)}
                                 label={field.label}
-                                modelValue={answers[index].value}
+                                modelValue={answers[index].value as boolean}
                                 key={index}
                             /> : null}
 

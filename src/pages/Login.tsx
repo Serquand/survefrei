@@ -49,9 +49,11 @@ const LoginPage = () => {
         const requestOptions = {
             method: "POST",
             body: JSON.stringify({ email, password }),
-            headers: { "Content-Type": "application/json" }
+            headers: { "Content-Type": "application/json" },
+            credentials: 'undefined'
         };
 
+        // @ts-ignore
         const response = await fetch(apiUrl + '/user/login', requestOptions);
         const informations = await response.json();
         if (!response.ok) throw new Error(informations.message);

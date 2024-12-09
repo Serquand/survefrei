@@ -1,7 +1,7 @@
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from "chart.js";
 import { Line } from "react-chartjs-2";
 import Statistic from "./Statistic";
-import { PresentationChartLineIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { PresentationChartLineIcon } from "@heroicons/react/24/outline";
 import { calculateMean, calculateMedian } from "../utils/utils";
 
 interface Props {

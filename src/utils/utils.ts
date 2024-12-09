@@ -46,3 +46,14 @@ export function calculateMean(numbers: Array<number>): string {
     const mean = sum / numbers.length;
     return mean.toFixed(2);
 }
+
+export async function fetchAccessToken() {
+    const response = await fetch('http://localhost:3000/user/refresh-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+    });
+
+    const data = await response.json();
+    return data.access_token;
+}

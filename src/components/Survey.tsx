@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { Answer, Organization, Survey as SurveyInterface, SurveyField, SurveyFieldType, User } from "../utils/types";
+import { Answer, Survey as SurveyInterface, SurveyField, SurveyFieldType, User } from "../utils/types";
 import { useSelector } from "react-redux";
 import InputField from "../components/SiteGlobalInput";
 import SiteCheckbox from "../components/SiteCheckbox";
@@ -83,7 +83,7 @@ const Survey = () => {
                                 id={"question-" + field.id}
                                 onUpdate={(e) => updateAnswer(index, e)}
                                 label={field.label}
-                                modelValue={answers[index].value}
+                                modelValue={answers[index].value as boolean}
                                 disabled={isDisabledForm}
                                 key={index}
                             /> : null}

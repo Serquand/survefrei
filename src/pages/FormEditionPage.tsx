@@ -11,7 +11,7 @@ import { moveElement, sendOrderedFields } from "../utils/utils";
 import { useTranslation } from 'react-i18next';
 
 const FormEditionPage = () => {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const debounceTimeMs = 2_500;
     const { id } = useParams<{ id: string; }>();
     const [form, setForm] = useState<Survey | undefined>(undefined);

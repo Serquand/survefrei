@@ -38,7 +38,7 @@ const AnswersPage = () => {
                         <SiteGlobalKPI
                             maxValue={field.maxValue}
                             minValue={field.minValue}
-                            answers={field.answers}
+                            answers={field.answers.map((answer) => ({questionId: answer.id, value: answer.value, valueText: answer.valueText}))}
                             fieldType={field.fieldType}
                             label={field.label}
                         />

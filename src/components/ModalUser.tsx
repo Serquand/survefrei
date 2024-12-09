@@ -67,7 +67,7 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
             } else if (mode === "edition") {
                 const { id, password, email, ...dataToSend } = formData;
                 await sendUserRequest(`${API_URL}/user/${id}`, "PUT", dataToSend);
-                onUpdateUser(formData);
+                onUpdateUser(formData as Omit<User, "accessToken">);
             }
         } catch (error) {
             console.error("Error during submission:", error);
