@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Organization, User } from "../utils/types";
 import CreateOrganizationModal from "../components/CreateOrganizationForm";
 import { PencilSquareIcon, PlusIcon, TrashIcon, UserGroupIcon, UserIcon } from "@heroicons/react/24/outline";
 import { useSelector } from "react-redux";
+import ConfirmationModal, { ConfirmationModalRef } from "../components/ConfirmationModal";
 
 const OrganizationPage = () => {
     const [organizations, setOrganizations] = useState<Organization[] | undefined>(undefined);
@@ -11,6 +12,7 @@ const OrganizationPage = () => {
     const [organizationDescribedId, setOrganizationDescribedId] = useState<number>(-1);
     const [updatedOrganizationId, setUpdatedOrganizationId] = useState<number | undefined>(undefined);
     const userLoggedIn = useSelector((state: any) => state.user.user) as User;
+    const modalRef = useRef<ConfirmationModalRef>(null);
     const accessToken = userLoggedIn.accessToken;
     const API_URL = import.meta.env.VITE_API_URL;
 
@@ -95,6 +97,11 @@ const OrganizationPage = () => {
 
     const deleteOrganization = async (event: any, organizationId: number) => {
         event.stopPropagation();
+
+        if(!modalRef.current) return;
+        const validateUserDeletion = await modalRef.current.openModal();
+        if(!validateUserDeletion) return;
+
         if (!organizations) return;
         const allOthersOrganization = organizations.filter((org) => org.id !== organizationId);
 
@@ -194,6 +201,10 @@ const OrganizationPage = () => {
                 onOrganizationUpdate={handleOrganizationNameUpdate}
                 updatedOrganizationId={updatedOrganizationId}
             />
+
+            <ConfirmationModal ref={modalRef}>
+                <p>Voulez-vous vraiment supprimer cette organisation ?</p>
+            </ConfirmationModal>
         </>
     );
 };

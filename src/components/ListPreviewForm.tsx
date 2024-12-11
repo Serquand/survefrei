@@ -1,5 +1,7 @@
 import { SurveyPreview } from "../utils/types";
 import SurveyCard from "./SurveyCard";
+import ConfirmationModal, { ConfirmationModalRef } from "../components/ConfirmationModal";
+import { useRef } from "react";
 
 interface Props {
     surveys: SurveyPreview[];
@@ -8,13 +10,16 @@ interface Props {
     mustShowPublicationStatus?: boolean;
 }
 
-const ListPreviewForm = ({surveys, canDelete, onDeleteForm, mustShowPublicationStatus}: Props) => {
+const ListPreviewForm = ({ surveys, canDelete, onDeleteForm, mustShowPublicationStatus }: Props) => {
+    const modalRef = useRef<ConfirmationModalRef>(null);
+
     const handleOnDeleteForm = (id: number) => {
         onDeleteForm && onDeleteForm(id);
     }
 
     return (
-        <div className="flex flex-col px-12 gap-5 py-6">
+        <>
+            <div className="flex flex-col px-12 gap-5 py-6">
                 {(surveys && surveys.length > 0) ? surveys.map((survey, index) => {
                     return (
                         <SurveyCard
@@ -29,8 +34,14 @@ const ListPreviewForm = ({surveys, canDelete, onDeleteForm, mustShowPublicationS
                             mustShowPublicationStatus={mustShowPublicationStatus}
                         />
                     );
-                }): null}
+                }) : null}
             </div>
+
+            <ConfirmationModal ref={modalRef}>
+                <p>Voulez-vous vraiment supprimer cette organisation ?</p>
+            </ConfirmationModal>
+        </>
+
     )
 }
 

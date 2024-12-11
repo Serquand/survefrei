@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SurveyFieldBuilder from "../components/SurveyFieldBuilder";
 import { Organization, Survey, SurveyField, User } from '../utils/types';
@@ -6,7 +6,7 @@ import InputField from "../components/SiteGlobalInput";
 import { useSelector } from "react-redux";
 import SiteCheckbox from "../components/SiteCheckbox";
 import SiteSelect from "../components/SiteSelect";
-import ConfirmationModal from "../components/ConfirmationModal";
+import ConfirmationModal, { ConfirmationModalRef } from "../components/ConfirmationModal";
 import { moveElement, sendOrderedFields } from "../utils/utils";
 import { useTranslation } from 'react-i18next';
 
@@ -15,7 +15,7 @@ const FormEditionPage = () => {
     const debounceTimeMs = 2_500;
     const { id } = useParams<{ id: string; }>();
     const [form, setForm] = useState<Survey | undefined>(undefined);
-    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState<boolean>(false);
+    const modalRef = useRef<ConfirmationModalRef>(null);
     const API_URL = import.meta.env.VITE_API_URL;
     const userLoggedIn = useSelector((state: any) => state.user.user) as User;
     const accessToken = userLoggedIn.accessToken;
@@ -32,20 +32,23 @@ const FormEditionPage = () => {
         return sendOrderedFields(form.fields);
     }, [form?.fields]);
 
-    const onTriggerPublishButton = (publishmentValue: boolean) => {
-        setForm(prevForm => ({ ...prevForm!, isPublic: publishmentValue }));
-        publishmentValue && setIsConfirmModalOpen(true);
+    const onTriggerPublishButton = async (publishmentValue: boolean) => {
+        try {
+            if (modalRef.current) {
+                const validateUserDeletion = await modalRef.current.openModal();
+                if (validateUserDeletion) {
+                    const newForm = { ...form!, isPublic: publishmentValue };
+                    onValidatePublishment(newForm);
+                }
+            }
+        } catch {
+            // TODO
+        }
     }
 
-    const onCancelPublishment = () => {
-        setForm(prevForm => ({ ...prevForm!, isPublic: false }));
-        setIsConfirmModalOpen(false);
-    }
-
-    const onValidatePublishment = async () => {
+    const onValidatePublishment = async (formToSave: Survey) => {
         if (saveTimeout) clearTimeout(saveTimeout);
-        await saveForm(form);
-        setIsConfirmModalOpen(false);
+        await saveForm(formToSave);
         navigate('/forms')
     }
 
@@ -239,11 +242,7 @@ const FormEditionPage = () => {
                     </div>
                 </div>
 
-                <ConfirmationModal
-                    isOpen={isConfirmModalOpen}
-                    onCancel={onCancelPublishment}
-                    onValidate={onValidatePublishment}
-                >
+                <ConfirmationModal ref={modalRef}>
                     <p>{t("PublishVerif")}</p>
                 </ConfirmationModal>
             </>}

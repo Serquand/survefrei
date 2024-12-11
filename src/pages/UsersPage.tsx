@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SiteInput from "../components/SiteInput";
 import UserCard from "../components/UserCard";
 import { Roles, User } from "../utils/types";
 import ModalUser, { CreateNewUSer } from "../components/ModalUser";
 import { useSelector } from "react-redux";
 import { useTranslation } from 'react-i18next';
+import ConfirmationModal, { ConfirmationModalRef } from "../components/ConfirmationModal";
 
 const UsersPage = () => {
     const { t } = useTranslation();
@@ -13,16 +14,26 @@ const UsersPage = () => {
     const [users, setUsers] = useState<Omit<User, 'accessToken'>[]>([]);
     const userLoggedIn = useSelector((state: any) => state.user.user) as User;
     const accessToken = userLoggedIn.accessToken;
-    const newUser: Partial<CreateNewUSer> = { email: '',  firstName: '', id: 0, lastName: '', role: Roles.STUDENT, password: '' }
+    const newUser: Partial<CreateNewUSer> = { email: '', firstName: '', id: 0, lastName: '', role: Roles.STUDENT, password: '' }
     const [updatedUser, setUpdatedUser] = useState<Partial<CreateNewUSer>>(newUser);
+    const modalRef = useRef<ConfirmationModalRef>(null);
 
     const fetchUsers = async () => {
         const API_URL = import.meta.env.VITE_API_URL;
-        const response  = await fetch(API_URL + '/user/all', {
+        const response = await fetch(API_URL + '/user/all', {
             headers: { Authorization: 'Bearer ' + accessToken }
         });
         const data = await response.json();
         setUsers(data);
+    }
+
+    const deleteUser = async (userId: number) => {
+        const API_URL = import.meta.env.VITE_API_URL;
+        const requestOptions = {
+            method: "DELETE",
+            headers: { Authorization: 'Bearer ' + accessToken }
+        }
+        await fetch(API_URL + '/user/' + userId, requestOptions);
     }
 
     const closeModal = () => {
@@ -35,8 +46,18 @@ const UsersPage = () => {
         closeModal();
     }
 
-    const removeUser = (userId: number) => {
-        setUsers(users.filter(user => user.id !== userId));
+    const removeUser = async (userId: number) => {
+        try {
+            if (modalRef.current) {
+                const validateUserDeletion = await modalRef.current.openModal();
+                if (validateUserDeletion) {
+                    deleteUser(userId)
+                    setUsers(users.filter(user => user.id !== userId));
+                }
+            }
+        } catch {
+            // TODO
+        }
     }
 
     useEffect(() => {
@@ -82,6 +103,10 @@ const UsersPage = () => {
                 onUpdateUser={addUser}
                 user={updatedUser}
             />
+
+            <ConfirmationModal ref={modalRef}>
+                <p>Are you sure you want to delete this user?</p>
+            </ConfirmationModal>
         </>
     );
 };

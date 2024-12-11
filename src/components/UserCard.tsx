@@ -2,7 +2,6 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import ModalUser from "./ModalUser";
 import { User } from "../utils/types";
 import { useState } from "react";
-import { useSelector } from "react-redux";
 
 interface Props {
     user: Omit<User, "accessToken">;
@@ -10,25 +9,17 @@ interface Props {
 }
 
 const UserCard = (props: Props) => {
-    const userLoggedIn = useSelector((state: any) => state.user.user) as User;
-    const accessToken = userLoggedIn.accessToken;
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [user, setUser] = useState(props.user);
-
-    const deleteUser = async (e: any) => {
-        e.stopPropagation();
-        const API_URL = import.meta.env.VITE_API_URL;
-        const requestOptions = {
-            method: "DELETE",
-            headers: { Authorization: 'Bearer ' + accessToken }
-        }
-        await fetch(API_URL + '/user/' + props.user.id, requestOptions);
-        props.onRemoveUser();
-    }
 
     const handleUpdateUser = (newUser: any) => {
         setUser(newUser);
         setIsModalOpen(false);
+    }
+
+    const deleteUser = (e: any) => {
+        e.stopPropagation();
+        props.onRemoveUser();
     }
 
     return (<>

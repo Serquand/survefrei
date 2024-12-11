@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { CreationSurvey, Organization, Roles, SurveyPreview, User } from "../utils/types";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import CreateFormModal from "../components/CreateFormModal";
 import { useNavigate } from "react-router-dom";
 import ListPreviewForm from "../components/ListPreviewForm";
 import { useSelector } from "react-redux";
+import ConfirmationModal, { ConfirmationModalRef } from "../components/ConfirmationModal";
 
 const FormsPage = () => {
     const [surveys, setSurveys] = useState<SurveyPreview[]>();
@@ -13,6 +14,7 @@ const FormsPage = () => {
     const user = useSelector((state: any) => state.user.user) as User;
     const API_URL = import.meta.env.VITE_API_URL;
     const accessToken = user.accessToken;
+    const modalRef = useRef<ConfirmationModalRef>(null);
     const navigate = useNavigate();
 
     const fetchSurveys = async () => {
@@ -37,7 +39,7 @@ const FormsPage = () => {
     const postNewSurvey = async (data: CreationSurvey) => {
         const requestOptions = {
             headers: { Authorization: 'Bearer ' + accessToken, 'Content-Type': 'application/json' },
-            body: JSON.stringify({...data, isPublic: false }),
+            body: JSON.stringify({ ...data, isPublic: false }),
             method: "POST"
         };
         const response = await fetch(API_URL + '/survey', requestOptions);
@@ -45,10 +47,33 @@ const FormsPage = () => {
         navigate(`/form/${newSurvey.id}/edition`);
     }
 
+    const removeSurvey = async (surveyId: number) => {
+        try {
+            if (!modalRef.current) return;
+            const validateUserDeletion = await modalRef.current.openModal();
+            if (!validateUserDeletion) return;
+
+            await deleteSurvey(surveyId);
+
+            setSurveys(surveys!.filter(survey => survey.id !== surveyId))
+        } catch {
+            // TODO
+        }
+    }
+
+    const deleteSurvey = async (surveyId: number) => {
+        const API_URL = import.meta.env.VITE_API_URL;
+        const requestOptions = {
+            method: "DELETE",
+            headers: { Authorization: 'Bearer ' + accessToken }
+        }
+        await fetch(API_URL + '/survey/' + surveyId, requestOptions);
+    }
+
     return (
         <>
             {surveys ? <ListPreviewForm
-                onDeleteForm={(id) => setSurveys(surveys.filter(survey => survey.id !== id))}
+                onDeleteForm={removeSurvey}
                 surveys={surveys}
                 mustShowPublicationStatus={user.role === Roles.ADMIN}
                 canDelete={user.role === Roles.ADMIN}
@@ -67,6 +92,10 @@ const FormsPage = () => {
                 onClose={() => isModalCreationOpen(false)}
                 onSubmit={postNewSurvey}
             /> : null}
+
+            <ConfirmationModal ref={modalRef}>
+                <p>Voulez-vous vraiment supprimer ce formulaire ?</p>
+            </ConfirmationModal>
         </>
     );
 };

@@ -1,8 +1,6 @@
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { User } from "../utils/types";
 
 interface Props {
     title: string;
@@ -17,8 +15,6 @@ interface Props {
 
 const SurveyCard = (props: Props) => {
     const navigate = useNavigate();
-    const userLoggedIn = useSelector((state: any) => state.user.user) as User;
-    const accessToken = userLoggedIn.accessToken;
     const location = useLocation();
 
     const navigateToFormPage = () => {
@@ -31,17 +27,6 @@ const SurveyCard = (props: Props) => {
 
             case '/filled': return navigate(`/form/${props.id}/review`)
         }
-    }
-
-    const deleteSurvey = async (e: any) => {
-        e.stopPropagation();
-        const API_URL = import.meta.env.VITE_API_URL;
-        const requestOptions = {
-            method: "DELETE",
-            headers: { Authorization: 'Bearer ' + accessToken }
-        }
-        await fetch(API_URL + '/survey/' + props.id, requestOptions);
-        props.onDeleteForm(props.id);
     }
 
     return (
@@ -69,7 +54,10 @@ const SurveyCard = (props: Props) => {
 
                                 {props.canDelete ? <div
                                     className="size-[22px] flex items-center justify-center rounded-full cursor-pointer opacity-0 group-hover:opacity-100"
-                                    onClick={deleteSurvey}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        props.onDeleteForm(props.id)
+                                    }}
                                 >
                                     <TrashIcon className="size-5 text-red-600" />
                                 </div> : null}
