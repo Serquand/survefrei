@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 import {
     NewspaperIcon,
     UserGroupIcon,
@@ -13,6 +13,7 @@ import { Dialog, Transition, TransitionChild, DialogPanel } from '@headlessui/re
 import { Roles, User } from '../utils/types';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { logout } from '../utils/auth';
 
 interface NavigationOption {
     to: string;
@@ -20,14 +21,15 @@ interface NavigationOption {
     label: string;
     id: string | number;
     current: boolean;
-    neededRole: Roles[],
-    notifications?: number,
+    neededRole: Roles[];
+    callbackTriggered?: () => void;
 }
 
 const Layout: React.FC = () => {
     const { t, i18n } = useTranslation();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const user = useSelector((state: any) => state.user.user) as User;
+    const navigate = useNavigate();
 
     const navigationCategories: NavigationOption[] = [
         {
@@ -76,7 +78,8 @@ const Layout: React.FC = () => {
             to: '/',
             icon: XCircleIcon,
             current: false,
-            neededRole: [Roles.ADMIN, Roles.STUDENT, Roles.TEACHER]
+            neededRole: [Roles.ADMIN, Roles.STUDENT, Roles.TEACHER],
+            callbackTriggered: () => logout(navigate)
         }
     ];
 
@@ -135,6 +138,7 @@ const Layout: React.FC = () => {
                                                             ? 'bg-gray-800 text-white'
                                                             : 'text-gray-400 hover:text-white hover:bg-gray-800'
                                                             }`}
+                                                        onClick={link.callbackTriggered}
                                                     >
                                                         <link.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
                                                         {link.label}
@@ -189,13 +193,10 @@ const Layout: React.FC = () => {
                                             ? 'bg-gray-800 text-white'
                                             : 'text-gray-400 hover:text-white hover:bg-gray-800'
                                             }`}
+                                        onClick={link.callbackTriggered}
                                     >
                                         <link.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
                                         {link.label}
-                                        {(link.notifications && link.notifications > 0) ?
-                                        <span className='text-white bg-red-800 px-1 rounded-full size-6 align-middle text-center'>
-                                            {link.notifications}
-                                        </span> : null}
                                     </Link> : null}
                                 </li>
                             </ul>

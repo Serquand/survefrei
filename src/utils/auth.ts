@@ -51,3 +51,10 @@ export const useAuthInitialization = () => {
         })();
     }, []);
 }
+
+export const logout = async (navigate: ReturnType<typeof useNavigate>) => {
+    const requestOptions = { method: "POST", credentials: "include" };
+    // @ts-ignore
+    await fetch(API_URL + '/auth/logout', requestOptions);
+    navigate("/");
+}
