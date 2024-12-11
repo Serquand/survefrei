@@ -1,6 +1,7 @@
 import { TrashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import AvatarIcon from "./AvatarIcon";
 
 interface Props {
     title: string;
@@ -37,12 +38,8 @@ const SurveyCard = (props: Props) => {
             <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
                 <div className="ml-4 mt-4">
                     <div className="flex items-center">
-                        <div className="shrink-0 relative">
-                            <img
-                                className="size-12 rounded-full"
-                                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                alt=""
-                            />
+                        <div className="shrink-0 relative size-12">
+                            <AvatarIcon label={props.title.charAt(0)} />
                         </div>
                         <div className="ml-4 overflow-hidden">
                             <div className="flex gap-2">

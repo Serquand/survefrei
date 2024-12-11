@@ -2,6 +2,7 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import ModalUser from "./ModalUser";
 import { User } from "../utils/types";
 import { useState } from "react";
+import AvatarIcon from "./AvatarIcon";
 
 interface Props {
     user: Omit<User, "accessToken">;
@@ -30,12 +31,8 @@ const UserCard = (props: Props) => {
             <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
                 <div className="ml-4 mt-4">
                     <div className="flex items-center">
-                        <div className="shrink-0 relative">
-                            <img
-                                className="size-12 rounded-full"
-                                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                                alt=""
-                            />
+                        <div className="shrink-0 size-12 relative">
+                            <AvatarIcon label={user.firstName.charAt(0) + user.lastName.charAt(0)} />
                             <div
                                 className="cursor-pointer bg-red-600 opacity-0 group-hover:opacity-100 size-7 rounded-full absolute -bottom-2 right-0 flex justify-center items-center"
                                 onClick={deleteUser}
