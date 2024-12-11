@@ -30,11 +30,17 @@ export async function refreshAccessToken(): Promise<false | User> {
 }
 
 export const navigateToBasisLoggedPage = (role: Roles, navigate: ReturnType<typeof useNavigate>) => {
-    if (role === Roles.STUDENT) {
-        return navigate('/to-fill');
-    } else {
-        return navigate('/forms');
-    }
+    const pathname = window.location.pathname.substring(1);
+    if(pathname) return navigate(pathname);
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const redirectQuery = urlParams.get('rq');
+    if(redirectQuery) return navigate(`/${redirectQuery}`);
+
+    if (role === Roles.STUDENT) return navigate('/to-fill');
+
+    return navigate('/forms');
 }
 
 export const useAuthInitialization = () => {

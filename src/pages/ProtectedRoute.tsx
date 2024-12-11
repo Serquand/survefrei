@@ -14,7 +14,7 @@ const ProtectedRoute = ({ allowedRole, children }: Props) => {
 
     useEffect(() => {
         if (!user || !allowedRole.includes(user.role)) {
-            navigate('/');
+            navigate(`/?rq=${window.location.pathname.substring(1)}`);
         }
     }, [user, allowedRole, navigate]);
 
