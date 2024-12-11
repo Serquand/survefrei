@@ -42,7 +42,7 @@ const RetrievePasswordPage = () => {
                 body: JSON.stringify(retrievePasswordInformations),
                 headers: { "Content-Type": "application/json" }
             };
-            const response = await fetch(API_URL + '/user/reset-password', requestOptions);
+            const response = await fetch(API_URL + '/auth/reset-password', requestOptions);
             const data = await response.json();
             if (!response.ok) throw new Error(data.message);
 

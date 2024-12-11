@@ -2,10 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import Loader from "../components/Loader";
 import { useDispatch } from "react-redux";
 import { updateUser } from '../context/User';
-import { Roles, User } from "../utils/types";
-import { useNavigate } from "react-router-dom";
+import { User } from "../utils/types";
 import Notification, { NotificationRef } from "../components/SiteNotifications";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { fetchProfile, navigateToBasisLoggedPage } from "../utils/auth";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
     const [email, setEmail] = useState("");
@@ -30,31 +31,16 @@ const LoginPage = () => {
         }
     };
 
-    const fetchProfile = async (accessToken: string) => {
-        const profileRequest = await fetch(apiUrl + '/user/profile', { headers: { Authorization: 'Bearer ' + accessToken } });
-        const profile = await profileRequest.json();
-        if (!profileRequest.ok) throw new Error(profile.message);
-        return profile;
-    }
-
-    const navigateToGoodPage = (role: Roles) => {
-        if (role === Roles.STUDENT) {
-            return navigate('/to-fill');
-        } else {
-            return navigate('/forms');
-        }
-    }
-
     const fetchLogin = async () => {
         const requestOptions = {
             method: "POST",
             body: JSON.stringify({ email, password }),
             headers: { "Content-Type": "application/json" },
-            credentials: 'undefined'
+            credentials: 'include'
         };
 
         // @ts-ignore
-        const response = await fetch(apiUrl + '/user/login', requestOptions);
+        const response = await fetch(apiUrl + '/auth/login', requestOptions);
         const informations = await response.json();
         if (!response.ok) throw new Error(informations.message);
 
@@ -64,13 +50,14 @@ const LoginPage = () => {
 
     const handleLogin = async () => {
         try {
-            const accessToken = await fetchLogin()
+            const accessToken = await fetchLogin();
 
             const profile: Omit<User, "accessToken"> = await fetchProfile(accessToken);
             dispatch(updateUser({ ...profile, accessToken }));
 
-            return navigateToGoodPage(profile.role);
-        } catch {
+            return navigateToBasisLoggedPage(profile.role, navigate);
+        } catch (err) {
+            console.error(err);
             setNotificationTitle("Error")
             setNotificationInformations("An error has occured when trying to log in");
             showNotification();
@@ -83,7 +70,7 @@ const LoginPage = () => {
             body: JSON.stringify({ email }),
             headers: { "Content-Type": "application/json" }
         }
-        const response = await fetch(apiUrl + '/user/forgot-password', requestOptions);
+        const response = await fetch(apiUrl + '/auth/forgot-password', requestOptions);
         const informations = await response.json();
         if (!response.ok) throw new Error(informations.message);
 
