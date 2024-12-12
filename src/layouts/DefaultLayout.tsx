@@ -14,6 +14,7 @@ import { Roles, User } from '../utils/types';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { logout } from '../utils/auth';
+import LanguageSwitcher from '../components/LanguageSwitcher';
 
 interface NavigationOption {
     to: string;
@@ -202,8 +203,7 @@ const Layout: React.FC = () => {
                             </ul>
                         ))}
                     </nav>
-                    <button onClick={() => handleLanguageChange('fr')} className='text-white'>{t('change_language')} (FR)</button>
-                    <button onClick={() => handleLanguageChange('en')} className='text-white'>{t('change_language')} (EN)</button>
+                    <LanguageSwitcher />
                 </div>
             </div>
 
