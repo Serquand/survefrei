@@ -27,7 +27,7 @@ interface NavigationOption {
 }
 
 const Layout: React.FC = () => {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const user = useSelector((state: any) => state.user.user) as User;
     const navigate = useNavigate();
@@ -83,10 +83,6 @@ const Layout: React.FC = () => {
             callbackTriggered: () => logout(navigate)
         }
     ];
-
-    const handleLanguageChange = (lang: string) => {
-        i18n.changeLanguage(lang);
-      };
 
     return (
         <div className="h-full">
