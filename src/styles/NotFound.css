@@ -163,3 +163,20 @@
         transform: none;
     }
 }
+
+@media all and (max-width: 640px) {
+    .glitchedAnim,
+    .invisible-text {
+        font-size: 200px;
+    }
+}
+
+@media all and (max-width: 420px) {
+    .glitchedAnim, .invisible-text {
+        font-size: 150px;
+    }
+
+    .txt-info {
+        font-size: 18px;
+    }
+}
