@@ -1,4 +1,4 @@
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import InputField from "../components/SiteGlobalInput";
 import { RetrievePassword } from '../utils/types';
 import { useRef, useState } from 'react';
@@ -17,6 +17,7 @@ const RetrievePasswordPage = () => {
         token: token as string,
     });
     const notificationRef = useRef<NotificationRef>(null);
+    const navigate = useNavigate();
 
     if (!token) return null;
 
@@ -49,6 +50,8 @@ const RetrievePasswordPage = () => {
             setNotificationTitle("Succès");
             setNotificationInformations("Le mot de passe a été réinitialisé avec succès");
             setNotificationsSuccess(true);
+
+            setInterval(() => navigate("/"), 2_000);
         } catch (err) {
             setNotificationTitle("Erreur");
             setNotificationInformations("Ta mère 13");
