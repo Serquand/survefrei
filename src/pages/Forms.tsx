@@ -77,7 +77,7 @@ const FormsPage = () => {
 
     return (
         <>
-            {surveys && <div className="md:px-12 pt-3 sticky top-0 w-full bg-white z-50">
+            {(surveys && surveys.length > 0) && <div className="md:px-12 pt-3 sticky top-0 w-full bg-white z-50">
                 <InputField
                     id="search-form-query"
                     modelValue={searchFormQuery}

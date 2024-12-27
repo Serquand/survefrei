@@ -28,22 +28,24 @@ const SiteGlobalKPI = (props: Props) => {
         return Array.from(occurrencesMap.entries()).map(([label, occurrences]) => ({ label, occurrences }));
     }
 
+    if (props.answers.length === 0) return (<p className='text-center'>
+        Ce champ n'a encore aucune réponse !
+    </p>);
+
+    if (props.fieldType === SurveyFieldType.CHECKBOX || props.fieldType === SurveyFieldType.SELECT) return <>
+        <PieChart
+            questionLabel={props.label}
+            responsesOccurence={convertAnswerInOccurenceAnswer(props.answers)}
+        />
+    </>
+
+    if (props.fieldType === SurveyFieldType.NUMBER) return <DensityChart
+        numbers={props.answers.map(answer => answer.value as number)}
+        maxValue={props.maxValue}
+        minValue={props.minValue}
+    />
+
     return (<>
-        {props.fieldType === SurveyFieldType.CHECKBOX || props.fieldType === SurveyFieldType.SELECT ?
-            <PieChart
-                questionLabel={props.label}
-                responsesOccurence={convertAnswerInOccurenceAnswer(props.answers)}
-            />
-            : null}
-
-        {props.fieldType === SurveyFieldType.NUMBER ?
-            <DensityChart
-                numbers={props.answers.map(answer => answer.value as number)}
-                maxValue={props.maxValue}
-                minValue={props.minValue}
-            />
-            : null}
-
         <div className='flex flex-col gap-4'>
             {(props.fieldType === SurveyFieldType.TEXT || props.fieldType === SurveyFieldType.TEXTAREA) &&
                 props.answers.map((answer, index) =>

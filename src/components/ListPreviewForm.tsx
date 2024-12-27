@@ -17,10 +17,14 @@ const ListPreviewForm = ({ surveys, canDelete, onDeleteForm, mustShowPublication
         onDeleteForm && onDeleteForm(id);
     }
 
+    if(surveys && surveys.length === 0) {
+        return <p className="h-screen flex items-center justify-center text-xl">Vous n'avez aucun formulaire !</p>
+    }
+
     return (
         <>
             <div className="flex divide-y md:divide-y-0 flex-col md:px-12 md:gap-5 md:py-6">
-                {(surveys && surveys.length > 0) ? surveys.map((survey, index) => {
+                {surveys ? surveys.map((survey, index) => {
                     return (
                         <div>
                             <SurveyCard

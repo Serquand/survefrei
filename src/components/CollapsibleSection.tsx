@@ -9,7 +9,7 @@ type Props = {
 };
 
 const CollapsibleSection = ({handleOnClick, isClosedFromOutside = false, animationRequired = false, ...props}: Props) => {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(true);
 
     useEffect(() => {
         if(isClosedFromOutside) {

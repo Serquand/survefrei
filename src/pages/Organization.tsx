@@ -35,7 +35,7 @@ const OrganizationPage = () => {
         const headers = { Authorization: 'Bearer ' + accessToken };
         const response = await fetch(API_URL + '/organization', { headers });
         const data = await response.json();
-        setOrganizationDescribedId(data[0].id)
+        setOrganizationDescribedId(data && data.length > 0 ? data[0].id : -1);
         setOrganizations(data);
     }
 
@@ -83,6 +83,7 @@ const OrganizationPage = () => {
     const addOrganization = (newOrganization: Organization) => {
         if (!organizations) return;
 
+        setOrganizationDescribedId(newOrganization.id);
         setOrganizations([...organizations, newOrganization])
         setIsModalCreationOpen(false);
     }
@@ -114,7 +115,7 @@ const OrganizationPage = () => {
         const allOthersOrganization = organizations.filter((org) => org.id !== organizationId);
 
         if (organizationId === organizationDescribedId) {
-            setOrganizationDescribedId(allOthersOrganization[0].id);
+            setOrganizationDescribedId(allOthersOrganization.length > 0 ? allOthersOrganization[0].id : -1);
         }
 
         const requestOptions = {
@@ -146,8 +147,13 @@ const OrganizationPage = () => {
 
     return (
         <>
+            {/* Without organizations */}
+            {organizations && organizations.length === 0 &&
+                <p className="h-screen flex items-center justify-center text-xl">Vous n'avez aucune organisation !</p>
+            }
+
             {/* For laptop / huge screen */}
-            {organizations && organizationsSearched && users && usersSearched ? <div className="h-screen hidden md:flex">
+            {organizations && organizations.length > 0 && organizationsSearched && users && usersSearched ? <div className="h-screen hidden md:flex">
                 <div className="w-1/2 overflow-y-scroll bg-gray-100">
                     <div className="px-4">
                         <InputField
@@ -214,7 +220,7 @@ const OrganizationPage = () => {
             </div> : null}
 
             {/* For mobile / little screen */}
-            {organizations && organizationsSearched && users && usersSearched ?
+            {organizations && organizations.length > 0 && organizationsSearched && users && usersSearched ?
                 <div className="block md:hidden">
                     <InputField
                         id="organization-search"
