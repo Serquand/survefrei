@@ -22,6 +22,7 @@ const FormEditionPage = () => {
     const [organizations, setOrganizations] = useState<Organization[] | undefined>(undefined);
     const [updatingKey, setUpdatingKey] = useState<number>(0);
     const navigate = useNavigate();
+    const bottomRef = useRef<HTMLDivElement | null>(null);
 
     // @ts-ignore
     const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
@@ -72,8 +73,13 @@ const FormEditionPage = () => {
 
         // @ts-ignore
         setForm(prevForm => {
-            return { ...prevForm, fields: prevForm?.fields ? [...prevForm.fields, data] : [data] };
+            const newForm = { ...prevForm, fields: prevForm?.fields ? [...prevForm.fields, data] : [data] };
+            return newForm;
         });
+
+        if (bottomRef.current) {
+            bottomRef.current.scrollIntoView({ behavior: "smooth" });
+        }
     }
 
     const saveForm = async (newForm: any) => {
@@ -95,7 +101,6 @@ const FormEditionPage = () => {
         return () => {
             if (saveTimeout) clearTimeout(saveTimeout);
         };
-
     };
 
     const deleteField = (fieldId: number) => {
@@ -168,7 +173,7 @@ const FormEditionPage = () => {
     return (
         <>
             {organizations && form && <>
-                <div className="relative flex flex-col min-h-screen">
+                <div className="relative flex flex-col pb-12 min-h-screen">
                     <div className="flex-grow w-4/5 mx-auto pt-10 divide-y-2">
                         {form ? <div className="flex flex-col gap-6 pb-12">
                             <InputField
@@ -191,7 +196,7 @@ const FormEditionPage = () => {
                                 disabled={false}
                             />
 
-                            <div className="grid grid-cols-2">
+                            <div className="flex flex-col-reverse gap-6 md:grid md:grid-cols-2">
                                 <SiteCheckbox
                                     id="form-published"
                                     onUpdate={onTriggerPublishButton}
@@ -232,7 +237,7 @@ const FormEditionPage = () => {
                         </div>
                     </div>
 
-                    <div className="self-center mb-4">
+                    <div className="fixed bottom-6 self-center">
                         <button
                             className="px-6 py-3 text-white bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 focus:ring-4 focus:ring-green-300 rounded-lg shadow-lg shadow-green-500/50 hover:shadow-xl transition-all duration-300 ease-in-out"
                             onClick={createNewField}
@@ -240,6 +245,8 @@ const FormEditionPage = () => {
                             {t("AddField")}
                         </button>
                     </div>
+
+                    <div ref={bottomRef}></div>
                 </div>
 
                 <ConfirmationModal ref={modalRef}>

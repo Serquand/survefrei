@@ -99,7 +99,7 @@ const SurveyFieldBuilder = (props: Props) => {
 
     return (
         <div className="mx-auto flex flex-col gap-6">
-            <div className="grid grid-cols-2 gap-6">
+            <div className="flex flex-col md:grid md:grid-cols-2 gap-6">
                 <InputField
                     modelValue={value.label}
                     onUpdate={(e) => updateFieldValue("label", e)}
@@ -193,7 +193,12 @@ const SurveyFieldBuilder = (props: Props) => {
 
             <div className="ml-auto w-fit flex items-center gap-6">
                 <div className="flex gap-2 items-center">
-                    <p>Position :</p>
+                    <p>
+                        Pos
+                        <span className="md:inline hidden">ition</span>
+                        <span className="md:hidden inline">.</span>
+                        :
+                    </p>
                     <SiteSelect
                         options={positionOptions}
                         modelValue={props.currentPlaceOfField}
