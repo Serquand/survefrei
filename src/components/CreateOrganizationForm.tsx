@@ -36,6 +36,7 @@ const CreateOrganizationModal: React.FC<Props> = ({ isOpen, onClose, onOrganizat
             const response = await fetch(url, requestOptions);
             const data: Organization = await response.json();
 
+            setOrganizationName("");
             if(mode === 'creation') return onOrganizationCreate(data);
             else return onOrganizationUpdate(data, updatedOrganizationId!);
         } catch (err) {
