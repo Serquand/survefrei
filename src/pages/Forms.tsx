@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { CreationSurvey, Organization, Roles, SurveyPreview, User } from "../utils/types";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import CreateFormModal from "../components/CreateFormModal";
@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import ListPreviewForm from "../components/ListPreviewForm";
 import { useSelector } from "react-redux";
 import ConfirmationModal, { ConfirmationModalRef } from "../components/ConfirmationModal";
+import { findSearchedArray } from "../utils/utils";
+import InputField from "../components/SiteGlobalInput";
 
 const FormsPage = () => {
     const [surveys, setSurveys] = useState<SurveyPreview[]>();
@@ -16,6 +18,9 @@ const FormsPage = () => {
     const accessToken = user.accessToken;
     const modalRef = useRef<ConfirmationModalRef>(null);
     const navigate = useNavigate();
+    const [searchFormQuery, setSearchFormQuery] = useState<string>("");
+
+    const filteredForms = useMemo(() => findSearchedArray<SurveyPreview>(surveys, searchFormQuery, ["title"]), [searchFormQuery, surveys]);
 
     const fetchSurveys = async () => {
         const headers = { Authorization: 'Bearer ' + accessToken };
@@ -72,14 +77,23 @@ const FormsPage = () => {
 
     return (
         <>
-            {surveys ? <ListPreviewForm
+            {surveys && <div className="md:px-12 pt-3 sticky top-0 w-full bg-white z-50">
+                <InputField
+                    id="search-form-query"
+                    modelValue={searchFormQuery}
+                    onUpdate={e => setSearchFormQuery(e as string)}
+                    placeholder="Formulaire recherché"
+                />
+            </div>}
+
+            {surveys && filteredForms ? <ListPreviewForm
                 onDeleteForm={removeSurvey}
                 surveys={surveys}
                 mustShowPublicationStatus={user.role === Roles.ADMIN}
                 canDelete={user.role === Roles.ADMIN}
             /> : null}
 
-            {user.role === Roles.ADMIN ? <div
+            {user.role === Roles.ADMIN && organizations ? <div
                 className="fixed bottom-10 right-10 size-14 rounded-full bg-green-600 flex items-center justify-center cursor-pointer"
                 onClick={() => isModalCreationOpen(true)}
             >
