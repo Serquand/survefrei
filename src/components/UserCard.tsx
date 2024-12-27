@@ -25,7 +25,7 @@ const UserCard = (props: Props) => {
 
     return (<>
         <div
-            className="border group border-gray-200 bg-white px-4 py-5 sm:px-6 cursor-pointer"
+            className="sm:border h-full group flex items-center border-gray-200 bg-white px-4 py-5 sm:px-6 cursor-pointer"
             onClick={() => setIsModalOpen(true)}
         >
             <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
@@ -34,7 +34,7 @@ const UserCard = (props: Props) => {
                         <div className="shrink-0 size-12 relative">
                             <AvatarIcon label={user.firstName.charAt(0) + user.lastName.charAt(0)} />
                             <div
-                                className="cursor-pointer bg-red-600 opacity-0 group-hover:opacity-100 size-7 rounded-full absolute -bottom-2 right-0 flex justify-center items-center"
+                                className="cursor-pointer bg-red-600 opacity-100 sm:opacity-0  sm:group-hover:opacity-100 size-7 rounded-full absolute -bottom-2 right-0 flex justify-center items-center"
                                 onClick={deleteUser}
                             >
                                 <TrashIcon className="size-5 text-white" />

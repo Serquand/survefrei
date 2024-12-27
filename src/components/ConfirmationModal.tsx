@@ -37,7 +37,7 @@ const ConfirmationModal = forwardRef<ConfirmationModalRef, ConfirmationModalProp
 
         return (
             <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-                <div className="bg-white rounded shadow p-6 w-1/3">
+                <div className="bg-white rounded shadow p-6 max-w-[85%]">
                     <div className="mb-4">{children}</div>
                     <div className="flex justify-end">
                         <button

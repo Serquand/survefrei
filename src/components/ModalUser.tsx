@@ -91,10 +91,11 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
                                 &times;
                             </button>
                         </div>
+
                         <div className="mt-4">
                             <form
                                 onSubmit={handleSubmit}
-                                className="grid grid-cols-2 gap-y-4 gap-x-12"
+                                className="flex flex-col sm:grid sm:grid-cols-2 gap-y-4 gap-x-12"
                             >
                                 <InputField
                                     id="update-user-first-name"
@@ -145,7 +146,7 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
                                     type="password"
                                 /> : null}
 
-                                <div className="flex justify-end space-x-2 col-span-2">
+                                <div className="flex justify-end space-x-2 mt-4 sm:mt-auto col-span-2">
                                     <button
                                         type="button"
                                         onClick={onClose}

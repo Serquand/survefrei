@@ -6,6 +6,7 @@ import ModalUser, { CreateNewUSer } from "../components/ModalUser";
 import { useSelector } from "react-redux";
 import { useTranslation } from 'react-i18next';
 import ConfirmationModal, { ConfirmationModalRef } from "../components/ConfirmationModal";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 const UsersPage = () => {
     const { t } = useTranslation();
@@ -69,31 +70,42 @@ const UsersPage = () => {
             <div className="sticky top-0 z-10 mt-3 bg-white shadow-md">
                 <div className="flex items-center justify-between p-4">
                     <div className="flex items-center space-x-2">
-                        <SiteInput
-                            value={searchText}
-                            onChange={(e) => setSearchText(e)}
-                            placeholder={t("UserSearch")}
-                        />
+                        <div className="">
+                            <SiteInput
+                                value={searchText}
+                                onChange={(e) => setSearchText(e)}
+                                placeholder={t("UserSearch")}
+                            />
+                        </div>
 
                     </div>
 
                     <button
-                        className="p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
+                        className="p-2 hidden sm:block bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
                         onClick={() => setIsModalOpen(true)}
                     >
                         {t('UserAdd')}
                     </button>
+
+                    <button
+                        className="size-14 sm:hidden rounded-full bg-green-500 text-white hover:bg-green-600 flex items-center justify-center cursor-pointer"
+                        onClick={() => setIsModalOpen(true)}
+                    >
+                        <PlusIcon className="size-8 text-white" />
+                    </button>
                 </div>
             </div>
 
-            <div className="grid mt-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 w-full px-12 gap-5 mx-auto pb-6">
-                {users.map((user) =>
-                    <UserCard
-                        key={user.id}
-                        user={user}
-                        onRemoveUser={() => removeUser(user.id)}
-                    />
-                )}
+            <div className="grid divide-y sm:divide-y-0 sm:mt-4 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 w-full sm:px-12 sm:gap-5 mx-auto pb-6">
+                {users.map((user) => (
+                    <div>
+                        <UserCard
+                            key={user.id}
+                            user={user}
+                            onRemoveUser={() => removeUser(user.id)}
+                        />
+                    </div>
+                ))}
             </div>
 
             <ModalUser

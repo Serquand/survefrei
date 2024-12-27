@@ -84,6 +84,36 @@ const Layout: React.FC = () => {
         }
     ];
 
+    const sendNavigationOptions = () => {
+        return (
+            <>
+                <nav className="flex flex-1 flex-col">
+                    {navigationCategories.map((link) => (
+                        <ul className="-mx-2 space-y-1">
+                            <li key={link.id}>
+                                {link.neededRole.includes(user?.role) ? <Link
+                                    to={link.to}
+                                    className={`flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold ${link.current
+                                        ? 'bg-gray-800 text-white'
+                                        : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                        }`}
+                                    onClick={() => {
+                                        setSidebarOpen(false);
+                                        link.callbackTriggered && link.callbackTriggered();
+                                    }}
+                                >
+                                    <link.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
+                                    {link.label}
+                                </Link> : null}
+                            </li>
+                        </ul>
+                    ))}
+                </nav>
+                <LanguageSwitcher />
+            </>
+        )
+    }
+
     return (
         <div className="h-full">
             <Transition show={sidebarOpen} as="div">
@@ -123,27 +153,9 @@ const Layout: React.FC = () => {
                                     <img
                                         className="w-10"
                                         src="/Logo SurvEfrei.png"
-                                        alt="Logo Coupe des Régions"
+                                        alt="Logo SurvEfrei"
                                     />
-                                    <nav className="flex flex-1 flex-col">
-                                        {navigationCategories.map((link) => (
-                                            <ul className="-mx-2 space-y-1">
-                                                <li key={link.id}>
-                                                    {link.neededRole.includes(user?.role) ? <Link
-                                                        to={link.to}
-                                                        className={`flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold ${link.current
-                                                            ? 'bg-gray-800 text-white'
-                                                            : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                                                            }`}
-                                                        onClick={link.callbackTriggered}
-                                                    >
-                                                        <link.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
-                                                        {link.label}
-                                                    </Link> : null}
-                                                </li>
-                                            </ul>
-                                        ))}
-                                    </nav>
+                                    {sendNavigationOptions()}
                                 </div>
                             </DialogPanel>
                         </TransitionChild>
@@ -163,7 +175,7 @@ const Layout: React.FC = () => {
                         <img
                             className="h-10 sm:h-12 w-auto"
                             src="/Logo SurvEfrei.png"
-                            alt="Logo Coupe des Régions"
+                            alt="Logo SurvEfrei"
                         />
                     </div>
                 </div>
@@ -176,30 +188,11 @@ const Layout: React.FC = () => {
                         <img
                             className="w-10"
                             src="/Logo SurvEfrei.png"
-                            alt="Logo Coupe des Régions"
+                            alt="Logo SurvEfrei"
                         />
                         <h1 className='text-white text-2xl font-semibold'>Surv'Efrei</h1>
                     </div>
-                    <nav className="flex flex-1 flex-col">
-                        {navigationCategories.map((link) => (
-                            <ul className="-mx-2 space-y-1">
-                                <li key={link.id}>
-                                    {link.neededRole.includes(user?.role) ? <Link
-                                        to={link.to}
-                                        className={`group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold ${link.current
-                                            ? 'bg-gray-800 text-white'
-                                            : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                                            }`}
-                                        onClick={link.callbackTriggered}
-                                    >
-                                        <link.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
-                                        {link.label}
-                                    </Link> : null}
-                                </li>
-                            </ul>
-                        ))}
-                    </nav>
-                    <LanguageSwitcher />
+                    {sendNavigationOptions()}
                 </div>
             </div>
 
