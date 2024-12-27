@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Organization, User } from "../utils/types";
 import CreateOrganizationModal from "../components/CreateOrganizationForm";
 import { PencilSquareIcon, PlusIcon, TrashIcon, UserGroupIcon, UserIcon } from "@heroicons/react/24/outline";
 import { useSelector } from "react-redux";
 import ConfirmationModal, { ConfirmationModalRef } from "../components/ConfirmationModal";
+import CollapsibleSection from "../components/CollapsibleSection";
+import InputField from "../components/SiteGlobalInput";
+import { findSearchedArray } from "../utils/utils";
 
 const OrganizationPage = () => {
     const [organizations, setOrganizations] = useState<Organization[] | undefined>(undefined);
@@ -11,10 +14,15 @@ const OrganizationPage = () => {
     const [isModalCreationOpen, setIsModalCreationOpen] = useState<boolean>(false);
     const [organizationDescribedId, setOrganizationDescribedId] = useState<number>(-1);
     const [updatedOrganizationId, setUpdatedOrganizationId] = useState<number | undefined>(undefined);
+    const [organizationSearchQuery, setOrganizationSearchQuery] = useState<string>("");
+    const [userSearchQuery, setUserSearchQuery] = useState<string>("");
     const userLoggedIn = useSelector((state: any) => state.user.user) as User;
     const modalRef = useRef<ConfirmationModalRef>(null);
     const accessToken = userLoggedIn.accessToken;
     const API_URL = import.meta.env.VITE_API_URL;
+
+    const organizationsSearched = useMemo(() => findSearchedArray<Organization>(organizations, organizationSearchQuery, ["name"]), [organizationSearchQuery, organizations]);
+    const usersSearched = useMemo(() => findSearchedArray<Omit<User, "accessToken">>(users, userSearchQuery, ["email", "firstName", "lastName"]), [userSearchQuery, users]);
 
     const fetchUsers = async () => {
         const headers = { Authorization: 'Bearer ' + accessToken };
@@ -98,9 +106,9 @@ const OrganizationPage = () => {
     const deleteOrganization = async (event: any, organizationId: number) => {
         event.stopPropagation();
 
-        if(!modalRef.current) return;
+        if (!modalRef.current) return;
         const validateUserDeletion = await modalRef.current.openModal();
-        if(!validateUserDeletion) return;
+        if (!validateUserDeletion) return;
 
         if (!organizations) return;
         const allOthersOrganization = organizations.filter((org) => org.id !== organizationId);
@@ -138,8 +146,18 @@ const OrganizationPage = () => {
 
     return (
         <>
-            {organizations && users ? <div className="h-screen flex">
+            {/* For laptop / huge screen */}
+            {organizations && organizationsSearched && users && usersSearched ? <div className="h-screen hidden md:flex">
                 <div className="w-1/2 overflow-y-scroll bg-gray-100">
+                    <div className="px-4">
+                        <InputField
+                            id="organization-search"
+                            modelValue={organizationSearchQuery}
+                            placeholder="Organisation"
+                            onUpdate={(e) => setOrganizationSearchQuery(e as string)}
+                        />
+                    </div>
+
                     <ul className="p-4 space-y-2">
                         {organizations.map((org) => (
                             <li
@@ -168,8 +186,17 @@ const OrganizationPage = () => {
                 </div>
 
                 <div className="w-1/2 overflow-y-scroll bg-gray-200">
+                    <div className="px-4">
+                        <InputField
+                            id="user-search-query"
+                            modelValue={userSearchQuery}
+                            placeholder="Utilisateurs"
+                            onUpdate={e => setUserSearchQuery(e as string)}
+                        />
+                    </div>
+
                     <ul className="p-4 space-y-2">
-                        {users.map((user) => (
+                        {usersSearched.map((user) => (
                             <li
                                 key={`org-${user.id}`}
                                 className={`py-2 px-4 shadow rounded cursor-pointer flex gap-x-3 ${isUserOnOrganization(user.id)
@@ -185,6 +212,45 @@ const OrganizationPage = () => {
                     </ul>
                 </div>
             </div> : null}
+
+            {/* For mobile / little screen */}
+            {organizations && organizationsSearched && users && usersSearched ?
+                <div className="block md:hidden">
+                    <InputField
+                        id="organization-search"
+                        modelValue={organizationSearchQuery}
+                        placeholder="Organisation"
+                        onUpdate={(e) => setOrganizationSearchQuery(e as string)}
+                    />
+                    {organizationsSearched.map(organization => (
+                        <CollapsibleSection
+                            title={organization.name}
+                            isClosedFromOutside={organizationDescribedId !== organization.id}
+                            handleOnClick={() => setOrganizationDescribedId(organization.id)}
+                        >
+                            <div className="mb-3">
+                                <InputField
+                                    id="user-search-query"
+                                    modelValue={userSearchQuery}
+                                    placeholder="Utilisateurs"
+                                    onUpdate={e => setUserSearchQuery(e as string)}
+                                />
+                            </div>
+                            {usersSearched.map((user) => <li
+                                key={`org-${user.id}`}
+                                className={`py-2 px-4 shadow rounded cursor-pointer flex gap-x-3 ${isUserOnOrganization(user.id)
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-white"
+                                    }`}
+                                onClick={() => toggleUserPresenceInOrganization(user.id)}
+                            >
+                                <UserIcon className="h-6 w-6 shrink-0" />
+                                {user.firstName + ' ' + user.lastName.toUpperCase() + ', ' + user.role.toUpperCase()}
+                            </li>)}
+                        </CollapsibleSection>
+                    ))}
+                </div>
+                : null}
 
             <div
                 className="fixed bottom-10 right-10 size-14 rounded-full bg-green-600 flex items-center justify-center cursor-pointer"

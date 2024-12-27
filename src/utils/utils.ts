@@ -46,3 +46,17 @@ export function calculateMean(numbers: Array<number>): string {
     const mean = sum / numbers.length;
     return mean.toFixed(2);
 }
+
+export function findSearchedArray<T>(initialArray: Array<T> | undefined | null, query: string, key: Array<keyof T>): Array<T> | undefined | null {
+    const localArray: Array<T> = [];
+    if(query.trim() === '' || !initialArray) return initialArray;
+    initialArray.forEach((element) => {
+        for(const k of key) {
+            if((element[k] as string).toLowerCase().includes(query.toLowerCase())) {
+                localArray.push(element);
+                return;
+            }
+        }
+    })
+    return localArray;
+}
