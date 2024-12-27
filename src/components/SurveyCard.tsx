@@ -32,7 +32,7 @@ const SurveyCard = (props: Props) => {
 
     return (
         <div
-            className="border group border-gray-300 cursor-pointer bg-white px-4 py-5 sm:px-6"
+            className="md:border group border-gray-300 cursor-pointer bg-white px-4 py-5 sm:px-6"
             onClick={navigateToFormPage}
         >
             <div className="-ml-4 -mt-4 flex flex-wrap items-center justify-between sm:flex-nowrap">
@@ -68,7 +68,7 @@ const SurveyCard = (props: Props) => {
                 </div>
             </div>
 
-            <p className="text-gray-500 text-sm mt-3">{props.description}</p>
+            <p className="text-gray-500 text-sm mt-3 line-clamp-3">{props.description}</p>
         </div>
     )
 }

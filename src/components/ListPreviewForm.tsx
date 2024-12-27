@@ -19,20 +19,22 @@ const ListPreviewForm = ({ surveys, canDelete, onDeleteForm, mustShowPublication
 
     return (
         <>
-            <div className="flex flex-col px-12 gap-5 py-6">
+            <div className="flex divide-y md:divide-y-0 flex-col md:px-12 md:gap-5 md:py-6">
                 {(surveys && surveys.length > 0) ? surveys.map((survey, index) => {
                     return (
-                        <SurveyCard
-                            description={survey.description}
-                            id={survey.id}
-                            organizationName={survey.organization.name}
-                            title={survey.title}
-                            key={index}
-                            onDeleteForm={() => handleOnDeleteForm(survey.id)}
-                            isPublic={survey.isPublic}
-                            canDelete={canDelete}
-                            mustShowPublicationStatus={mustShowPublicationStatus}
-                        />
+                        <div>
+                            <SurveyCard
+                                description={survey.description}
+                                id={survey.id}
+                                organizationName={survey.organization.name}
+                                title={survey.title}
+                                key={index}
+                                onDeleteForm={() => handleOnDeleteForm(survey.id)}
+                                isPublic={survey.isPublic}
+                                canDelete={canDelete}
+                                mustShowPublicationStatus={mustShowPublicationStatus}
+                            />
+                        </div>
                     );
                 }) : null}
             </div>
