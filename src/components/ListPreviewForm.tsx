@@ -46,7 +46,7 @@ const ListPreviewForm = ({ surveys, canDelete, onDeleteForm, mustShowPublication
             </div>
 
             <ConfirmationModal ref={modalRef}>
-                <p>Voulez-vous vraiment supprimer cette organisation ?</p>
+                <p>{t("ConfirmSurveyDeletion")}</p>
             </ConfirmationModal>
         </>
 

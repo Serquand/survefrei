@@ -117,7 +117,7 @@ const Layout: React.FC = () => {
     return (
         <div className="h-full">
             <Transition show={sidebarOpen} as="div">
-                <Dialog as="div" className="relative z-40 lg:hidden" onClose={() => setSidebarOpen(false)}>
+                <Dialog as="div" className="relative z-[100] lg:hidden" onClose={() => setSidebarOpen(false)}>
                     <TransitionChild
                         enter="transition-opacity ease-linear duration-300"
                         enterFrom="opacity-0"
@@ -163,7 +163,7 @@ const Layout: React.FC = () => {
                 </Dialog>
             </Transition>
 
-            <div className="fixed inset-x-0 top-0 z-40 lg:hidden flex items-center">
+            <div className="fixed inset-x-0 top-0 z-[60] lg:hidden flex items-center">
                 <div className="bg-gray-900 px-5 sm:px-7 h-20 flex flex-row items-center justify-between w-full">
                     <Bars3Icon
                         className="size-10 sm:size-12 text-white cursor-pointer px-2 py-0"

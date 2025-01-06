@@ -36,7 +36,7 @@ const SiteNotifications = forwardRef<NotificationRef, Props>(
         return (
             <div
                 aria-live="assertive"
-                className="pointer-events-none fixed inset-0 flex px-4 py-6 items-start sm:p-6 z-30"
+                className="pointer-events-none fixed inset-0 flex px-4 py-6 items-start sm:p-6 z-[70]"
             >
                 <div className="flex w-full flex-col items-center space-y-4 sm:items-end">
                     {show && (
