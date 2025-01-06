@@ -55,7 +55,7 @@ const CreateOrganizationModal: React.FC<Props> = ({ isOpen, onClose, onOrganizat
         <>
             <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
-                    <h2 className="text-xl font-bold mb-4">{t('CreateOrg')}</h2>
+                    <h2 className="text-xl font-bold mb-4">{t(mode === "creation" ? 'CreateOrg' : "UpdateOrg")}</h2>
                     <InputField
                         id="create-organization-name"
                         modelValue={organizationName}

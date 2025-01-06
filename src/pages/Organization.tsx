@@ -163,6 +163,11 @@ const OrganizationPage = () => {
         })
     }
 
+    const handleOnCloseCreateOrganizationModal = () => {
+        setIsModalCreationOpen(false);
+        setUpdatedOrganizationId(undefined);
+    }
+
     return (
         <>
             {/* Without organizations */}
@@ -283,7 +288,7 @@ const OrganizationPage = () => {
 
             <CreateOrganizationModal
                 isOpen={isModalCreationOpen}
-                onClose={() => setIsModalCreationOpen(false)}
+                onClose={handleOnCloseCreateOrganizationModal}
                 onOrganizationCreate={addOrganization}
                 mode={!!updatedOrganizationId ? 'edition' : 'creation'}
                 onOrganizationUpdate={handleOrganizationNameUpdate}

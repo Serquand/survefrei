@@ -18,6 +18,7 @@
     "Desc": "Description",
     "SelectOpt": "Veuillez sélectionner une option",
     "CreateOrg": "Création d'une organisation",
+    "UpdateOrg": "Modifier l'organisation",
     "OrgName": "Nom de l'organisation",
     "OrgNew": "Ma nouvelle organisation",
     "UserAdd": "Ajouter un utilisateur",
