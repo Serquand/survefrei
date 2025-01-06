@@ -62,5 +62,6 @@
     "SubmitAnswers": "Submit the answers",
     "ConfirmSurveyDeletion": "Are you sure you want to delete this survey ?",
     "ConfirmOrganizationDeletion": "Are you sure you want to delete this organization ?",
-    "ConfirmUserDeletion": "Are you sure you want to delete this user ?"
+    "ConfirmUserDeletion": "Are you sure you want to delete this user ?",
+    "NoOrganization": "You have no organization !"
 }

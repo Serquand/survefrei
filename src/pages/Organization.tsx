@@ -166,9 +166,7 @@ const OrganizationPage = () => {
     return (
         <>
             {/* Without organizations */}
-            {organizations && organizations.length === 0 &&
-                <p className="h-screen flex items-center justify-center text-xl">Vous n'avez aucune organisation !</p>
-            }
+            {organizations && organizations.length === 0 && <p className="h-screen flex items-center justify-center text-xl">{t("NoOrganization")}</p>}
 
             {/* For laptop / huge screen */}
             {organizations && organizations.length > 0 && organizationsSearched && users && usersSearched ? <div className="h-screen hidden md:flex">
@@ -183,7 +181,7 @@ const OrganizationPage = () => {
                     </div>
 
                     <ul className="p-4 space-y-2">
-                        {organizations.map((org) => (
+                        {organizationsSearched.map((org) => (
                             <li
                                 key={`org-${org.id}`}
                                 className={`py-2 px-4 shadow rounded cursor-pointer flex gap-x-3 ${org.id === organizationDescribedId

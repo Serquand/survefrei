@@ -110,7 +110,7 @@ const FormsPage = () => {
 
             {surveys && filteredForms ? <ListPreviewForm
                 onDeleteForm={removeSurvey}
-                surveys={surveys}
+                surveys={filteredForms}
                 mustShowPublicationStatus={user.role === Roles.ADMIN}
                 canDelete={user.role === Roles.ADMIN}
             /> : null}

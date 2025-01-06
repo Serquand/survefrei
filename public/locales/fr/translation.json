@@ -62,5 +62,6 @@
     "SubmitAnswers": "Soumettre les réponses",
     "ConfirmSurveyDeletion": "Voulez-vous vraiment supprimer ce formulaire ?",
     "ConfirmOrganizationDeletion": "Voulez-vous vraiment supprimer cette organisation ?",
-    "ConfirmUserDeletion": "Voulez-vous vraiment supprimer cette utilisateur ?"
+    "ConfirmUserDeletion": "Voulez-vous vraiment supprimer cette utilisateur ?",
+    "NoOrganization": "Vous n'avez aucune organisation !"
 }
