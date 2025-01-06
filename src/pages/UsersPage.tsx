@@ -66,16 +66,12 @@ const UsersPage = () => {
     }
 
     const removeUser = async (userId: number) => {
-        try {
-            if (modalRef.current) {
-                const validateUserDeletion = await modalRef.current.openModal();
-                if (validateUserDeletion) {
-                    const success = await deleteUser(userId);
-                    success && setUsers(users.filter(user => user.id !== userId));
-                }
+        if (modalRef.current) {
+            const validateUserDeletion = await modalRef.current.openModal();
+            if (validateUserDeletion) {
+                const success = await deleteUser(userId);
+                success && setUsers(users.filter(user => user.id !== userId));
             }
-        } catch {
-            // TODO
         }
     }
 
@@ -136,7 +132,7 @@ const UsersPage = () => {
             />
 
             <ConfirmationModal ref={modalRef}>
-                <p>Are you sure you want to delete this user?</p>
+                <p>{t("ConfirmUserDeletion")}</p>
             </ConfirmationModal>
 
             <Notification

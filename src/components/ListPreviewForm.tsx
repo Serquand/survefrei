@@ -2,6 +2,7 @@ import { SurveyPreview } from "../utils/types";
 import SurveyCard from "./SurveyCard";
 import ConfirmationModal, { ConfirmationModalRef } from "../components/ConfirmationModal";
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
     surveys: SurveyPreview[];
@@ -11,6 +12,7 @@ interface Props {
 }
 
 const ListPreviewForm = ({ surveys, canDelete, onDeleteForm, mustShowPublicationStatus }: Props) => {
+    const { t } = useTranslation();
     const modalRef = useRef<ConfirmationModalRef>(null);
 
     const handleOnDeleteForm = (id: number) => {
@@ -18,7 +20,7 @@ const ListPreviewForm = ({ surveys, canDelete, onDeleteForm, mustShowPublication
     }
 
     if(surveys && surveys.length === 0) {
-        return <p className="h-screen flex items-center justify-center text-xl">Vous n'avez aucun formulaire !</p>
+        return <p className="h-screen flex items-center justify-center text-xl">{t("NoSurvey")}</p>
     }
 
     return (

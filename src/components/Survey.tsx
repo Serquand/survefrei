@@ -123,7 +123,7 @@ const Survey = () => {
                         className="p-2 col-span-full px-7 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
                         onClick={submitAnswers}
                     >
-                        Soumettre les réponses
+                        {t("SubmitAnswers")}
                     </button>
                 </div>
             </div>

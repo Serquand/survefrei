@@ -3,6 +3,7 @@ import { Line } from "react-chartjs-2";
 import Statistic from "./Statistic";
 import { PresentationChartLineIcon } from "@heroicons/react/24/outline";
 import { calculateMean, calculateMedian } from "../utils/utils";
+import { useTranslation } from "react-i18next";
 
 interface Props {
     minValue: number;
@@ -22,6 +23,7 @@ const kernelDensityEstimation = (x: number[], data: number[], bandwidth: number)
 };
 
 const DensityChart = (props: Props) => {
+    const { t } = useTranslation();
     const step = 0.1;
     const xRange = Array.from({ length: Math.ceil((props.maxValue - props.minValue) / step) + 1 }, (_, i) => props.minValue + i * step);
 
@@ -66,14 +68,14 @@ const DensityChart = (props: Props) => {
             <Line data={data} options={options} />
             <div className="flex gap-5">
                 <Statistic
-                    title="Moyenne"
+                    title={t("Mean")}
                     value={calculateMean(props.numbers)}
                 >
                     <PresentationChartLineIcon className="size-6 text-white" />
                 </Statistic>
 
                 <Statistic
-                    title="Médianne"
+                    title={t("Median")}
                     value={calculateMedian(props.numbers)}
                 >
                     <PresentationChartLineIcon className="size-6 text-white" />

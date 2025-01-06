@@ -293,7 +293,7 @@ const OrganizationPage = () => {
             />
 
             <ConfirmationModal ref={modalRef}>
-                <p>Voulez-vous vraiment supprimer cette organisation ?</p>
+                <p>{t("ConfirmOrganizationDeletion")}</p>
             </ConfirmationModal>
 
             <Notification

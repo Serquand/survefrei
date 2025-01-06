@@ -53,5 +53,14 @@
     "Error": "Erreur",
     "WentWrong": "Un problème est survenu !",
     "BadInformations": "Mauvaises informations",
-    "BadInformationsDescription": "Les informations saisies sont incorrectes !"
+    "BadInformationsDescription": "Les informations saisies sont incorrectes !",
+    "Confirm": "Confirmer",
+    "Mean": "Moyenne",
+    "Median": "Médianne",
+    "NoSurvey": "Vous n'avez aucun formulaire !",
+    "FieldWithoutAnswer": "Ce champ n'a pas encore de réponse !",
+    "SubmitAnswers": "Soumettre les réponses",
+    "ConfirmSurveyDeletion": "Voulez-vous vraiment supprimer ce formulaire ?",
+    "ConfirmOrganizationDeletion": "Voulez-vous vraiment supprimer cette organisation ?",
+    "ConfirmUserDeletion": "Voulez-vous vraiment supprimer cette utilisateur ?"
 }

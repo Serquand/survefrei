@@ -1,4 +1,5 @@
 import { useState, forwardRef, useImperativeHandle, ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ConfirmationModalProps {
     children: ReactNode;
@@ -10,6 +11,7 @@ export interface ConfirmationModalRef {
 
 const ConfirmationModal = forwardRef<ConfirmationModalRef, ConfirmationModalProps>(
     ({ children }, ref) => {
+        const { t } = useTranslation();
         const [isOpen, setIsOpen] = useState(false);
         const [resolvePromise, setResolvePromise] = useState<((value: boolean) => void) | null>(null);
 
@@ -44,13 +46,13 @@ const ConfirmationModal = forwardRef<ConfirmationModalRef, ConfirmationModalProp
                             className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 mr-3"
                             onClick={handleCancel}
                         >
-                            Annuler
+                            {t("Cancel")}
                         </button>
                         <button
                             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                             onClick={handleValidate}
                         >
-                            Confirmer
+                            {t("Confirm")}
                         </button>
                     </div>
                 </div>

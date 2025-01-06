@@ -3,6 +3,7 @@ import { Answer, SurveyFieldType } from '../utils/types';
 import DensityChart from './DensityChart';
 import PieChart from './PieChart';
 import InputField from './SiteGlobalInput';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     answers: Answer[],
@@ -13,6 +14,7 @@ interface Props {
 }
 
 const SiteGlobalKPI = (props: Props) => {
+    const { t } = useTranslation();
     const convertAnswerInOccurenceAnswer = (answers: Answer[]): { label: string; occurrences: number }[] => {
         const occurrencesMap = new Map();
         answers
@@ -29,7 +31,7 @@ const SiteGlobalKPI = (props: Props) => {
     }
 
     if (props.answers.length === 0) return (<p className='text-center'>
-        Ce champ n'a encore aucune réponse !
+        {t("Ce champ n'a encore aucune réponse !")}
     </p>);
 
     if (props.fieldType === SurveyFieldType.CHECKBOX || props.fieldType === SurveyFieldType.SELECT) return <>
