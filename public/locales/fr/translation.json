@@ -49,5 +49,9 @@
     "Number": "Nombre",
     "Dropdown_list": "Liste déroulante",
     "Text": "Texte",
-    "Paragraph": "Paragraphe"
+    "Paragraph": "Paragraphe",
+    "Error": "Erreur",
+    "WentWrong": "Un problème est survenu !",
+    "BadInformations": "Mauvaises informations",
+    "BadInformationsDescription": "Les informations saisies sont incorrectes !"
 }

@@ -1,23 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import SiteSelect from "../components/SiteSelect";
-import { SurveyFieldType, SurveyWithAnswer, User } from "../utils/types";
+import { NotificationsInformations, SurveyFieldType, SurveyWithAnswer, User } from "../utils/types";
 import SiteCheckbox from "../components/SiteCheckbox";
 import InputField from "../components/SiteGlobalInput";
-import { sendOrderedFields } from "../utils/utils";
+import { handleErrorInFetchRequest, sendOrderedFields } from "../utils/utils";
 import { useSelector } from "react-redux";
+import Notification, { NotificationRef } from "../components/SiteNotifications";
+import { useTranslation } from "react-i18next";
+import { XCircleIcon } from "@heroicons/react/24/outline";
 
 const ReviewForm = () => {
+    const { t, i18n } = useTranslation();
     const { id: formId } = useParams<{ id: string; }>();
     const [form, setForm] = useState<SurveyWithAnswer | undefined>(undefined);
     const API_URL = import.meta.env.VITE_API_URL;
     const user = useSelector((state: any) => state.user.user) as User;
     const accessToken = user.accessToken;
 
+    // Notifications
+    const emptyNotificationsInformations: NotificationsInformations = { informations: "", title: "" };
+    const [notificationInformations, setNotificationInformations] = useState<NotificationsInformations>(emptyNotificationsInformations);
+    const notificationRef = useRef<NotificationRef>(null);
+
     useEffect(() => {
         const getAnswers = async () => {
             const headers = { Authorization: 'Bearer ' + accessToken }
             const response = await fetch(`${API_URL}/user-answer/${formId}`, { headers });
+            if (!response.ok) {
+                return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+            }
             const data = await response.json();
             data.fields = sendOrderedFields(data.fields);
             setForm(data);
@@ -93,6 +105,14 @@ const ReviewForm = () => {
                 </div>
             </div>
         </div>
+
+        <Notification
+            ref={notificationRef}
+            title={notificationInformations.title}
+            information={notificationInformations.informations}
+        >
+            <XCircleIcon className="h-6 w-6 text-red-600" />
+        </Notification>
     </>)
 }
 

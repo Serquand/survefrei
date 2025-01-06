@@ -1,4 +1,7 @@
-import { SurveyField, SurveyFieldWithAnswer } from "./types";
+import { TFunction } from "i18next";
+import { NotificationRef } from "../components/SiteNotifications";
+import { NotificationsInformations, SurveyField, SurveyFieldWithAnswer } from "./types";
+import { SetStateAction, Dispatch, RefObject } from "react";
 
 export function generateDistinctColors(count: number) {
     const colors = [];
@@ -49,10 +52,10 @@ export function calculateMean(numbers: Array<number>): string {
 
 export function findSearchedArray<T>(initialArray: Array<T> | undefined | null, query: string, key: Array<keyof T>): Array<T> | undefined | null {
     const localArray: Array<T> = [];
-    if(query.trim() === '' || !initialArray) return initialArray;
+    if (query.trim() === '' || !initialArray) return initialArray;
     initialArray.forEach((element) => {
-        for(const k of key) {
-            if((element[k] as string).toLowerCase().includes(query.toLowerCase())) {
+        for (const k of key) {
+            if ((element[k] as string).toLowerCase().includes(query.toLowerCase())) {
                 localArray.push(element);
                 return;
             }
@@ -60,3 +63,47 @@ export function findSearchedArray<T>(initialArray: Array<T> | undefined | null, 
     })
     return localArray;
 }
+
+export const handleErrorInFetchRequest = async (
+    response: Response,
+    setInformationsToasterState: Dispatch<SetStateAction<NotificationsInformations>>,
+    notificationsRef: RefObject<NotificationRef>,
+    language: "fr" | "en",
+    translateFunction: TFunction<"translation", undefined>
+) => {
+    const defaultErrorMessage = {
+        title: translateFunction("Error"),
+        informations: translateFunction("WentWrong")
+    };
+
+    switch (response.status) {
+        case 401:
+        case 403:
+            return (window.location.href = "/");
+
+        case 400:
+            setInformationsToasterState({ title: translateFunction("BadInformations"), informations: translateFunction("BadInformationsDescription") });
+            break;
+
+        case 500:
+            setInformationsToasterState(defaultErrorMessage);
+            break;
+
+        case 404:
+        case 409:
+            try {
+                const data = await response.json();
+                setInformationsToasterState({
+                    title: translateFunction("Error"),
+                    informations: data[language] || translateFunction("WentWrong")
+                });
+            } catch (error) {
+                setInformationsToasterState(defaultErrorMessage);
+            }
+            break;
+    }
+
+    if (notificationsRef.current) {
+        notificationsRef.current.openNotifications();
+    }
+};

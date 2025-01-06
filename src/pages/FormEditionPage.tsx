@@ -1,18 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SurveyFieldBuilder from "../components/SurveyFieldBuilder";
-import { Organization, Survey, SurveyField, User } from '../utils/types';
+import { NotificationsInformations, Organization, Survey, SurveyField, User } from '../utils/types';
 import InputField from "../components/SiteGlobalInput";
 import { useSelector } from "react-redux";
 import SiteCheckbox from "../components/SiteCheckbox";
 import SiteSelect from "../components/SiteSelect";
 import ConfirmationModal, { ConfirmationModalRef } from "../components/ConfirmationModal";
-import { moveElement, sendOrderedFields } from "../utils/utils";
+import { handleErrorInFetchRequest, moveElement, sendOrderedFields } from "../utils/utils";
 import { useTranslation } from 'react-i18next';
+import Notification, { NotificationRef } from "../components/SiteNotifications";
+import { XCircleIcon } from "@heroicons/react/24/solid";
 
 const FormEditionPage = () => {
-    const { t } = useTranslation();
-    const debounceTimeMs = 2_500;
+    const { t, i18n } = useTranslation();
+    const debounceTimeMs = 2_000;
     const { id } = useParams<{ id: string; }>();
     const [form, setForm] = useState<Survey | undefined>(undefined);
     const modalRef = useRef<ConfirmationModalRef>(null);
@@ -24,6 +26,11 @@ const FormEditionPage = () => {
     const navigate = useNavigate();
     const bottomRef = useRef<HTMLDivElement | null>(null);
 
+    // Notifications
+    const emptyNotificationsInformations: NotificationsInformations = { informations: "", title: "" };
+    const [notificationInformations, setNotificationInformations] = useState<NotificationsInformations>(emptyNotificationsInformations);
+    const notificationRef = useRef<NotificationRef>(null);
+
     // @ts-ignore
     const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
 
@@ -34,23 +41,19 @@ const FormEditionPage = () => {
     }, [form?.fields]);
 
     const onTriggerPublishButton = async (publishmentValue: boolean) => {
-        try {
-            if (modalRef.current) {
-                const validateUserDeletion = await modalRef.current.openModal();
-                if (validateUserDeletion) {
-                    const newForm = { ...form!, isPublic: publishmentValue };
-                    onValidatePublishment(newForm);
-                }
+        if (modalRef.current) {
+            const validateUserDeletion = await modalRef.current.openModal();
+            if (validateUserDeletion) {
+                const newForm = { ...form!, isPublic: publishmentValue };
+                onValidatePublishment(newForm);
             }
-        } catch {
-            // TODO
         }
     }
 
     const onValidatePublishment = async (formToSave: Survey) => {
         if (saveTimeout) clearTimeout(saveTimeout);
-        await saveForm(formToSave);
-        navigate('/forms')
+        const success = await saveForm(formToSave);
+        if (success) navigate('/forms')
     }
 
     const findMaxOrder = (): number => {
@@ -70,6 +73,9 @@ const FormEditionPage = () => {
         }
         const response = await fetch(`${API_URL}/survey/${id}/field`, requestOptions);
         const data = await response.json();
+        if (!response.ok) {
+            return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+        }
 
         // @ts-ignore
         setForm(prevForm => {
@@ -82,14 +88,18 @@ const FormEditionPage = () => {
         }
     }
 
-    const saveForm = async (newForm: any) => {
+    const saveForm = async (newForm: any): Promise<boolean> => {
         const { fields, organization, id, ...formToSave } = newForm;
         const requestOptions = {
             headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
             method: "PUT",
             body: JSON.stringify(formToSave),
         };
-        await fetch(`${API_URL}/survey/${id}`, requestOptions);
+        const response = await fetch(`${API_URL}/survey/${id}`, requestOptions);
+        if (!response.ok) {
+            handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+        }
+        return response.ok;
     }
 
     const setDebounceToSaveField = (newForm: any) => {
@@ -152,6 +162,10 @@ const FormEditionPage = () => {
     const fetchOrganizations = async () => {
         const headers = { Authorization: 'Bearer ' + accessToken };
         const response = await fetch(API_URL + '/organization', { headers });
+        if (!response.ok) {
+            return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+        }
+
         const data = await response.json();
         setOrganizations(data);
     }
@@ -159,6 +173,10 @@ const FormEditionPage = () => {
     const getForm = async () => {
         const headers = { Authorization: 'Bearer ' + accessToken };
         const response = await fetch(API_URL + '/survey/' + id, { headers });
+        if (!response.ok) {
+            return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+        }
+
         const data = await response.json();
         if (data.isPublic) return navigate(`form/${id}/answers"`);
 
@@ -253,6 +271,14 @@ const FormEditionPage = () => {
                     <p>{t("PublishVerif")}</p>
                 </ConfirmationModal>
             </>}
+
+            <Notification
+                ref={notificationRef}
+                title={notificationInformations.title}
+                information={notificationInformations.informations}
+            >
+                <XCircleIcon className="h-6 w-6 text-red-600" />
+            </Notification>
         </>
     );
 };

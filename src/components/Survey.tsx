@@ -1,13 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { Answer, Survey as SurveyInterface, SurveyField, SurveyFieldType, User } from "../utils/types";
+import { Answer, Survey as SurveyInterface, SurveyField, SurveyFieldType, User, NotificationsInformations } from "../utils/types";
 import { useSelector } from "react-redux";
 import InputField from "../components/SiteGlobalInput";
 import SiteCheckbox from "../components/SiteCheckbox";
 import SiteSelect from "../components/SiteSelect";
 import { sendOrderedFields } from "../utils/utils";
+import { handleErrorInFetchRequest } from "../utils/utils";
+import { XCircleIcon } from "@heroicons/react/24/outline";
+import Notification, { NotificationRef } from "./SiteNotifications";
+import { useTranslation } from "react-i18next";
 
 const Survey = () => {
+    const { t, i18n } = useTranslation();
     const { id } = useParams<{ id: string; }>();
     const [form, setForm] = useState<SurveyInterface | undefined>(undefined);
     const [answers, setAnswers] = useState<Answer[] | undefined>(undefined);
@@ -16,11 +21,20 @@ const Survey = () => {
     const accessToken = userLoggedIn.accessToken;
     const isDisabledForm = false;
 
+    // Notifications
+    const emptyNotificationsInformations: NotificationsInformations = { informations: "", title: "" };
+    const [notificationInformations, setNotificationInformations] = useState<NotificationsInformations>(emptyNotificationsInformations);
+    const notificationRef = useRef<NotificationRef>(null);
+
     useEffect(() => {
         const getForm = async () => {
             // Fetch data
             const headers = { Authorization: 'Bearer ' + accessToken };
             const response = await fetch(API_URL + '/survey/' + id, { headers });
+            if (!response.ok) {
+                return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+            }
+
             const data = await response.json();
             data.fields = sendOrderedFields(data.fields);
             setForm(data);
@@ -54,7 +68,10 @@ const Survey = () => {
                 body: JSON.stringify({ answers })
             };
             const response = await fetch(`${API_URL}/user-answer/${id}`, requestOptions);
-            if(!response.ok) throw new Error();
+            if (!response.ok) {
+                return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+            }
+
             await response.json();
         } catch {
             // TODO
@@ -110,6 +127,14 @@ const Survey = () => {
                     </button>
                 </div>
             </div>
+
+            <Notification
+                ref={notificationRef}
+                title={notificationInformations.title}
+                information={notificationInformations.informations}
+            >
+                <XCircleIcon className="h-6 w-6 text-red-600" />
+            </Notification>
         </>
     );
 }

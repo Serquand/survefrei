@@ -87,3 +87,8 @@ export interface RetrievePassword {
     password: string;
     email: string;
 }
+
+export interface NotificationsInformations {
+    title: string;
+    informations: string;
+}

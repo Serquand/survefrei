@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react";
-import { User } from "../utils/types";
+import { useState, useEffect, useRef } from "react";
+import { NotificationsInformations, User } from "../utils/types";
 import InputField from "./SiteGlobalInput";
 import SiteSelect from "./SiteSelect";
 import { useSelector } from "react-redux";
 import { useTranslation } from 'react-i18next';
+import { handleErrorInFetchRequest } from "../utils/utils";
+import { XCircleIcon } from "@heroicons/react/24/outline";
+import Notification, { NotificationRef } from "./SiteNotifications";
 
 export type CreateNewUSer = Omit<User, "accessToken"> & { password?: string; };
 
@@ -16,7 +19,7 @@ interface ModalUserProps {
 }
 
 const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [formData, setFormData] = useState<Partial<CreateNewUSer>>(user);
     const API_URL = import.meta.env.VITE_API_URL;
     const userLoggedIn = useSelector((state: any) => state.user.user) as User;
@@ -27,6 +30,10 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
         { id: 'admin', label: `${t("Admin")}` },
     ]
 
+    // Notifications
+    const emptyNotificationsInformations: NotificationsInformations = { informations: "", title: "" };
+    const [notificationInformations, setNotificationInformations] = useState<NotificationsInformations>(emptyNotificationsInformations);
+    const notificationRef = useRef<NotificationRef>(null);
 
     useEffect(() => {
         setFormData(user);
@@ -46,7 +53,7 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
 
             const response = await fetch(url, requestOptions);
             if (!response.ok) {
-                throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
             }
 
             return response.json();
@@ -82,7 +89,7 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
                     <div className="bg-white p-6 rounded-lg shadow-lg">
                         <div className="flex justify-between items-center">
                             <h3 className="text-lg font-semibold">
-                                { mode === 'creation' ? `${t("UserCreate")}` : `${t("UserModify")}` }
+                                {mode === 'creation' ? `${t("UserCreate")}` : `${t("UserModify")}`}
                             </h3>
                             <button
                                 onClick={onClose}
@@ -158,7 +165,7 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
                                         type="submit"
                                         className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                                     >
-                                        { mode === 'creation' ? `${t("Create")}` :  `${t("Update")}` }
+                                        {mode === 'creation' ? `${t("Create")}` : `${t("Update")}`}
                                     </button>
                                 </div>
                             </form>
@@ -166,6 +173,14 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
                     </div>
                 </div>
             )}
+
+            <Notification
+                ref={notificationRef}
+                title={notificationInformations.title}
+                information={notificationInformations.informations}
+            >
+                <XCircleIcon className="h-6 w-6 text-red-600" />
+            </Notification>
         </>
     );
 };

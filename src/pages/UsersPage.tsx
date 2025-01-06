@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import UserCard from "../components/UserCard";
-import { Roles, User } from "../utils/types";
+import { NotificationsInformations, Roles, User } from "../utils/types";
 import ModalUser, { CreateNewUSer } from "../components/ModalUser";
 import { useSelector } from "react-redux";
 import { useTranslation } from 'react-i18next';
 import ConfirmationModal, { ConfirmationModalRef } from "../components/ConfirmationModal";
-import { PlusIcon } from "@heroicons/react/24/outline";
-import { findSearchedArray } from "../utils/utils";
+import { PlusIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { findSearchedArray, handleErrorInFetchRequest } from "../utils/utils";
 import InputField from "../components/SiteGlobalInput";
+import Notification, { NotificationRef } from "../components/SiteNotifications";
 
 const UsersPage = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [users, setUsers] = useState<Omit<User, 'accessToken'>[]>([]);
     const userLoggedIn = useSelector((state: any) => state.user.user) as User;
@@ -20,6 +21,11 @@ const UsersPage = () => {
     const [updatedUser, setUpdatedUser] = useState<Partial<CreateNewUSer>>(newUser);
     const modalRef = useRef<ConfirmationModalRef>(null);
 
+    // Notifications
+    const emptyNotificationsInformations: NotificationsInformations = { informations: "", title: "" };
+    const [notificationInformations, setNotificationInformations] = useState<NotificationsInformations>(emptyNotificationsInformations);
+    const notificationRef = useRef<NotificationRef>(null);
+
     const usersSearched = useMemo(() => findSearchedArray<Omit<User, "accessToken">>(users, userSearchQuery, ["email", "firstName", "lastName"]), [userSearchQuery, users]);
 
     const fetchUsers = async () => {
@@ -27,6 +33,11 @@ const UsersPage = () => {
         const response = await fetch(API_URL + '/user/all', {
             headers: { Authorization: 'Bearer ' + accessToken }
         });
+
+        if (!response.ok) {
+            return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+        }
+
         const data = await response.json();
         setUsers(data);
     }
@@ -37,7 +48,11 @@ const UsersPage = () => {
             method: "DELETE",
             headers: { Authorization: 'Bearer ' + accessToken }
         }
-        await fetch(API_URL + '/user/' + userId, requestOptions);
+        const response = await fetch(API_URL + '/user/' + userId, requestOptions);
+        if (!response.ok) {
+            handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+        }
+        return response.ok;
     }
 
     const closeModal = () => {
@@ -55,8 +70,8 @@ const UsersPage = () => {
             if (modalRef.current) {
                 const validateUserDeletion = await modalRef.current.openModal();
                 if (validateUserDeletion) {
-                    deleteUser(userId)
-                    setUsers(users.filter(user => user.id !== userId));
+                    const success = await deleteUser(userId);
+                    success && setUsers(users.filter(user => user.id !== userId));
                 }
             }
         } catch {
@@ -123,6 +138,14 @@ const UsersPage = () => {
             <ConfirmationModal ref={modalRef}>
                 <p>Are you sure you want to delete this user?</p>
             </ConfirmationModal>
+
+            <Notification
+                ref={notificationRef}
+                title={notificationInformations.title}
+                information={notificationInformations.informations}
+            >
+                <XCircleIcon className="h-6 w-6 text-red-600" />
+            </Notification>
         </>
     );
 };

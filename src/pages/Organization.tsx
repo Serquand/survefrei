@@ -1,14 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Organization, User } from "../utils/types";
+import { NotificationsInformations, Organization, User } from "../utils/types";
 import CreateOrganizationModal from "../components/CreateOrganizationForm";
-import { PencilSquareIcon, PlusIcon, TrashIcon, UserGroupIcon, UserIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon, PlusIcon, TrashIcon, UserGroupIcon, UserIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { useSelector } from "react-redux";
 import ConfirmationModal, { ConfirmationModalRef } from "../components/ConfirmationModal";
 import CollapsibleSection from "../components/CollapsibleSection";
 import InputField from "../components/SiteGlobalInput";
-import { findSearchedArray } from "../utils/utils";
+import { findSearchedArray, handleErrorInFetchRequest } from "../utils/utils";
+import Notification, { NotificationRef } from "../components/SiteNotifications";
+import { useTranslation } from "react-i18next";
 
 const OrganizationPage = () => {
+    const { t, i18n } = useTranslation();
     const [organizations, setOrganizations] = useState<Organization[] | undefined>(undefined);
     const [users, setUsers] = useState<Omit<User, "accessToken">[] | undefined>(undefined);
     const [isModalCreationOpen, setIsModalCreationOpen] = useState<boolean>(false);
@@ -21,12 +24,20 @@ const OrganizationPage = () => {
     const accessToken = userLoggedIn.accessToken;
     const API_URL = import.meta.env.VITE_API_URL;
 
+    // Notifications
+    const emptyNotificationsInformations: NotificationsInformations = { informations: "", title: "" };
+    const [notificationInformations, setNotificationInformations] = useState<NotificationsInformations>(emptyNotificationsInformations);
+    const notificationRef = useRef<NotificationRef>(null);
+
     const organizationsSearched = useMemo(() => findSearchedArray<Organization>(organizations, organizationSearchQuery, ["name"]), [organizationSearchQuery, organizations]);
     const usersSearched = useMemo(() => findSearchedArray<Omit<User, "accessToken">>(users, userSearchQuery, ["email", "firstName", "lastName"]), [userSearchQuery, users]);
 
     const fetchUsers = async () => {
         const headers = { Authorization: 'Bearer ' + accessToken };
         const response = await fetch(API_URL + '/user/all', { headers });
+        if (!response.ok) {
+            return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+        }
         const data = await response.json();
         setUsers(data);
     }
@@ -34,6 +45,10 @@ const OrganizationPage = () => {
     const fetchOrganizations = async () => {
         const headers = { Authorization: 'Bearer ' + accessToken };
         const response = await fetch(API_URL + '/organization', { headers });
+        if (!response.ok) {
+            return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+        }
+
         const data = await response.json();
         setOrganizationDescribedId(data && data.length > 0 ? data[0].id : -1);
         setOrganizations(data);
@@ -89,18 +104,17 @@ const OrganizationPage = () => {
     }
 
     const updateOrganization = async (updatedOrganization: any, organizationId: number) => {
-        try {
-            const requestOptions = {
-                headers: {
-                    "Content-Type": 'application/json',
-                    Authorization: 'Bearer ' + accessToken,
-                },
-                method: "PUT",
-                body: JSON.stringify(updatedOrganization)
-            }
-            await fetch(`${API_URL}/organization/${organizationId}`, requestOptions);
-        } catch (err) {
-            console.error(err);
+        const requestOptions = {
+            headers: {
+                "Content-Type": 'application/json',
+                Authorization: 'Bearer ' + accessToken,
+            },
+            method: "PUT",
+            body: JSON.stringify(updatedOrganization)
+        }
+        const response = await fetch(`${API_URL}/organization/${organizationId}`, requestOptions);
+        if (!response.ok) {
+            return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
         }
     }
 
@@ -122,7 +136,11 @@ const OrganizationPage = () => {
             headers: { Authorization: 'Bearer ' + accessToken },
             method: "DELETE"
         };
-        await fetch(`${API_URL}/organization/${organizationId}`, requestOptions);
+        const response = await fetch(`${API_URL}/organization/${organizationId}`, requestOptions);
+        if (!response.ok) {
+            return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+        }
+
         setOrganizations(allOthersOrganization);
     }
 
@@ -277,6 +295,14 @@ const OrganizationPage = () => {
             <ConfirmationModal ref={modalRef}>
                 <p>Voulez-vous vraiment supprimer cette organisation ?</p>
             </ConfirmationModal>
+
+            <Notification
+                ref={notificationRef}
+                title={notificationInformations.title}
+                information={notificationInformations.informations}
+            >
+                <XCircleIcon className="h-6 w-6 text-red-600" />
+            </Notification>
         </>
     );
 };

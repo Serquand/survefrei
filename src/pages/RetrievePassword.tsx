@@ -44,8 +44,7 @@ const RetrievePasswordPage = () => {
                 headers: { "Content-Type": "application/json" }
             };
             const response = await fetch(API_URL + '/auth/reset-password', requestOptions);
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.message);
+            if (!response.ok) throw new Error();
 
             setNotificationTitle("Succès");
             setNotificationInformations("Le mot de passe a été réinitialisé avec succès");
@@ -54,7 +53,7 @@ const RetrievePasswordPage = () => {
             setInterval(() => navigate("/"), 2_000);
         } catch (err) {
             setNotificationTitle("Erreur");
-            setNotificationInformations("Ta mère 13");
+            setNotificationInformations("Something went wrong when trying to update the password");
             setNotificationsSuccess(false);
         } finally {
             showNotification();

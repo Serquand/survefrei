@@ -1,15 +1,19 @@
 import { useEffect, useState, useRef, useMemo } from "react";
-import { CreationSurvey, Organization, Roles, SurveyPreview, User } from "../utils/types";
+import { CreationSurvey, NotificationsInformations, Organization, Roles, SurveyPreview, User } from "../utils/types";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import CreateFormModal from "../components/CreateFormModal";
 import { useNavigate } from "react-router-dom";
 import ListPreviewForm from "../components/ListPreviewForm";
 import { useSelector } from "react-redux";
 import ConfirmationModal, { ConfirmationModalRef } from "../components/ConfirmationModal";
-import { findSearchedArray } from "../utils/utils";
+import { findSearchedArray, handleErrorInFetchRequest } from "../utils/utils";
 import InputField from "../components/SiteGlobalInput";
+import { useTranslation } from 'react-i18next';
+import Notification, { NotificationRef } from "../components/SiteNotifications";
+import { XCircleIcon } from "@heroicons/react/24/solid";
 
 const FormsPage = () => {
+    const { t, i18n } = useTranslation();
     const [surveys, setSurveys] = useState<SurveyPreview[]>();
     const [creationModalOpen, isModalCreationOpen] = useState(false);
     const [organizations, setOrganizations] = useState<Organization[] | undefined>(undefined);
@@ -20,11 +24,20 @@ const FormsPage = () => {
     const navigate = useNavigate();
     const [searchFormQuery, setSearchFormQuery] = useState<string>("");
 
+    // Notifications
+    const emptyNotificationsInformations: NotificationsInformations = { informations: "", title: "" };
+    const [notificationInformations, setNotificationInformations] = useState<NotificationsInformations>(emptyNotificationsInformations);
+    const notificationRef = useRef<NotificationRef>(null);
+
     const filteredForms = useMemo(() => findSearchedArray<SurveyPreview>(surveys, searchFormQuery, ["title"]), [searchFormQuery, surveys]);
 
     const fetchSurveys = async () => {
         const headers = { Authorization: 'Bearer ' + accessToken };
         const response = await fetch(API_URL + '/survey', { headers });
+        if (!response.ok) {
+            return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+        }
+
         const data = await response.json();
         setSurveys(data);
     }
@@ -32,6 +45,10 @@ const FormsPage = () => {
     const fetchOrganizations = async () => {
         const headers = { Authorization: 'Bearer ' + accessToken };
         const response = await fetch(API_URL + '/organization', { headers });
+        if (!response.ok) {
+            return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+        }
+
         const data = await response.json();
         setOrganizations(data);
     }
@@ -48,22 +65,23 @@ const FormsPage = () => {
             method: "POST"
         };
         const response = await fetch(API_URL + '/survey', requestOptions);
+        if (!response.ok) {
+            return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+        }
+
         const newSurvey = await response.json();
         navigate(`/form/${newSurvey.id}/edition`);
     }
 
     const removeSurvey = async (surveyId: number) => {
-        try {
-            if (!modalRef.current) return;
-            const validateUserDeletion = await modalRef.current.openModal();
-            if (!validateUserDeletion) return;
+        if (!modalRef.current) return;
+        const validateUserDeletion = await modalRef.current.openModal();
+        if (!validateUserDeletion) return;
 
-            await deleteSurvey(surveyId);
+        const success = await deleteSurvey(surveyId);
+        if (!success) return;
 
-            setSurveys(surveys!.filter(survey => survey.id !== surveyId))
-        } catch {
-            // TODO
-        }
+        setSurveys(surveys!.filter(survey => survey.id !== surveyId))
     }
 
     const deleteSurvey = async (surveyId: number) => {
@@ -72,7 +90,11 @@ const FormsPage = () => {
             method: "DELETE",
             headers: { Authorization: 'Bearer ' + accessToken }
         }
-        await fetch(API_URL + '/survey/' + surveyId, requestOptions);
+        const response = await fetch(API_URL + '/survey/' + surveyId, requestOptions);
+        if (!response.ok) {
+            handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+        }
+        return response.ok;
     }
 
     return (
@@ -110,6 +132,14 @@ const FormsPage = () => {
             <ConfirmationModal ref={modalRef}>
                 <p>Voulez-vous vraiment supprimer ce formulaire ?</p>
             </ConfirmationModal>
+
+            <Notification
+                ref={notificationRef}
+                title={notificationInformations.title}
+                information={notificationInformations.informations}
+            >
+                <XCircleIcon className="h-6 w-6 text-red-600" />
+            </Notification>
         </>
     );
 };
