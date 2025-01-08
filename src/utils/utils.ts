@@ -77,25 +77,25 @@ export const handleErrorInFetchRequest = async (
         informations: translateFunction("WentWrong")
     };
 
-    if(response.status === 401 || response.status === 403) {
+    if (response.status === 401 || response.status === 403) {
         return (window.location.href = "/");
     }
 
-    if(response.status === 500) {
+    if (response.status === 500) {
         setInformationsToasterState(defaultErrorMessage);
     } else {
         try {
             const data = await response.json();
             const keys = Object.keys(data);
-            if(response.status === 400 && keys.includes("message") && isArray(data.message)) {
+            if (response.status === 400 && keys.includes("message") && isArray(data.message)) {
                 setInformationsToasterState({
                     title: translateFunction("BadInformations"),
                     informations: translateFunction("BadInformationsDescription")
                 });
-            } else if(isObject(data) && keys.includes("fr") && keys.includes("en")) {
+            } else if (isObject(data) && keys.includes("fr") && keys.includes("en")) {
                 setInformationsToasterState({
                     title: translateFunction("Error"),
-                    informations: (data as Record<"fr"| "en", string>)[language] || translateFunction("WentWrong")
+                    informations: (data as Record<"fr" | "en", string>)[language] || translateFunction("WentWrong")
                 });
             } else {
                 throw new Error();
@@ -127,15 +127,27 @@ export function groupBy<T, K extends keyof T>(initialArray: Array<T>, key: K): R
     return localRecords;
 }
 
-export function updateGroupForLoggedInUser (userLoggedIn: User, groupedUser: Record<any, UserWithoutAccessToken[]>) {
+export function updateGroupForLoggedInUser(userLoggedIn: User, groupedUser: Record<any, UserWithoutAccessToken[]>) {
     const user = groupedUser[userLoggedIn.role]?.filter(user => userLoggedIn.id === user.id);
     groupedUser[userLoggedIn.role] = groupedUser[userLoggedIn.role]?.filter(user => userLoggedIn.id !== user.id);
+    groupedUser["You"] = user;
+    return groupedUser;
+}
 
-    const localGroup: Record<any, UserWithoutAccessToken[]> = {};
-    if (user && user.length >= 1) localGroup["You"] = user;
-    if (groupedUser["admin"] && groupedUser["admin"].length >= 1) localGroup["admin"] = groupedUser["admin"];
-    if (groupedUser["teacher"] && groupedUser["teacher"].length >= 1) localGroup["teacher"] = groupedUser["teacher"];
-    if (groupedUser["student"] && groupedUser["student"].length >= 1) localGroup["student"] = groupedUser["student"];
+export function reorderObject<T>(objectToReorder: Record<string, T[]>, priorities: string[]): Record<string, T[]> {
+    const reorderedObject: Record<string, T[]> = {};
 
-    return localGroup;
+    for (const priority of priorities) {
+        if (objectToReorder[priority] && objectToReorder[priority].length >= 1) {
+            reorderedObject[priority] = objectToReorder[priority];
+        }
+    }
+
+    for (const key of Object.keys(objectToReorder)) {
+        if (!priorities.includes(key) && objectToReorder[key]?.length >= 1) {
+            reorderedObject[key] = objectToReorder[key];
+        }
+    }
+
+    return reorderedObject;
 }

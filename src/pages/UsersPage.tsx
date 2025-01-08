@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { useTranslation } from 'react-i18next';
 import ConfirmationModal, { ConfirmationModalRef } from "../components/ConfirmationModal";
 import { PlusIcon, XCircleIcon } from "@heroicons/react/24/outline";
-import { findSearchedArray, groupBy, handleErrorInFetchRequest, updateGroupForLoggedInUser } from "../utils/utils";
+import { findSearchedArray, groupBy, handleErrorInFetchRequest, reorderObject, updateGroupForLoggedInUser } from "../utils/utils";
 import InputField from "../components/SiteGlobalInput";
 import Notification, { NotificationRef } from "../components/SiteNotifications";
 import CollapsibleSection from "../components/CollapsibleSection";
@@ -29,17 +29,16 @@ const UsersPage = () => {
     const notificationRef = useRef<NotificationRef>(null);
 
     const usersSearched = useMemo(() => {
-        return findSearchedArray<UserWithoutAccessToken>(users, userSearchQuery, ["email", "firstName", "lastName"])
+        if(!users) return [];
+        const localUsers = users.map((user) => ({...user, fullName: user.firstName + ' ' + user.lastName }))
+        return findSearchedArray<UserWithoutAccessToken & {fullName: string}>(localUsers, userSearchQuery, ["email", "firstName", "lastName", "fullName"]);
     }, [userSearchQuery, users, computationTrigger]);
 
     const usersGrouped = useMemo(() => {
         if (!usersSearched || usersSearched.length === 0) return;
 
-        const groupedUser = updateGroupForLoggedInUser(
-            userLoggedIn,
-            groupBy<UserWithoutAccessToken, any>(usersSearched, "role")
-        );
-        return groupedUser;
+        const groupedUser = updateGroupForLoggedInUser(userLoggedIn, groupBy<UserWithoutAccessToken, any>(usersSearched, "role"));
+        return reorderObject<UserWithoutAccessToken>(groupedUser, ["You", "admin", "teacher", "student"]);
     }, [userSearchQuery, usersSearched, users, computationTrigger]);
 
     const fetchUsers = async () => {

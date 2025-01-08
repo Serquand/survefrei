@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import ConfirmationModal, { ConfirmationModalRef } from "../components/ConfirmationModal";
 import CollapsibleSection from "../components/CollapsibleSection";
 import InputField from "../components/SiteGlobalInput";
-import { findSearchedArray, handleErrorInFetchRequest } from "../utils/utils";
+import { findSearchedArray, groupBy, handleErrorInFetchRequest, reorderObject } from "../utils/utils";
 import Notification, { NotificationRef } from "../components/SiteNotifications";
 import { useTranslation } from "react-i18next";
 
@@ -30,7 +30,17 @@ const OrganizationPage = () => {
     const notificationRef = useRef<NotificationRef>(null);
 
     const organizationsSearched = useMemo(() => findSearchedArray<Organization>(organizations, organizationSearchQuery, ["name"]), [organizationSearchQuery, organizations]);
-    const usersSearched = useMemo(() => findSearchedArray<UserWithoutAccessToken>(users, userSearchQuery, ["email", "firstName", "lastName"]), [userSearchQuery, users]);
+    const usersSearched = useMemo(() => {
+        if (!users) return [];
+        const localUsers = users.map((user) => ({ ...user, fullName: user.firstName + ' ' + user.lastName }))
+        return findSearchedArray<UserWithoutAccessToken & { fullName: string }>(localUsers, userSearchQuery, ["email", "firstName", "lastName", "fullName"]);
+    }, [userSearchQuery, users]);
+
+    const usersGrouped = useMemo(() => {
+        if (!usersSearched || usersSearched.length === 0) return;
+        const localGroup = groupBy<UserWithoutAccessToken, any>(usersSearched, "role");
+        return reorderObject<UserWithoutAccessToken>(localGroup, ["teacher", "student"]);
+    }, [userSearchQuery, usersSearched, users]);
 
     const fetchUsers = async () => {
         const headers = { Authorization: 'Bearer ' + accessToken };
@@ -223,25 +233,36 @@ const OrganizationPage = () => {
                     </div>
 
                     <ul className="p-4 space-y-2">
-                        {usersSearched.map((user) => (
-                            <li
-                                key={`org-${user.id}`}
-                                className={`py-2 px-4 shadow rounded cursor-pointer flex gap-x-3 ${isUserOnOrganization(user.id)
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-white"
-                                    }`}
-                                onClick={() => toggleUserPresenceInOrganization(user.id)}
-                            >
-                                <UserIcon className="h-6 w-6 shrink-0" />
-                                {user.firstName + ' ' + user.lastName.toUpperCase() + ', ' + user.role.toUpperCase()}
-                            </li>
-                        ))}
+                        {users && usersGrouped && (Object.keys(usersGrouped)).map((element) =>
+                            <div className="bg-white rounded-lg">
+                                <CollapsibleSection title={t(element)}>
+                                    <div className="grid divide-y sm:divide-y-0 sm:mt-4 grid-cols-1 w-full sm:gap-2">
+                                        {users && usersGrouped && usersGrouped[element] && usersGrouped[element].map((user) => (
+                                            <li
+                                                onClick={() => toggleUserPresenceInOrganization(user.id)}
+                                                key={`org-${user.id}`}
+                                                className={`py-2 px-4 shadow rounded cursor-pointer items-center flex gap-x-3 ${isUserOnOrganization(user.id)
+                                                    ? "bg-blue-600 text-white"
+                                                    : "bg-white"
+                                                    }`}
+                                            >
+                                                <UserIcon className="size-7 shrink-0" />
+                                                <p>
+                                                    {user.firstName} {user.lastName.toUpperCase()} <br />
+                                                    <span className="text-thin text-sm">{user.email}</span>
+                                                </p>
+                                            </li>
+                                        ))}
+                                    </div>
+                                </CollapsibleSection>
+                            </div>
+                        )}
                     </ul>
                 </div>
             </div> : null}
 
             {/* For mobile / little screen */}
-            {organizations && organizations.length > 0 && organizationsSearched && users && usersSearched ?
+            {organizations && organizations.length > 0 && organizationsSearched && users && usersSearched &&
                 <div className="block md:hidden">
                     <InputField
                         id="organization-search"
@@ -263,21 +284,34 @@ const OrganizationPage = () => {
                                     onUpdate={e => setUserSearchQuery(e as string)}
                                 />
                             </div>
-                            {usersSearched.map((user) => <li
-                                key={`org-${user.id}`}
-                                className={`py-2 px-4 shadow rounded cursor-pointer flex gap-x-3 ${isUserOnOrganization(user.id)
-                                    ? "bg-blue-600 text-white"
-                                    : "bg-white"
-                                    }`}
-                                onClick={() => toggleUserPresenceInOrganization(user.id)}
-                            >
-                                <UserIcon className="h-6 w-6 shrink-0" />
-                                {user.firstName + ' ' + user.lastName.toUpperCase() + ', ' + user.role.toUpperCase()}
-                            </li>)}
+                            {users && usersGrouped && (Object.keys(usersGrouped)).map((element) =>
+                                <div className="bg-white rounded-lg my-3">
+                                    <CollapsibleSection title={t(element)}>
+                                        <ul className="grid divide-y sm:divide-y-0 sm:mt-4 grid-cols-1 w-full gap-y-1.5">
+                                            {users && usersGrouped && usersGrouped[element] && usersGrouped[element].map((user) => (
+                                                <li
+                                                    onClick={() => toggleUserPresenceInOrganization(user.id)}
+                                                    key={`org-${user.id}`}
+                                                    className={`py-2 px-4 shadow rounded cursor-pointer items-center flex gap-x-3 ${isUserOnOrganization(user.id)
+                                                        ? "bg-blue-600 text-white"
+                                                        : "bg-white"
+                                                        }`}
+                                                >
+                                                    <UserIcon className="size-7 shrink-0" />
+                                                    <p>
+                                                        {user.firstName} {user.lastName.toUpperCase()} <br />
+                                                        <span className="text-thin text-sm">{user.email}</span>
+                                                    </p>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </CollapsibleSection>
+                                </div>
+                            )}
                         </CollapsibleSection>
                     ))}
                 </div>
-                : null}
+            }
 
             <div
                 className="fixed bottom-10 right-10 size-14 rounded-full bg-green-600 flex items-center justify-center cursor-pointer"
