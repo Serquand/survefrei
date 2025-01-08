@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { NotificationsInformations, User } from "../utils/types";
+import { NotificationsInformations, User, UserWithoutAccessToken } from "../utils/types";
 import InputField from "./SiteGlobalInput";
 import SiteSelect from "./SiteSelect";
 import { useSelector } from "react-redux";
@@ -8,13 +8,13 @@ import { handleErrorInFetchRequest } from "../utils/utils";
 import { XCircleIcon } from "@heroicons/react/24/outline";
 import Notification, { NotificationRef } from "./SiteNotifications";
 
-export type CreateNewUSer = Omit<User, "accessToken"> & { password?: string; };
+export type CreateNewUSer = UserWithoutAccessToken & { password?: string; };
 
 interface ModalUserProps {
     isOpen: boolean;
     onClose: () => void;
     user: Partial<CreateNewUSer>;
-    onUpdateUser: (updatedUser: Omit<User, "accessToken">) => void;
+    onUpdateUser: (updatedUser: UserWithoutAccessToken) => void;
     mode: 'creation' | 'edition';
 }
 
@@ -74,7 +74,7 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
             } else if (mode === "edition") {
                 const { id, password, email, ...dataToSend } = formData;
                 await sendUserRequest(`${API_URL}/user/${id}`, "PUT", dataToSend);
-                onUpdateUser(formData as Omit<User, "accessToken">);
+                onUpdateUser(formData as UserWithoutAccessToken);
             }
         } catch (error) {
             console.error("Error during submission:", error);

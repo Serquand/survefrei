@@ -4,7 +4,7 @@ export enum Roles {
     TEACHER = "teacher"
 }
 
-export interface User {
+export type User = {
     firstName: string;
     lastName: string;
     accessToken: string;
@@ -12,6 +12,8 @@ export interface User {
     id: number;
     role: Roles;
 }
+
+export type UserWithoutAccessToken = Omit<User, "accessToken">;
 
 export interface SurveyFieldChoice {
     id: number;
@@ -54,7 +56,7 @@ export interface Survey extends SurveyPreview {
 export interface Organization {
     id: number;
     name: string;
-    users: Omit<User, "accessToken">[];
+    users: UserWithoutAccessToken[];
 }
 
 export interface SurveyPreview {

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Loader from "../components/Loader";
 import { useDispatch } from "react-redux";
 import { updateUser } from '../context/User';
-import { User } from "../utils/types";
+import { UserWithoutAccessToken } from "../utils/types";
 import Notification, { NotificationRef } from "../components/SiteNotifications";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { fetchProfile, navigateToBasisLoggedPage } from "../utils/auth";
@@ -52,7 +52,7 @@ const LoginPage = () => {
         try {
             const accessToken = await fetchLogin();
 
-            const profile: Omit<User, "accessToken"> = await fetchProfile(accessToken);
+            const profile: UserWithoutAccessToken = await fetchProfile(accessToken);
             dispatch(updateUser({ ...profile, accessToken }));
 
             return navigateToBasisLoggedPage(profile.role, navigate);

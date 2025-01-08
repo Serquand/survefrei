@@ -47,19 +47,20 @@ const SurveyFieldBuilder = (props: Props) => {
     }));
 
     const updateFieldValue = (key: keyof SurveyFieldInterface, newValue: any) => {
+        if(key == 'fieldType' && newValue === "SL" && value.choices.length === 0) {
+            addChoiceInField();
+        }
+
         setValue((prevState) => {
             const newState = { ...prevState, [key]: newValue };
-            if (key == 'fieldType') {
-                setDebounceToSaveField(newState);
-                props.onUpdateField(newState);
-            }
+            key === 'fieldType' && handleOnBlur(newState);
             return newState;
         });
     };
 
-    const handleOnBlur = () => {
-        setDebounceToSaveField(value);
-        props.onUpdateField(value);
+    const handleOnBlur = (valueToSave?: SurveyFieldInterface) => {
+        setDebounceToSaveField(valueToSave ?? value);
+        props.onUpdateField(valueToSave ?? value);
     }
 
     const saveField = async (fieldToSave: SurveyFieldInterface) => {
@@ -106,6 +107,11 @@ const SurveyFieldBuilder = (props: Props) => {
         }
         props.onDeleteField();
     };
+
+    const addChoiceInField = () => {
+        const newChoice = { label: "Choix " + (value.choices.length + 1) };
+        updateFieldValue("choices", [...value.choices, newChoice]);
+    }
 
     return (
         <>
@@ -168,19 +174,20 @@ const SurveyFieldBuilder = (props: Props) => {
                                             label={`Choix ${index + 1}`}
                                         />
                                     </div>
-                                    <TrashIcon
+
+                                    {value.choices.length > 1 && <TrashIcon
                                         className="size-6 mb-2 text-red-600 cursor-pointer"
                                         onClick={() => {
                                             const updatedChoices = value.choices.filter((_, i) => i !== index);
                                             updateFieldValue("choices", updatedChoices);
                                         }}
-                                    />
+                                    />}
                                 </div>
                             ))}
 
                             <button
                                 type="button"
-                                onClick={() => updateFieldValue("choices", [...value.choices, { label: "Choix " + (value.choices.length + 1) }])}
+                                onClick={addChoiceInField}
                                 className="text-green-600 hover:text-green-800 mt-4"
                             >
                                 {t("AddAnswer")}
@@ -198,6 +205,8 @@ const SurveyFieldBuilder = (props: Props) => {
                             required={true}
                             label={t("MaxAnswer")}
                             disabled={false}
+                            min={1}
+                            max={value.choices.length}
                         />
                     )}
                 </div>

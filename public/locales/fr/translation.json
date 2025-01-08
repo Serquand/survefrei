@@ -64,5 +64,9 @@
     "ConfirmSurveyDeletion": "Voulez-vous vraiment supprimer ce formulaire ?",
     "ConfirmOrganizationDeletion": "Voulez-vous vraiment supprimer cette organisation ?",
     "ConfirmUserDeletion": "Voulez-vous vraiment supprimer cette utilisateur ?",
-    "NoOrganization": "Vous n'avez aucune organisation !"
+    "NoOrganization": "Vous n'avez aucune organisation !",
+    "You": "Votre profil",
+    "admin": "Administrateurs",
+    "teacher": "Professeurs",
+    "student": "Étudiants"
 }

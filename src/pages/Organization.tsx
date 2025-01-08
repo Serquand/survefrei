@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { NotificationsInformations, Organization, User } from "../utils/types";
+import { NotificationsInformations, Organization, User, UserWithoutAccessToken } from "../utils/types";
 import CreateOrganizationModal from "../components/CreateOrganizationForm";
 import { PencilSquareIcon, PlusIcon, TrashIcon, UserGroupIcon, UserIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { useSelector } from "react-redux";
@@ -13,7 +13,7 @@ import { useTranslation } from "react-i18next";
 const OrganizationPage = () => {
     const { t, i18n } = useTranslation();
     const [organizations, setOrganizations] = useState<Organization[] | undefined>(undefined);
-    const [users, setUsers] = useState<Omit<User, "accessToken">[] | undefined>(undefined);
+    const [users, setUsers] = useState<UserWithoutAccessToken[] | undefined>(undefined);
     const [isModalCreationOpen, setIsModalCreationOpen] = useState<boolean>(false);
     const [organizationDescribedId, setOrganizationDescribedId] = useState<number>(-1);
     const [updatedOrganizationId, setUpdatedOrganizationId] = useState<number | undefined>(undefined);
@@ -30,7 +30,7 @@ const OrganizationPage = () => {
     const notificationRef = useRef<NotificationRef>(null);
 
     const organizationsSearched = useMemo(() => findSearchedArray<Organization>(organizations, organizationSearchQuery, ["name"]), [organizationSearchQuery, organizations]);
-    const usersSearched = useMemo(() => findSearchedArray<Omit<User, "accessToken">>(users, userSearchQuery, ["email", "firstName", "lastName"]), [userSearchQuery, users]);
+    const usersSearched = useMemo(() => findSearchedArray<UserWithoutAccessToken>(users, userSearchQuery, ["email", "firstName", "lastName"]), [userSearchQuery, users]);
 
     const fetchUsers = async () => {
         const headers = { Authorization: 'Bearer ' + accessToken };

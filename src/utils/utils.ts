@@ -1,6 +1,6 @@
 import { TFunction } from "i18next";
 import { NotificationRef } from "../components/SiteNotifications";
-import { NotificationsInformations, SurveyField, SurveyFieldWithAnswer } from "./types";
+import { NotificationsInformations, SurveyField, SurveyFieldWithAnswer, User, UserWithoutAccessToken } from "./types";
 import { SetStateAction, Dispatch, RefObject } from "react";
 
 export function generateDistinctColors(count: number) {
@@ -107,3 +107,32 @@ export const handleErrorInFetchRequest = async (
         notificationsRef.current.openNotifications();
     }
 };
+
+// @ts-ignore
+export function groupBy<T, K extends keyof T>(initialArray: Array<T>, key: K): Record<T[K], T[]> {
+    // @ts-ignore
+    const localRecords: Record<T[K], T[]> = {};
+
+    for (const item of initialArray) {
+        const groupKey = item[key];
+        if (!localRecords[groupKey]) {
+            localRecords[groupKey] = [];
+        }
+        localRecords[groupKey].push(item);
+    }
+
+    return localRecords;
+}
+
+export function updateGroupForLoggedInUser (userLoggedIn: User, groupedUser: Record<any, UserWithoutAccessToken[]>) {
+    const user = groupedUser[userLoggedIn.role]?.filter(user => userLoggedIn.id === user.id);
+    groupedUser[userLoggedIn.role] = groupedUser[userLoggedIn.role]?.filter(user => userLoggedIn.id !== user.id);
+
+    const localGroup: Record<any, UserWithoutAccessToken[]> = {};
+    if (user) localGroup["You"] = user;
+    if (groupedUser["admin"]) localGroup["admin"] = groupedUser["admin"];
+    if (groupedUser["teacher"]) localGroup["teacher"] = groupedUser["teacher"];
+    if (groupedUser["student"]) localGroup["student"] = groupedUser["student"];
+
+    return localGroup;
+}

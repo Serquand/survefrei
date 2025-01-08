@@ -9,7 +9,8 @@ interface Props {
     hasIcon?: boolean;
     disabled?: boolean;
     maxLength?: number;
-    min?: string;
+    min?: number;
+    max?: number | undefined;
     required?: boolean;
     onUpdate?: (value: string | number | boolean | string[] | undefined) => void;
     onBlur?: () => void;
@@ -24,7 +25,8 @@ const InputField: React.FC<Props> = ({
     placeholder,
     disabled = false,
     maxLength,
-    min = '0',
+    min = 1,
+    max = undefined,
     required = false,
     onUpdate,
     onBlur,
@@ -86,6 +88,7 @@ const InputField: React.FC<Props> = ({
                         className={`appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md disabled:bg-slate-100 disabled:text-slate-500 focus:outline-none focus:border-sky-700 sm:text-sm ${children ? 'pl-10' : ''}`}
                         maxLength={maxLength}
                         min={min}
+                        max={max}
                         onChange={handleChange}
                         onBlur={() => onBlur && onBlur()}
                     />
