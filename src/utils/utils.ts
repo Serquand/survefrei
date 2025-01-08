@@ -86,12 +86,13 @@ export const handleErrorInFetchRequest = async (
     } else {
         try {
             const data = await response.json();
-            if(response.status === 400 && isArray(data)) {
+            const keys = Object.keys(data);
+            if(response.status === 400 && keys.includes("message") && isArray(data.message)) {
                 setInformationsToasterState({
                     title: translateFunction("BadInformations"),
                     informations: translateFunction("BadInformationsDescription")
                 });
-            } else if(isObject(data)) {
+            } else if(isObject(data) && keys.includes("fr") && keys.includes("en")) {
                 setInformationsToasterState({
                     title: translateFunction("Error"),
                     informations: (data as Record<"fr"| "en", string>)[language] || translateFunction("WentWrong")

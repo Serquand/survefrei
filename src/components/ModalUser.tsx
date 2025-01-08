@@ -43,7 +43,7 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
         setFormData({ ...formData, [key]: e });
     };
 
-    const sendUserRequest = async (url: string, method: string, data: object) => {
+    const sendUserRequest = async (url: string, method: string, data: object): Promise<false | UserWithoutAccessToken> => {
         try {
             const requestOptions = {
                 body: JSON.stringify(data),
@@ -53,7 +53,8 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
 
             const response = await fetch(url, requestOptions);
             if (!response.ok) {
-                return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+                handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
+                return false;
             }
 
             return response.json();
@@ -70,17 +71,18 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
             if (mode === "creation") {
                 const { id, ...dataToSend } = formData;
                 const data = await sendUserRequest(`${API_URL}/user/register`, "POST", dataToSend);
+                if(!data) throw new Error();
                 onUpdateUser(data);
             } else if (mode === "edition") {
                 const { id, password, email, ...dataToSend } = formData;
-                await sendUserRequest(`${API_URL}/user/${id}`, "PUT", dataToSend);
-                onUpdateUser(formData as UserWithoutAccessToken);
+                const data = await sendUserRequest(`${API_URL}/user/${id}`, "PUT", dataToSend);
+                if(!data) throw new Error();
+                onUpdateUser(data);
             }
         } catch (error) {
             console.error("Error during submission:", error);
         }
     };
-
 
     return (
         <>
