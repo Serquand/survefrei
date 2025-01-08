@@ -51,7 +51,7 @@ const Layout: React.FC = () => {
         },
         {
             id: 'organization',
-            label: `${t("Organization")}`,
+            label: `${t("Organization")}s`,
             icon: UserGroupIcon,
             to: '/organization',
             current: false,

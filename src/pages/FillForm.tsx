@@ -73,7 +73,6 @@ const FillForm = () => {
                 return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
             }
 
-            await response.json();
             navigate(`/form/${id}/review`)
         } catch (err) {
             console.error(err);

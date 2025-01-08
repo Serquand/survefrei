@@ -223,8 +223,8 @@ const FormEditionPage = () => {
                                 />
 
                                 <SiteSelect
-                                    modelValue={1}
-                                    onUpdate={(e) => console.log(e)}
+                                    modelValue={form.organizationId}
+                                    onUpdate={(e) => updateForm('organizationId', e)}
                                     options={organizations.map((org) => ({ id: org.id, label: org.name }))}
                                     required={false}
                                     label={t("Organization")}

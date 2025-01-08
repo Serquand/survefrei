@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import SiteSelect from "../components/SiteSelect";
 import { NotificationsInformations, SurveyFieldType, SurveyWithAnswer, User } from "../utils/types";
 import SiteCheckbox from "../components/SiteCheckbox";
 import InputField from "../components/SiteGlobalInput";
@@ -66,7 +65,6 @@ const ReviewForm = () => {
                                 disabled={true}
                                 placeholder={field.label}
                                 key={index}
-                                onUpdate={() => console.error()}
                             /> : null}
 
                             {field.fieldType === SurveyFieldType.NUMBER ? <InputField
@@ -78,11 +76,9 @@ const ReviewForm = () => {
                                 disabled={true}
                                 placeholder={field.label}
                                 key={index}
-                                onUpdate={() => console.error()}
                             /> : null}
 
                             {field.fieldType === SurveyFieldType.CHECKBOX ? <SiteCheckbox
-                                onUpdate={() => console.error()}
                                 id={"question-" + field.id}
                                 label={field.label}
                                 modelValue={field.answers[0].value as boolean}
@@ -90,15 +86,14 @@ const ReviewForm = () => {
                                 key={index}
                             /> : null}
 
-                            {field.fieldType === SurveyFieldType.SELECT ? <SiteSelect
-                                modelValue={(field.answers[0].value as string[]).map(el => el)}
-                                key={index}
-                                options={field.choices.map((choice) => ({ label: choice.label }))}
-                                optionLabel="label"
+                            {field.fieldType === SurveyFieldType.SELECT ? <InputField
+                                id={"question-" + field.id}
+                                modelValue={(field.answers[0].value as string[]).join(", ")}
                                 label={field.label}
-                                optionKey="label"
-                                onUpdate={() => console.error()}
+                                required={field.required}
+                                type="text"
                                 disabled={true}
+                                key={index}
                             /> : null}
                         </>))}
                     </>) : null}

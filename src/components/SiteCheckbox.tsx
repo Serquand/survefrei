@@ -5,7 +5,7 @@ interface Props {
     modelValue?: boolean;
     label?: string;
     disabled?: boolean;
-    onUpdate: (value: boolean) => void;
+    onUpdate?: (value: boolean) => void;
 }
 
 const SiteCheckbox: React.FC<Props> = ({
@@ -17,7 +17,7 @@ const SiteCheckbox: React.FC<Props> = ({
 }) => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const valueToUpdate = e.target.checked;
-        onUpdate(valueToUpdate);
+        onUpdate && onUpdate(valueToUpdate);
     };
 
     return (
