@@ -33,7 +33,7 @@ const CreateFormModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, organizat
                 <h2 className="text-xl font-bold mb-4">{t("FormCreate")}</h2>
 
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">{t("Name")}</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t("FormName")}</label>
                     <input
                         type="text"
                         value={title}
