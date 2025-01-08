@@ -132,10 +132,11 @@ export function updateGroupForLoggedInUser (userLoggedIn: User, groupedUser: Rec
     groupedUser[userLoggedIn.role] = groupedUser[userLoggedIn.role]?.filter(user => userLoggedIn.id !== user.id);
 
     const localGroup: Record<any, UserWithoutAccessToken[]> = {};
-    if (user) localGroup["You"] = user;
-    if (groupedUser["admin"]) localGroup["admin"] = groupedUser["admin"];
-    if (groupedUser["teacher"]) localGroup["teacher"] = groupedUser["teacher"];
-    if (groupedUser["student"]) localGroup["student"] = groupedUser["student"];
+    console.log(user);
+    if (user && user.length >= 1) localGroup["You"] = user;
+    if (groupedUser["admin"] && groupedUser["admin"].length >= 1) localGroup["admin"] = groupedUser["admin"];
+    if (groupedUser["teacher"] && groupedUser["teacher"].length >= 1) localGroup["teacher"] = groupedUser["teacher"];
+    if (groupedUser["student"] && groupedUser["student"].length >= 1) localGroup["student"] = groupedUser["student"];
 
     return localGroup;
 }
