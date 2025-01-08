@@ -39,7 +39,6 @@ const UsersPage = () => {
             userLoggedIn,
             groupBy<UserWithoutAccessToken, any>(usersSearched, "role")
         );
-        console.log(groupedUser);
         return groupedUser;
     }, [userSearchQuery, usersSearched, users, computationTrigger]);
 
