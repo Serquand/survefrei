@@ -34,7 +34,7 @@ const OrganizationPage = () => {
 
     const fetchUsers = async () => {
         const headers = { Authorization: 'Bearer ' + accessToken };
-        const response = await fetch(API_URL + '/user/all', { headers });
+        const response = await fetch(API_URL + '/user/all?roles=teacher&roles=student', { headers });
         if (!response.ok) {
             return handleErrorInFetchRequest(response, setNotificationInformations, notificationRef, i18n.language as "fr" | "en", t);
         }
