@@ -2,6 +2,7 @@ import { TFunction } from "i18next";
 import { NotificationRef } from "../components/SiteNotifications";
 import { NotificationsInformations, SurveyField, SurveyFieldWithAnswer, User, UserWithoutAccessToken } from "./types";
 import { SetStateAction, Dispatch, RefObject } from "react";
+import { isArray, isObject } from "lodash";
 
 export function generateDistinctColors(count: number) {
     const colors = [];
@@ -76,35 +77,36 @@ export const handleErrorInFetchRequest = async (
         informations: translateFunction("WentWrong")
     };
 
-    switch (response.status) {
-        case 401:
-        case 403:
-            return (window.location.href = "/");
-
-        case 400:
-            setInformationsToasterState({ title: translateFunction("BadInformations"), informations: translateFunction("BadInformationsDescription") });
-            break;
-
-        case 500:
-            setInformationsToasterState(defaultErrorMessage);
-            break;
-
-        case 404:
-        case 409:
-            try {
-                const data = await response.json();
-                setInformationsToasterState({
-                    title: translateFunction("Error"),
-                    informations: data[language] || translateFunction("WentWrong")
-                });
-            } catch (error) {
-                setInformationsToasterState(defaultErrorMessage);
-            }
-            break;
+    if(response.status === 401 || response.status === 403) {
+        return (window.location.href = "/");
     }
 
-    if (notificationsRef.current) {
-        notificationsRef.current.openNotifications();
+    if(response.status === 500) {
+        setInformationsToasterState(defaultErrorMessage);
+    } else {
+        try {
+            const data = await response.json();
+            if(response.status === 400 && isArray(data)) {
+                setInformationsToasterState({
+                    title: translateFunction("BadInformations"),
+                    informations: translateFunction("BadInformationsDescription")
+                });
+            } else if(isObject(data)) {
+                setInformationsToasterState({
+                    title: translateFunction("Error"),
+                    informations: (data as Record<"fr"| "en", string>)[language] || translateFunction("WentWrong")
+                });
+            } else {
+                throw new Error();
+            }
+        } catch {
+            setInformationsToasterState(defaultErrorMessage);
+        } finally {
+            if (notificationsRef.current) {
+                notificationsRef.current.openNotifications();
+            }
+        }
+
     }
 };
 
