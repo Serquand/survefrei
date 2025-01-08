@@ -14,7 +14,7 @@ import { XCircleIcon } from "@heroicons/react/24/solid";
 
 const FormEditionPage = () => {
     const { t, i18n } = useTranslation();
-    const debounceTimeMs = 2_000;
+    const debounceTimeMs = 1_500;
     const { id } = useParams<{ id: string; }>();
     const [form, setForm] = useState<Survey | undefined>(undefined);
     const modalRef = useRef<ConfirmationModalRef>(null);

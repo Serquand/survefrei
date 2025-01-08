@@ -31,7 +31,11 @@ const CreateOrganizationModal: React.FC<Props> = ({ isOpen, onClose, onOrganizat
     if (!isOpen) return null;
 
     const handleSubmit = async () => {
-        if (!organizationName) return;
+        if (!organizationName) {
+            setNotificationInformations({ informations: t("OrganizationNameRequired"), title: t("Error") });
+            notificationRef.current?.openNotifications();
+            return;
+        };
 
         const dataToSend = mode == 'creation' ? { name: organizationName, memberIds: [] } : { name: organizationName }
         const requestOptions = {

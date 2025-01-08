@@ -6,6 +6,7 @@
     "exit": "Déconnexion",
     "Forms": "Formulaires",
     "Organization": "Organisation",
+    "OrganizationNameRequired": "Vous devez saisir un nom pour l'organisation",
     "FillAll" : "Veuillez remplir tous les champs",
     "FormName": "Nom du formulaire",
     "FormDesc": "Description du formulaire",

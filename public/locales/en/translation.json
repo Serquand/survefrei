@@ -6,6 +6,7 @@
     "exit": "Log Out",
     "Forms": "Forms",
     "Organization": "Organization",
+    "OrganizationNameRequired": "You need to enter an organization name",
     "FillAll": "Please, fill everything",
     "FormName": "Form name",
     "FormDesc": "Form description",

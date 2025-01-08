@@ -22,7 +22,7 @@ interface Props {
 const SurveyFieldBuilder = (props: Props) => {
     const { t, i18n } = useTranslation();
     const [value, setValue] = useState(props.field);
-    const debounceTimeMs = 2_000;
+    const debounceTimeMs = 1_500;
     const [saveTimeout, setSaveTimeout] = useState<any>(null);
     const API_URL = import.meta.env.VITE_API_URL;
     const userLoggedIn = useSelector((state: any) => state.user.user) as User;
@@ -47,8 +47,10 @@ const SurveyFieldBuilder = (props: Props) => {
     }));
 
     const updateFieldValue = (key: keyof SurveyFieldInterface, newValue: any) => {
-        if(key == 'fieldType' && newValue === "SL" && value.choices.length === 0) {
+        if(key === 'fieldType' && newValue === "SL" && value.choices.length === 0) {
             addChoiceInField();
+        } else if (key === 'maximalNumberOfChoices') {
+            newValue = Math.min(newValue, value.choices.length);
         }
 
         setValue((prevState) => {
@@ -111,6 +113,12 @@ const SurveyFieldBuilder = (props: Props) => {
     const addChoiceInField = () => {
         const newChoice = { label: "Choix " + (value.choices.length + 1) };
         updateFieldValue("choices", [...value.choices, newChoice]);
+    }
+
+    const removeChoiceOfField = (choiceIndex: number) => {
+        const updatedChoices = value.choices.filter((_, i) => i !== choiceIndex);
+        updateFieldValue("choices", updatedChoices);
+        updateFieldValue("maximalNumberOfChoices", updatedChoices.length);
     }
 
     return (
@@ -177,10 +185,7 @@ const SurveyFieldBuilder = (props: Props) => {
 
                                     {value.choices.length > 1 && <TrashIcon
                                         className="size-6 mb-2 text-red-600 cursor-pointer"
-                                        onClick={() => {
-                                            const updatedChoices = value.choices.filter((_, i) => i !== index);
-                                            updateFieldValue("choices", updatedChoices);
-                                        }}
+                                        onClick={() => removeChoiceOfField(index)}
                                     />}
                                 </div>
                             ))}
