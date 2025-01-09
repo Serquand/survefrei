@@ -74,7 +74,8 @@ const ModalUser = ({ isOpen, onClose, user, onUpdateUser, mode }: ModalUserProps
                 if(!data) throw new Error();
                 onUpdateUser(data);
             } else if (mode === "edition") {
-                const { id, password, email, ...dataToSend } = formData;
+                // @ts-ignore
+                const { id, password, email, fullName, ...dataToSend } = formData;
                 const data = await sendUserRequest(`${API_URL}/user/${id}`, "PUT", dataToSend);
                 if(!data) throw new Error();
                 onUpdateUser(data);
