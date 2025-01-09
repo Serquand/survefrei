@@ -51,6 +51,10 @@ const SurveyFieldBuilder = (props: Props) => {
             addChoiceInField();
         } else if (key === 'maximalNumberOfChoices') {
             newValue = Math.min(newValue, value.choices.length);
+        } else if (key === 'maxValue') {
+            newValue = Math.max(newValue, value.minValue + 1);
+        } else if (key === "minValue") {
+            newValue = Math.min(newValue, value.maxValue - 1);
         }
 
         setValue((prevState) => {
