@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import AvatarIcon from "./AvatarIcon";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { Roles, User } from "../utils/types";
 
 interface Props {
     title: string;
@@ -19,16 +21,17 @@ const SurveyCard = (props: Props) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
+    const user = useSelector((state: any) => state.user.user) as User;
 
     const navigateToFormPage = () => {
         switch(location.pathname) {
-            case '/to-fill': return navigate(`/form/${props.id}/fill`)
+            case '/to-fill': return navigate(`/form/${props.id}/fill`);
 
             case '/forms':
-                if(props.isPublic) return navigate(`/form/${props.id}/answers`)
-                else  return navigate(`/form/${props.id}/edition`)
+                if(props.isPublic || user.role === Roles.TEACHER) return navigate(`/form/${props.id}/answers`);
+                else return navigate(`/form/${props.id}/edition`);
 
-            case '/filled': return navigate(`/form/${props.id}/review`)
+            case '/filled': return navigate(`/form/${props.id}/review`);
         }
     }
 
