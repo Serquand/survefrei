@@ -59,7 +59,9 @@ const SurveyFieldBuilder = (props: Props) => {
 
         setValue((prevState) => {
             const newState = { ...prevState, [key]: newValue };
-            key === 'fieldType' && handleOnBlur(newState);
+            if (key === 'fieldType' || key === 'choices') {
+                handleOnBlur(newState);
+            }
             return newState;
         });
     };
@@ -94,12 +96,8 @@ const SurveyFieldBuilder = (props: Props) => {
 
     const updateChoices = (newChoice: string, choiceIndex: number) => {
         // @ts-ignore
-        setValue((prevState) => {
-            return {
-                ...prevState!,
-                choices: prevState.choices.map((choice, index) => (index === choiceIndex ? { label: newChoice } : choice))
-            };
-        });
+        const newChoices = value.choices.map((choice, index) => (index === choiceIndex ? { label: newChoice } : choice));
+        updateFieldValue("choices", [...value.choices, newChoice]);
     };
 
     const deleteField = async () => {
@@ -121,8 +119,10 @@ const SurveyFieldBuilder = (props: Props) => {
 
     const removeChoiceOfField = (choiceIndex: number) => {
         const updatedChoices = value.choices.filter((_, i) => i !== choiceIndex);
+        if(value.maximalNumberOfChoices > updatedChoices.length) {
+            updateFieldValue("maximalNumberOfChoices", updatedChoices.length);
+        }
         updateFieldValue("choices", updatedChoices);
-        updateFieldValue("maximalNumberOfChoices", updatedChoices.length);
     }
 
     return (
@@ -180,7 +180,6 @@ const SurveyFieldBuilder = (props: Props) => {
                                         <InputField
                                             modelValue={value.choices[index].label}
                                             onUpdate={(value) => updateChoices(value + "", index)}
-                                            onBlur={handleOnBlur}
                                             type="text"
                                             id={`field-${value.id}-choice-${index}`}
                                             label={`Choix ${index + 1}`}
