@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { NotificationsInformations, Organization, User, UserWithoutAccessToken } from "../utils/types";
 import CreateOrganizationModal from "../components/CreateOrganizationForm";
-import { PencilSquareIcon, PlusIcon, TrashIcon, UserGroupIcon, UserIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { PencilSquareIcon, PlusIcon, TrashIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { useSelector } from "react-redux";
 import ConfirmationModal, { ConfirmationModalRef } from "../components/ConfirmationModal";
 import CollapsibleSection from "../components/CollapsibleSection";
@@ -9,6 +9,7 @@ import InputField from "../components/SiteGlobalInput";
 import { findSearchedArray, groupBy, handleErrorInFetchRequest, reorderObject } from "../utils/utils";
 import Notification, { NotificationRef } from "../components/SiteNotifications";
 import { useTranslation } from "react-i18next";
+import AvatarIcon from "../components/AvatarIcon";
 
 const OrganizationPage = () => {
     const { t, i18n } = useTranslation();
@@ -199,13 +200,15 @@ const OrganizationPage = () => {
                         {organizationsSearched.map((org) => (
                             <li
                                 key={`org-${org.id}`}
-                                className={`py-2 px-4 shadow rounded cursor-pointer flex gap-x-3 ${org.id === organizationDescribedId
+                                className={`py-2 px-4 shadow rounded cursor-pointer flex items-center gap-x-3 ${org.id === organizationDescribedId
                                     ? "bg-blue-600 text-white"
                                     : "bg-white"
                                     }`}
                                 onClick={() => setOrganizationDescribedId(org.id)}
                             >
-                                <UserGroupIcon className="h-6 w-6 shrink-0" />
+                                <div className="size-10">
+                                    <AvatarIcon label={org.name.charAt(0).toUpperCase()} />
+                                </div>
                                 {org.name}
                                 <div className="ml-auto flex gap-3">
                                     <PencilSquareIcon
@@ -246,7 +249,9 @@ const OrganizationPage = () => {
                                                     : "bg-white"
                                                     }`}
                                             >
-                                                <UserIcon className="size-7 shrink-0" />
+                                                <div className="size-10">
+                                                    <AvatarIcon label={(user.lastName.charAt(0) + user.firstName.charAt(0)).toUpperCase()} />
+                                                </div>
                                                 <p>
                                                     {user.firstName} {user.lastName.toUpperCase()} <br />
                                                     <span className="text-thin text-sm">{user.email}</span>
@@ -297,7 +302,10 @@ const OrganizationPage = () => {
                                                         : "bg-white"
                                                         }`}
                                                 >
-                                                    <UserIcon className="size-7 shrink-0" />
+                                                    <div className="size-10">
+                                                        <AvatarIcon label={(user.lastName.charAt(0) + user.firstName.charAt(0)).toUpperCase()} />
+                                                    </div>
+
                                                     <p>
                                                         {user.firstName} {user.lastName.toUpperCase()} <br />
                                                         <span className="text-thin text-sm">{user.email}</span>

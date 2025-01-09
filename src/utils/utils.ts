@@ -1,6 +1,6 @@
 import { TFunction } from "i18next";
 import { NotificationRef } from "../components/SiteNotifications";
-import { NotificationsInformations, SurveyField, SurveyFieldWithAnswer, User, UserWithoutAccessToken } from "./types";
+import { NotificationsInformations, SurveyField, SurveyFieldType, SurveyFieldWithAnswer, User, UserWithoutAccessToken } from "./types";
 import { SetStateAction, Dispatch, RefObject } from "react";
 import { isArray, isObject } from "lodash";
 
@@ -150,4 +150,12 @@ export function reorderObject<T>(objectToReorder: Record<string, T[]>, prioritie
     }
 
     return reorderedObject;
+}
+
+export const convertFieldTypeToInputType = (fieldType: SurveyFieldType) => {
+    switch (fieldType) {
+        case SurveyFieldType.NUMBER: return 'number';
+        case SurveyFieldType.TEXTAREA: return 'textarea';
+        default: return 'text';
+    }
 }

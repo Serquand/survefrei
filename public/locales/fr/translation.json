@@ -69,5 +69,9 @@
     "You": "Votre profil",
     "admin": "Administrateurs",
     "teacher": "Professeurs",
-    "student": "Étudiants"
+    "student": "Étudiants",
+    "General": "Général",
+    "ByUser": "Par utilisateur",
+    "NoRespondent": "Ce formulaire n'a pas encore de répondants publics!",
+    "MakeDataAccessibleForTeacher": "Permettre aux professeurs d'accéder aux réponses nominativement"
 }

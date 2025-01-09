@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import InputField from "../components/SiteGlobalInput";
 import SiteCheckbox from "../components/SiteCheckbox";
 import SiteSelect from "../components/SiteSelect";
-import { handleErrorInFetchRequest, sendOrderedFields } from "../utils/utils";
+import { convertFieldTypeToInputType, handleErrorInFetchRequest, sendOrderedFields } from "../utils/utils";
 import Notification, { NotificationRef } from "../components/SiteNotifications";
 import { useTranslation } from "react-i18next";
 import { XCircleIcon } from "@heroicons/react/24/outline";
@@ -16,6 +16,7 @@ const FillForm = () => {
     const [form, setForm] = useState<Survey | undefined>(undefined);
     const [answers, setAnswers] = useState<Answer[] | undefined>(undefined);
     const API_URL = import.meta.env.VITE_API_URL;
+    const [isAnswersAccessibleByAdmin, setIsAnswersAccessibleByAdmin] = useState<boolean>(false);
     const userLoggedIn = useSelector((state: any) => state.user.user) as User;
     const accessToken = userLoggedIn.accessToken;
     const navigate = useNavigate();
@@ -52,19 +53,11 @@ const FillForm = () => {
         });
     }
 
-    const convertFieldTypeToInputType = (fieldType: SurveyFieldType) => {
-        switch (fieldType) {
-            case SurveyFieldType.NUMBER: return 'number';
-            case SurveyFieldType.TEXTAREA: return 'textarea';
-            default: return 'text';
-        }
-    }
-
     const submitAnswers = async () => {
         const requestOptions = {
             method: "POST",
             headers: { Authorization: 'Bearer ' + accessToken, "Content-Type": 'application/json' },
-            body: JSON.stringify({ answers })
+            body: JSON.stringify({ answers, acceptReview: isAnswersAccessibleByAdmin })
         };
 
         try {
@@ -130,7 +123,16 @@ const FillForm = () => {
                         </>) : null}
                     </div>
 
-                    <div className="flex justify-center pt-10">
+                    <div className="mt-5">
+                        <SiteCheckbox
+                            label={t("MakeDataAccessibleForTeacher")}
+                            modelValue={isAnswersAccessibleByAdmin}
+                            onUpdate={setIsAnswersAccessibleByAdmin}
+                            id="accept-review"
+                        />
+                    </div>
+
+                    <div className="flex justify-center pt-5">
                         <button
                             className="p-2 col-span-full px-7 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
                             onClick={submitAnswers}

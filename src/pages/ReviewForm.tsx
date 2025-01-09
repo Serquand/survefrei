@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { NotificationsInformations, SurveyFieldType, SurveyWithAnswer, User } from "../utils/types";
-import SiteCheckbox from "../components/SiteCheckbox";
-import InputField from "../components/SiteGlobalInput";
+import { NotificationsInformations, SurveyWithAnswer, User } from "../utils/types";
 import { handleErrorInFetchRequest, sendOrderedFields } from "../utils/utils";
 import { useSelector } from "react-redux";
 import Notification, { NotificationRef } from "../components/SiteNotifications";
 import { useTranslation } from "react-i18next";
 import { XCircleIcon } from "@heroicons/react/24/outline";
+import SurveyResponseViewer from "../components/SurveyResponseViewer";
 
 const ReviewForm = () => {
     const { t, i18n } = useTranslation();
@@ -36,14 +35,6 @@ const ReviewForm = () => {
         getAnswers();
     }, []);
 
-    const convertFieldTypeToInputType = (fieldType: SurveyFieldType) => {
-        switch (fieldType) {
-            case SurveyFieldType.NUMBER: return 'number';
-            case SurveyFieldType.TEXTAREA: return 'textarea';
-            default: return 'text';
-        }
-    }
-
     return (<>
         <div className="relative min-h-screen">
             {form && (
@@ -53,51 +44,7 @@ const ReviewForm = () => {
             )}
 
             <div className="w-4/5 mx-auto mt-6 items-center">
-                <div className="grid gap-5">
-                    {(form && form.fields) ? (<>
-                        {form.fields.map((field, index) => (<>
-                            {(field.fieldType === SurveyFieldType.TEXTAREA || field.fieldType === SurveyFieldType.TEXT) ? <InputField
-                                id={"question-" + field.id}
-                                modelValue={field.answers[0].valueText}
-                                label={field.label}
-                                required={field.required}
-                                type={convertFieldTypeToInputType(field.fieldType)}
-                                disabled={true}
-                                placeholder={field.label}
-                                key={index}
-                            /> : null}
-
-                            {field.fieldType === SurveyFieldType.NUMBER ? <InputField
-                                id={"question-" + field.id}
-                                modelValue={field.answers[0].value}
-                                label={`${field.label} (min. ${field.minValue}, max. ${field.maxValue})`}
-                                required={field.required}
-                                type={convertFieldTypeToInputType(field.fieldType)}
-                                disabled={true}
-                                placeholder={field.label}
-                                key={index}
-                            /> : null}
-
-                            {field.fieldType === SurveyFieldType.CHECKBOX ? <SiteCheckbox
-                                id={"question-" + field.id}
-                                label={field.label}
-                                modelValue={field.answers[0].value as boolean}
-                                disabled={true}
-                                key={index}
-                            /> : null}
-
-                            {field.fieldType === SurveyFieldType.SELECT ? <InputField
-                                id={"question-" + field.id}
-                                modelValue={(field.answers[0].value as string[]).join(", ")}
-                                label={field.label}
-                                required={field.required}
-                                type="text"
-                                disabled={true}
-                                key={index}
-                            /> : null}
-                        </>))}
-                    </>) : null}
-                </div>
+                {form && <SurveyResponseViewer form={form} />}
             </div>
         </div>
 
