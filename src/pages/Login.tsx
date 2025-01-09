@@ -53,7 +53,8 @@ const LoginPage = () => {
             const accessToken = await fetchLogin();
 
             const profile: UserWithoutAccessToken = await fetchProfile(accessToken);
-            dispatch(updateUser({ ...profile, accessToken }));
+            const user = { ...profile, accessToken };
+            dispatch(updateUser(user));
 
             return navigateToBasisLoggedPage(profile.role, navigate);
         } catch (err) {

@@ -55,7 +55,7 @@ const FormsPage = () => {
 
     useEffect(() => {
         fetchSurveys();
-        fetchOrganizations()
+        user.role === Roles.ADMIN && fetchOrganizations()
     }, []);
 
     const postNewSurvey = async (data: CreationSurvey) => {

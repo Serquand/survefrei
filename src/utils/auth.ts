@@ -29,18 +29,23 @@ export async function refreshAccessToken(): Promise<false | User> {
     return false;
 }
 
+export const navigateToDefaultPageForRole = (role: Roles, navigate: ReturnType<typeof useNavigate>) => {
+    if (role === Roles.STUDENT) return navigate('/to-fill');
+    return navigate('/forms');
+}
+
 export const navigateToBasisLoggedPage = (role: Roles, navigate: ReturnType<typeof useNavigate>) => {
     const pathname = window.location.pathname.substring(1);
-    if(pathname) return navigate(pathname);
+    if(pathname) {
+        return navigate(pathname);
+    }
 
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const redirectQuery = urlParams.get('rq');
     if(redirectQuery) return navigate(`/${redirectQuery}`);
 
-    if (role === Roles.STUDENT) return navigate('/to-fill');
-
-    return navigate('/forms');
+    return navigateToDefaultPageForRole(role, navigate);
 }
 
 export const useAuthInitialization = () => {
