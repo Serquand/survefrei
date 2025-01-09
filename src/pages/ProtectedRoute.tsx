@@ -13,8 +13,6 @@ const ProtectedRoute = ({ allowedRole, children }: Props) => {
     const user = useSelector((state: any) => state.user.user) as User | undefined;
     const navigate = useNavigate();
 
-    alert(allowedRole)
-
     useEffect(() => {
         if (!user) {
             navigate(`/?rq=${window.location.pathname.substring(1)}`);
