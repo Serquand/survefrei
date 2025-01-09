@@ -7,10 +7,12 @@ import Notification, { NotificationRef } from "../components/SiteNotifications";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { fetchProfile, navigateToBasisLoggedPage } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
+import SiteCheckbox from "../components/SiteCheckbox";
 
 const LoginPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [rememberMe, setRememberMe] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState(false);
     const [notificationTitle, setNotificationTitle] = useState("");
     const [notificationInformations, setNotificationInformations] = useState("");
@@ -34,7 +36,7 @@ const LoginPage = () => {
     const fetchLogin = async () => {
         const requestOptions = {
             method: "POST",
-            body: JSON.stringify({ email, password }),
+            body: JSON.stringify({ email, password, rememberMe }),
             headers: { "Content-Type": "application/json" },
             credentials: 'include'
         };
@@ -196,6 +198,14 @@ const LoginPage = () => {
                                 />
                             </div>
                         </div>}
+
+                        {mode === 'login' && <SiteCheckbox
+                            id="remember-me"
+                            disabled={false}
+                            label="Remember me"
+                            modelValue={rememberMe}
+                            onUpdate={setRememberMe}
+                        />}
 
                         <div>
                             <button
