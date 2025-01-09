@@ -73,5 +73,7 @@
     "General": "General",
     "ByUser": "ByUser",
     "NoRespondent": "The survey has no public respondent!",
-    "MakeDataAccessibleForTeacher": "Allow teachers to access answers by name"
+    "MakeDataAccessibleForTeacher": "Allow teachers to access answers by name",
+    "Published": "Published",
+    "NotPublished": "Unpublished"
 }

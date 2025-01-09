@@ -2,6 +2,7 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import AvatarIcon from "./AvatarIcon";
+import { useTranslation } from "react-i18next";
 
 interface Props {
     title: string;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 const SurveyCard = (props: Props) => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -45,7 +47,7 @@ const SurveyCard = (props: Props) => {
                             <div className="flex gap-2">
                                 <h3 className="text-base font-semibold text-gray-900">
                                     <span>{props.title}
-                                        {props.mustShowPublicationStatus ? <span>, {props.isPublic ? 'P' : 'Non p'}ublié</span> : null}
+                                        {props.mustShowPublicationStatus ? <span>, {t(props.isPublic ? "Published" : "NotPublished")}</span> : null}
                                     </span>
                                 </h3>
 
